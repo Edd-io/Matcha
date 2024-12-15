@@ -6,11 +6,10 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/15 00:51:44 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/15 21:39:02 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-const { json } = require('express');
 const Debug = require('./Debug');
 const users = [];
 

@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/15 00:41:24 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/15 23:35:10 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ const PostRequest = require('./src/PostRequest');
 const Websocket = require('./src/Websocket');
 const Debug = require('./src/Debug');
 const ws = require('ws');
+const session = require('express-session');
 
 const app = express();
 const server = http.createServer(app);
@@ -25,11 +26,18 @@ function init()
 {
 	app.use(express.json());
 	app.use(express.static('build'));
+	app.use(session({
+		secret: 'dndlsahwp9u4hoe8uhdwnow1du81g',
+		resave: false,
+		saveUninitialized: true,
+	}));
 
 	init_ws();
 
 	app.get('/', (req, res, next) => {
 		Debug.log(req);
+		if (!req.session.info)
+			req.session.info = {logged: false, id: -1, username: ''};
 		res.send('Hello World');
 	});
 
@@ -50,6 +58,8 @@ function init_ws()
 	const wss = new ws.Server({ noServer: true });
 
 	server.on('upgrade', (request, socket, head) => {
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		wss.handleUpgrade(request, socket, head, (ws) => {
 			wss.emit('connection', ws, request);
 		});
@@ -70,6 +80,11 @@ function init_ws()
 function main()
 {
 	init();
+
+	process.on('SIGINT', () => {
+		console.log('Server stopped');
+		process.exit(0);
+	});
 }
 
 main();

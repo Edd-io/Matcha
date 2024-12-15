@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/14 23:32:13 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/15 21:43:15 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ class PostRequest
 	static logout(req, res)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("Logout request");
 	}
 
@@ -39,6 +41,8 @@ class PostRequest
 	static block_user(req, res)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("Block user request");
 	}
 
@@ -46,6 +50,8 @@ class PostRequest
 	static report_user(req, res)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("Report user request");
 	}
 
@@ -54,6 +60,8 @@ class PostRequest
 	static get_swipe_user(req, res)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("Get swipe user request");
 	}
 
@@ -61,6 +69,8 @@ class PostRequest
 	static react_to_user(req, res)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("React to user request");
 	}
 
@@ -69,6 +79,8 @@ class PostRequest
 	static get_chat_list(req, res)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("Get chat list request");
 	}
 
@@ -76,6 +88,8 @@ class PostRequest
 	static get_chat(req, res)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("Get chat request");
 	}
 
