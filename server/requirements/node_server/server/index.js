@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/15 23:35:10 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/16 17:18:34 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ const Websocket = require('./src/Websocket');
 const Debug = require('./src/Debug');
 const ws = require('ws');
 const session = require('express-session');
+const Database = require('./src/Database');
 
 const app = express();
 const server = http.createServer(app);
@@ -79,6 +80,8 @@ function init_ws()
 
 function main()
 {
+	const db = new Database();
+
 	init();
 
 	process.on('SIGINT', () => {

@@ -1,6 +1,11 @@
 services:
   nginx:
     container_name: nginx
+    develop:
+      watch:
+        - action: sync
+          path: ./requirements/nginx/static
+          target: /var/www/static
     networks:
       - matcha_network
     depends_on:
@@ -13,11 +18,22 @@ services:
 
   node_server:
     container_name: node_server
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./requirements/node_server/
+          target: /app/
     networks:
       - matcha_network
     depends_on:
       - mariadb
-    build: requirements/node_server
+    build: 
+      context: requirements/node_server
+      args:
+          MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${MARIADB_DATABASE}
+          MYSQL_USER: ${MARIADB_USER}
+          MYSQL_PASSWORD: ${MARIADB_PASSWORD}
     volumes:
       - user_static_data:/app/user_static_data # This folder will be used to store user uploaded files (like profile pictures)
     restart: always
