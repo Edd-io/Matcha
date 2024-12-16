@@ -1,0 +1,47 @@
+services:
+  nginx:
+    container_name: nginx
+    networks:
+      - matcha_network
+    depends_on:
+      - node_server
+      - mariadb
+    build: requirements/nginx
+    ports:
+      - "8000:8000"
+    restart: always
+
+  node_server:
+    container_name: node_server
+    networks:
+      - matcha_network
+    depends_on:
+      - mariadb
+    build: requirements/node_server
+    volumes:
+      - user_static_data:/app/user_static_data # This folder will be used to store user uploaded files (like profile pictures)
+    restart: always
+
+  mariadb:
+    container_name: mariadb
+    env_file: .env
+    networks:
+      - matcha_network
+    build: 
+      context: requirements/mariadb
+      args:
+          MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+          MYSQL_DATABASE: ${MARIADB_DATABASE}
+          MYSQL_USER: ${MARIADB_USER}
+          MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+    # volumes:
+    #   - mariadb_data:/var/lib/mysql
+    restart: always
+
+networks:
+  matcha_network:
+    driver: bridge
+
+volumes:
+  # mariadb_data:
+  user_static_data:
