@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 15:13:19 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/17 16:25:43 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/17 21:54:46 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,9 @@ function checkIfCodeIsValid(token, code)
 		if (listMailToConfirm[i].token === token && listMailToConfirm[i].code === code)
 		{
 			const mail = listMailToConfirm[i].mail;
+			const token = listMailToConfirm[i].token;
 			listMailToConfirm.pop(i);
-			return ({valid: true, mail});
+			return ({valid: true, mail, token});
 		}
 	}
 	return ({valid: false});
