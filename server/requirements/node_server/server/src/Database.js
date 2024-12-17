@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/16 17:48:08 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/17 15:00:04 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,9 @@ class Database
 
 	constructor()
 	{
-		console.log('Database created');
 		this.db = require('mariadb');
 		this.pool = this.db.createPool({
-			host: credientials.host,
+			host: 'mariadb',
 			user: credientials.user,
 			password: credientials.password,
 			database: credientials.database,

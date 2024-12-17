@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:41:08 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/15 00:52:15 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/17 15:06:39 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,14 @@ class Debug
 			return;
 		console.log(`------ [Send response] ------`);
 		console.log("Data :", res);
+	}
+
+	static simpleLog(message)
+	{
+		if (!debug_mode)
+			return;
+		console.log('------ [Log] ------');
+		console.log(message);
 	}
 
 	static logError(err)

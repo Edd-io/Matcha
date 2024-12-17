@@ -6,11 +6,14 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/15 21:43:15 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/17 16:28:52 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const Debug = require('./Debug');
+const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
+
+const missing = "Missing parameters";
 
 class PostRequest
 {
@@ -18,6 +21,8 @@ class PostRequest
 	static login(req, res)
 	{
 		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
 		res.send("Login request");
 	}
 
@@ -25,7 +30,27 @@ class PostRequest
 	static register(req, res)
 	{
 		Debug.log(req);
-		res.send("Register request");
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
+		if (!req.body.email)
+			return (res.send(JSON.stringify({error: missing})));
+		sendVerificationMail(req.body.email).then((token) => {
+			res.send(JSON.stringify({success: "Mail sent", token}));
+		}).catch(() => {
+			res.send(JSON.stringify({error: "Error sending mail"}));
+		});
+	}
+
+	// Request to confirm mail
+	static confirm_register(req, res)
+	{
+		Debug.log(req);
+		if (!req.body.token || !req.body.code)
+			return (res.send(JSON.stringify({error: missing})));
+		if (checkIfCodeIsValid(req.body.token, req.body.code).valid)
+			res.send(JSON.stringify({success: "Mail confirmed"}));
+		else
+			res.send(JSON.stringify({error: "Code invalid"}));
 	}
 
 	// Request to logout

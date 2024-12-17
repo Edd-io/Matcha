@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/16 17:18:34 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/17 15:42:31 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ function init()
 
 	app.post('/login', PostRequest.login);
 	app.post('/register', PostRequest.register);
+	app.post('/confirm_register', PostRequest.confirm_register);
 	app.post('/logout', PostRequest.logout);
 	app.post('/get_swipe_user', PostRequest.get_swipe_user);
 	app.post('/react_to_user', PostRequest.react_to_user);

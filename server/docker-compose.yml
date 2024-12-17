@@ -34,6 +34,11 @@ services:
           MYSQL_DATABASE: ${MARIADB_DATABASE}
           MYSQL_USER: ${MARIADB_USER}
           MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+          MAIL_ID: ${MAIL_ID}
+          MAIL_PASS: ${MAIL_PASS}
+          MAIL_FROM: ${MAIL_FROM}
+          HOST: ${HOST}
+          PORT: ${PORT}
     volumes:
       - user_static_data:/app/user_static_data # This folder will be used to store user uploaded files (like profile pictures)
     restart: always
