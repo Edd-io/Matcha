@@ -6,15 +6,15 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/18 00:02:15 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/18 16:10:54 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
 
-const missing = "Missing parameters";
-const userCreatingAccount = [];
+const	missing = "Missing parameters";
+let		userCreatingAccount = [];
 
 class PostRequest
 {
@@ -53,10 +53,10 @@ class PostRequest
 		if (typeof req.body.token !== 'string' || typeof req.body.code !== 'string')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 
-		const res = checkIfCodeIsValid(req.body.token, req.body.code);
-		if (res.valid)
+		const resCode = checkIfCodeIsValid(req.body.token, req.body.code);
+		if (resCode.valid)
 		{
-			userCreatingAccount.push({mail: res.mail, token: res.token});
+			userCreatingAccount.push({mail: resCode.mail, token: resCode.token});
 			res.send(JSON.stringify({success: "Mail confirmed"}));
 		}
 		else
@@ -65,10 +65,11 @@ class PostRequest
 
 	// Request to register step 1 (who contain first name, last name, nickname, password)
 	// {first_name: string, last_name: string, nickname: string, password: string, token: string}
-	// need to be tested
 	static first_step_register(req, res)
 	{
-		let	index;
+		const	authorizedCharsNickname = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+		const	authorizedCharsNames = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ- ";
+		let		index;
 
 		Debug.log(req);
 		if (!req.body.first_name || !req.body.last_name || !req.body.password || !req.body.token)
@@ -83,10 +84,16 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "First name must be between 2 and 50 characters"})));
 		if (req.body.last_name.length < 2 || req.body.last_name.length > 50)
 			return (res.send(JSON.stringify({error: "Last name must be between 2 and 50 characters"})));
+		if (req.body.first_name.split('').some((c) => !authorizedCharsNames.includes(c)))
+			return (res.send(JSON.stringify({error: "First name contains unauthorized characters"})));
+		if (req.body.last_name.split('').some((c) => !authorizedCharsNames.includes(c)))
+			return (res.send(JSON.stringify({error: "Last name contains unauthorized characters"})));
 		if (req.body.password.length < 8 || req.body.password.length > 50)
 			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters"})));
 		if (req.body.nickname.length < 2 || req.body.nickname.length > 50)
 			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
+		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
+			return (res.send(JSON.stringify({error: "Nickname contains unauthorized characters"})));
 
 		for (index = 0; index < userCreatingAccount.length; index++)
 		{
@@ -104,8 +111,7 @@ class PostRequest
 	}
 
 	// Request to register step 2 (who contain date of birth, sexe, orientation, bio, tags)
-	// {date_of_birth: string(YYYYMMDD), sexe: string(M/F/O), orientation: string(M/F/O), bio: string, tags: string[], token: string}
-	// need to be tested
+	// {date_of_birth: string(YYYY-MM-DD), sexe: string(M/F/O), orientation: string(M/F/O), bio: string, tags: string[], token: string}
 	static second_step_register(req, res)
 	{
 		let	index;
@@ -118,7 +124,10 @@ class PostRequest
 				!Array.isArray(req.body.tags) || typeof req.body.token !== 'string')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		
-		if (req.body.date_of_birth.length !== 10)
+		if (req.body.date_of_birth.length !== 10 || req.body.date_of_birth[4] !== '-' || req.body.date_of_birth[7] !== '-' ||
+				isNaN(parseInt(req.body.date_of_birth.substr(0, 4))) || isNaN(parseInt(req.body.date_of_birth.substr(5, 2))) ||
+				isNaN(parseInt(req.body.date_of_birth.substr(8, 2)))
+			)
 			return (res.send(JSON.stringify({error: "Invalid date of birth"})));
 		if (req.body.sexe !== 'M' && req.body.sexe !== 'F' && req.body.sexe !== 'O')
 			return (res.send(JSON.stringify({error: "Invalid sexe"})));
@@ -145,10 +154,47 @@ class PostRequest
 		res.send(JSON.stringify({success: "Second step register request"}));
 	}
 
-	// Request to register step 3 (who contain pictures)
-	static third_step_register(req, res)
+	// Request to add picture to register
+	static add_picture_register(req, res)
 	{
 
+	}
+
+	// Request to delete picture to register
+	static delete_picture_register(req, res)
+	{
+
+	}
+
+	// Request to finish register
+	// {token: string}
+	// need to be tested
+	static finish_register(req, res, db)
+	{
+		let	index;
+
+		Debug.log(req);
+		if (!req.body.token)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.token !== 'string')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		
+		for (index = 0; index < userCreatingAccount.length; index++)
+		{
+			if (userCreatingAccount[index].token === req.body.token)
+				break;
+		}
+		if (index === userCreatingAccount.length)
+			return (res.send(JSON.stringify({error: "Invalid token"})));
+		
+		if (!userCreatingAccount[index].first_name || !userCreatingAccount[index].last_name || !userCreatingAccount[index].password ||
+				!userCreatingAccount[index].nickname || !userCreatingAccount[index].date_of_birth || !userCreatingAccount[index].sexe ||
+				!userCreatingAccount[index].orientation || !userCreatingAccount[index].bio || !userCreatingAccount[index].tags ||
+				!userCreatingAccount[index].pictures)
+			return (res.send(JSON.stringify({error: "Incomplete account"})));
+		db.addUser(userCreatingAccount[index]);
+		userCreatingAccount.pop(index);
+		res.send(JSON.stringify({success: "Account created"}));
 	}
 
 	// Request to logout
