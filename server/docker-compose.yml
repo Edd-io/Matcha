@@ -21,7 +21,7 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: ./requirements/node_server/
+          path: ./requirements/node_server/server/
           target: /app/
     networks:
       - matcha_network
@@ -58,6 +58,13 @@ services:
     # volumes:
     #   - mariadb_data:/var/lib/mysql
     restart: always
+
+  adminer: 
+    container_name: adminer 
+    image: adminer:latest
+    restart: always
+    networks:
+      - matcha_network 
 
 networks:
   matcha_network:

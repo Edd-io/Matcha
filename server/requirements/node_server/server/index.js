@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/18 14:02:58 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/19 21:33:38 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ const Debug = require('./src/Debug');
 const ws = require('ws');
 const session = require('express-session');
 const Database = require('./src/Database');
+const multer = require('multer');
+const upload = multer({ dest: '../uploads/' });
 
 const app = express();
 const server = http.createServer(app);
@@ -47,6 +49,7 @@ function init()
 	app.post('/confirm_register', PostRequest.confirm_register);
 	app.post('/first_step_register', PostRequest.first_step_register);
 	app.post('/second_step_register', PostRequest.second_step_register);
+	app.post('/add_picture_register', upload.single('file'), PostRequest.add_picture_register);
 	app.post('/logout', PostRequest.logout);
 	app.post('/get_swipe_user', PostRequest.get_swipe_user);
 	app.post('/react_to_user', PostRequest.react_to_user);

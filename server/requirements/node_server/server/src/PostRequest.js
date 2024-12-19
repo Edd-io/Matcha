@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/18 16:10:54 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/19 21:30:58 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -157,7 +157,10 @@ class PostRequest
 	// Request to add picture to register
 	static add_picture_register(req, res)
 	{
-
+		if (!req.file)
+			return (res.send(JSON.stringify({error: "No image sent"})));
+		console.log('File received:', req.file);
+		res.send(JSON.stringify({success: "Image added"}));
 	}
 
 	// Request to delete picture to register
