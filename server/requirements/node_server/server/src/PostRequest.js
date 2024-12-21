@@ -6,12 +6,14 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/19 21:30:58 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/21 17:28:59 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+var fs = require('fs');
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
+const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
 
 const	missing = "Missing parameters";
 let		userCreatingAccount = [];
@@ -19,28 +21,49 @@ let		userCreatingAccount = [];
 class PostRequest
 {
 	// Request to login
-	static login(req, res)
+	// {email: string, hashed_password: string}
+	static login(req, res, db)
 	{
 		Debug.log(req);
 		if (req.session.info && req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
-		res.send("Login request");
+		if (!req.body.email || !req.body.hashed_password)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.email !== 'string' || typeof req.body.hashed_password !== 'string')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.isValidAccount(req.body.email, req.body.hashed_password).then((data) => {
+			if (data.valid)
+			{
+				req.session.info = {logged: true, id: data.id};
+				return (res.send(JSON.stringify({success: "Connected"})));
+			}
+			return (res.send(JSON.stringify({Error: "Invalid mail or password"})));
+		});
+
 	}
 
 	// Request to register
 	// {email: string}
-	static register(req, res)
+	static register(req, res, db)
 	{
 		Debug.log(req);
 		if (req.session.info && req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
 		if (!req.body.email)
 			return (res.send(JSON.stringify({error: missing})));
-		sendVerificationMail(req.body.email).then((token) => {
-			res.send(JSON.stringify({success: "Mail sent", token}));
-		}).catch(() => {
-			res.send(JSON.stringify({error: "Error sending mail"}));
-		});
+		db.checkIfMailExist(req.body.email).then((exist) => {
+			console.log(exist);
+			if (exist)
+			{
+				res.send(JSON.stringify({error: "Mail already use"}));
+				return ;
+			}
+			sendVerificationMail(req.body.email).then((token) => {
+				res.send(JSON.stringify({success: "Mail sent", token}));
+			}).catch(() => {
+				res.send(JSON.stringify({error: "Error sending mail"}));
+			});
+		})
 	}
 
 	// Request to confirm mail
@@ -95,12 +118,8 @@ class PostRequest
 		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
 			return (res.send(JSON.stringify({error: "Nickname contains unauthorized characters"})));
 
-		for (index = 0; index < userCreatingAccount.length; index++)
-		{
-			if (userCreatingAccount[index].token === req.body.token)
-				break;
-		}
-		if (index === userCreatingAccount.length)
+		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
+		if (index == -1)
 			return (res.send(JSON.stringify({error: "Invalid token"})));
 
 		userCreatingAccount[index].first_name = req.body.first_name;
@@ -138,12 +157,8 @@ class PostRequest
 		if (req.body.tags.length < 1 || req.body.tags.length > 5)
 			return (res.send(JSON.stringify({error: "Tags must be between 1 and 5"})));
 
-		for (index = 0; index < userCreatingAccount.length; index++)
-		{
-			if (userCreatingAccount[index].token === req.body.token)
-				break;
-		}
-		if (index === userCreatingAccount.length)
+		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
+		if (index == -1)
 			return (res.send(JSON.stringify({error: "Invalid token"})));
 
 		userCreatingAccount[index].date_of_birth = req.body.date_of_birth;
@@ -155,18 +170,53 @@ class PostRequest
 	}
 
 	// Request to add picture to register
+	// {file, token: string}
 	static add_picture_register(req, res)
 	{
+		let	index;
+
+		Debug.log(req, res);
+		req.body = JSON.parse(req.body.data);
+		if (!req.body.token)
+			return (res.send(JSON.stringify({error: missing})));
 		if (!req.file)
 			return (res.send(JSON.stringify({error: "No image sent"})));
-		console.log('File received:', req.file);
-		res.send(JSON.stringify({success: "Image added"}));
+
+		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
+		if (index == -1)
+			return (res.send(JSON.stringify({error: "Invalid token"})));
+
+		res.send(JSON.stringify({success: "Image added", imgName: req.file.filename}));
+		if (!userCreatingAccount[index]?.pictures)
+			userCreatingAccount[index].pictures = [];
+		userCreatingAccount[index].pictures.push(req.file.filename);
 	}
 
 	// Request to delete picture to register
+	// {imgName: string, token: string}
 	static delete_picture_register(req, res)
 	{
+		let	index;
+	
+		Debug.log(req, res);
+		if (!req.body.token || !req.body.imgName)
+			return (res.send(JSON.stringify({error: missing})));
+		
+		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
+		if (index == -1)
+			return (res.send(JSON.stringify({error: "Invalid token"})));
 
+		for (let i = 0; i < userCreatingAccount[index].pictures.length; i++)
+		{
+			if (userCreatingAccount[index].pictures[i] == req.body.imgName)
+			{
+				fs.unlinkSync('/app/user_static_data/pfp/' + req.body.imgName);
+				res.send(JSON.stringify({success: "Image deleted"}));
+				return ;
+			}
+			if (i + 1 == userCreatingAccount[index].pictures.length)
+				return (res.send(JSON.stringify({error: "No image with this name"})));
+		}
 	}
 
 	// Request to finish register
@@ -176,7 +226,6 @@ class PostRequest
 	{
 		let	index;
 
-		Debug.log(req);
 		if (!req.body.token)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.token !== 'string')

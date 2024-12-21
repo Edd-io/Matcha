@@ -40,6 +40,8 @@ RUN echo '{"host": "localhost", "user": "'$MYSQL_USER'", "password": "'$MYSQL_PA
 
 WORKDIR /app
 
+RUN mkdir -p /app/user_static_data/
+
 RUN npm install
 
 STOPSIGNAL SIGKILL
