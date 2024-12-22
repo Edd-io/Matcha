@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/21 17:28:59 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/22 13:48:41 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ class PostRequest
 		db.isValidAccount(req.body.email, req.body.hashed_password).then((data) => {
 			if (data.valid)
 			{
+				if (data.banned)
+					return (res.send(JSON.stringify({error: "You has been banned"})));
 				req.session.info = {logged: true, id: data.id};
 				return (res.send(JSON.stringify({success: "Connected"})));
 			}
@@ -221,7 +223,6 @@ class PostRequest
 
 	// Request to finish register
 	// {token: string}
-	// need to be tested
 	static finish_register(req, res, db)
 	{
 		let	index;
@@ -250,21 +251,34 @@ class PostRequest
 	}
 
 	// Request to logout
+	// {}
+	// need to be tested
 	static logout(req, res)
 	{
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		res.send("Logout request");
+		req.session.info = {logged: false, id: -1};
+		res.send(JSON.stringify({success: "Disconnected"}));
 	}
 
 	// Request to block a user
-	static block_user(req, res)
+	// {block_id: int}
+	// need to be tested
+	static block_user(req, res, db)
 	{
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		res.send("Block user request");
+		if (!req.body.block_id)
+			return (res.send(JSON.stringify({error: missing})));
+		db.blockUser(req.session.info.id, req.body.block_id).then((data) => {
+			if (data.alreadyBlocked)
+				return (res.send(JSON.stringify({error: "User already blocked"})));
+			else if (!data.exist)
+				return (res.send(JSON.stringify({error: "User not exist"})));
+			res.send(JSON.stringify({success: "User blocked"}));
+		});
 	}
 
 	// Request to report a user
