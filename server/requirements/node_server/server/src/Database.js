@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/23 16:32:18 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/24 00:06:56 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,15 +98,15 @@ class Database
 		});
 	}
 	
-	isValidAccount(email, hash_pass)
+	isValidAccount(email)
 	{
 		return (new Promise((resolve) => {
 			this.pool.getConnection().then((conn) => {
-				conn.query('SELECT * FROM accounts WHERE email = ? AND password = ?', [email, hash_pass]).then((row) => {
+				conn.query('SELECT * FROM accounts WHERE email = ?', [email]).then((row) => {
 					if (row.length == 0)
 						resolve({valid: false});
 					else
-						resolve({valid: true, id: row[0].id, banned: row[0].banned});
+						resolve({valid: true, id: row[0].id, password: row[0].password, banned: row[0].banned});
 				}).finally(() => {conn.release(), conn.end()});
 			});
 		}));
@@ -200,9 +200,17 @@ class Database
 			this.pool.getConnection().then((conn) => {
 				conn.query('SELECT * FROM users_reported WHERE user_reported_id = ?', [reported_id]).then((row) => {
 					resolve(row.length);
-				});
-			}).finally(() => {conn.release(), conn.end()});
+				}).finally(() => {conn.release(), conn.end()});
+			})
 		}));
+	}
+
+	banUser(banned_id)
+	{
+		this.pool.getConnection().then((conn) => {
+			conn.query('UPDATE accounts SET banned = ? WHERE id = ?', [true, banned_id])
+			.finally(() => {conn.release(), conn.end()});
+		})
 	}
 }
 

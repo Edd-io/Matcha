@@ -6,11 +6,12 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/23 16:29:43 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/24 00:10:34 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 var fs = require('fs');
+const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
 const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
@@ -21,27 +22,33 @@ let		userCreatingAccount = [];
 class PostRequest
 {
 	// Request to login
-	// {email: string, hashed_password: string}
+	// {email: string, password: string}
 	static login(req, res, db)
 	{
 		Debug.log(req);
 		if (req.session.info && req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
-		if (!req.body.email || !req.body.hashed_password)
+		if (!req.body.email || !req.body.password)
 			return (res.send(JSON.stringify({error: missing})));
-		if (typeof req.body.email !== 'string' || typeof req.body.hashed_password !== 'string')
+		if (typeof req.body.email !== 'string' || typeof req.body.password !== 'string')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
-		db.isValidAccount(req.body.email, req.body.hashed_password).then((data) => {
+		db.isValidAccount(req.body.email).then((data) => {
 			if (data.valid)
 			{
-				if (data.banned)
-					return (res.send(JSON.stringify({error: "You has been banned"})));
-				req.session.info = {logged: true, id: data.id};
-				return (res.send(JSON.stringify({success: "Connected"})));
+				bcrypt.compare(req.body.email + req.body.password, data.password, (err, result) => {
+					if (result)
+					{
+						if (data.banned)
+							return (res.send(JSON.stringify({error: "You has been banned"})));
+						req.session.info = {logged: true, id: data.id};
+						return (res.send(JSON.stringify({success: "Connected"})));
+					}
+					return (res.send(JSON.stringify({Error: "Invalid mail or password"})));
+				});
 			}
-			return (res.send(JSON.stringify({Error: "Invalid mail or password"})));
+			else
+				return (res.send(JSON.stringify({error: "Invalid mail or password"})));
 		});
-
 	}
 
 	// Request to register
@@ -54,7 +61,6 @@ class PostRequest
 		if (!req.body.email)
 			return (res.send(JSON.stringify({error: missing})));
 		db.checkIfMailExist(req.body.email).then((exist) => {
-			console.log(exist);
 			if (exist)
 			{
 				res.send(JSON.stringify({error: "Mail already use"}));
@@ -287,6 +293,8 @@ class PostRequest
 	static report_user(req, res, db)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.report_id)
 			return (res.send(JSON.stringify({error: missing})));
 		db.reportedUser(req.session.info.id, req.body.block_id).then((data) => {
@@ -296,9 +304,10 @@ class PostRequest
 				return (res.send(JSON.stringify({error: "User not exist"})));
 			res.send(JSON.stringify({success: "User blocked"}));
 			db.getNbReport(req.body.report_id).then((nb_report) => {
-				if (nb_report >= 10)
+				if (nb_report >= 5)
 				{
-					console.warn("Do a function to ban an account");
+					db.banUser(req.body.report_id);
+					// Do a function to kick user from server with websocket
 				}
 			});
 		});
@@ -342,6 +351,13 @@ class PostRequest
 		res.send("Get chat request");
 	}
 
+
+	////// TEST //////
+	static test(req, res, db)
+	{
+		db.banUser(1);
+		res.send("Test ok");
+	}
 }
 
 module.exports = PostRequest;
