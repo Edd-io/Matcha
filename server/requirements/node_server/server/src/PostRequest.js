@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/22 13:48:41 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/23 16:29:43 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,12 +282,26 @@ class PostRequest
 	}
 
 	// Request to report a user
-	static report_user(req, res)
+	// {report_id: int}
+	// need to be tested
+	static report_user(req, res, db)
 	{
 		Debug.log(req);
-		if (!req.session.info || !req.session.info.logged)
-			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		res.send("Report user request");
+		if (!req.body.report_id)
+			return (res.send(JSON.stringify({error: missing})));
+		db.reportedUser(req.session.info.id, req.body.block_id).then((data) => {
+			if (data.alreadyReported)
+				return (res.send(JSON.stringify({error: "User already reported"})));
+			else if (!data.exist)
+				return (res.send(JSON.stringify({error: "User not exist"})));
+			res.send(JSON.stringify({success: "User blocked"}));
+			db.getNbReport(req.body.report_id).then((nb_report) => {
+				if (nb_report >= 10)
+				{
+					console.warn("Do a function to ban an account");
+				}
+			});
+		});
 	}
 
 	////// SWIPE ZONE //////
