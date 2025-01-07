@@ -24,7 +24,6 @@ body {
 	padding: 0.7rem 1rem;
 	height: 3rem;
 	width: 80%;
-	max-width: 40rem;
 	display: flex;
 	align-items: center;
 }
@@ -53,4 +52,12 @@ body {
 	font-size: 0.9rem;
 	font-weight: 600;
 	color: #111111;
+}
+
+.input-slider {
+	/* width: 100vw; */
+	max-width: 35rem;
+	/* position: fixed; */
+	/* left: 50%; */
+	/* transform: translateX(-50%); */
 }

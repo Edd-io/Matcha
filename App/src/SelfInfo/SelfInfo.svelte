@@ -13,7 +13,7 @@
 	<h2>PHOTOS</h2>
 	<div class="part">
 		{#each {length: 6} as _, i}
-			<button class="no-style-button button-image" aria-label='Photo 1'>
+			<button class="no-style-button button-image" aria-label='Photo {i + 1}'>
 				{#if lstPhotos[i]}
 					<img src={lstPhotos[i]} alt="Pfp 1" />
 				{:else}
