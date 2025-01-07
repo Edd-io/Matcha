@@ -8,8 +8,8 @@
   }
 </script>
 
-<main>
-  <!-- <Register matchaLogo={matchaLogo}/> -->
+<Register matchaLogo={matchaLogo}/>
+<!-- <main>
   <div class="main-logo">
     <img class="matcha-logo" src={matchaLogo} alt="Matcha logo"/>
     <h1>MATCHA</h1>
@@ -34,7 +34,7 @@
       <p>J’ai déjà un compte</p>
     </button>
   </div>
-</main>
+</main> -->
 
 <style>
 
@@ -62,14 +62,14 @@
   }
 
   .main-logo h1 {
-    font-size: 2em;
+    font-size: 2.5rem;
     margin-top: 10px;
     text-align: center;
     font-weight: 900;
   }
 
   .main-logo p {
-    font-size: 1em;
+    font-size: 1rem;
     margin-top: 20px;
     text-align: center;
   }
@@ -90,6 +90,7 @@
   }
 
   .buttons .create {
+    position: relative;
     background-color: white;
     color: #111111;
     border: none;
@@ -109,8 +110,8 @@
   .arrow-icon {
     position: absolute;
     rotate: -45deg;
-    bottom: 210px;
-    left: 155.px;
+    top: 10px;
+    right: 15px;
     width: 22px;
     height: 22px;
   }

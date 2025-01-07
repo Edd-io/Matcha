@@ -1,10 +1,56 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Red Hat Display", serif;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Red Hat Display', sans-serif;
+}
+body {
+	font-size: 26px;
+}
+.text {
+	font-size: 1.1rem;
+	font-weight: 600;
+	color: #111111;
 }
 
-p {
-  font-size: 1.1rem;
+.input-text {
+	font-size: 1rem;
+	font-weight: 600;
+	color: #5E5E5E;
+	background-color: #D9D9D9;
+	border-radius: 0.9rem;
+	text-decoration: none;
+	border: none;
+	padding: 0.7rem 1rem;
+	height: 3rem;
+	width: 80%;
+	max-width: 40rem;
+	display: flex;
+	align-items: center;
+}
+
+.next-button {
+	background-color: #D9D9D9;
+	border-radius: 1.5rem;
+	padding: 1.3rem;
+	text-decoration: none;
+	border: none;
+	display: flex;
+	align-items: center;
+	transition: background-color 0.3s;
+}
+
+.next-button:hover {
+	background-color: #c9c9c9;
+}
+
+.next-button svg {
+	color: #111111;
+	transform: scale(2);
+}
+
+.small-text {
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #111111;
 }
