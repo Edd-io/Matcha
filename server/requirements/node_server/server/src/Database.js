@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/24 00:06:56 by edbernar         ###   ########.fr       */
+/*   Updated: 2024/12/24 13:21:59 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ class Database
 						resolve({valid: false});
 					else
 						resolve({valid: true, id: row[0].id, password: row[0].password, banned: row[0].banned});
-				}).finally(() => {conn.release(), conn.end()});
+				}).finally(() => {conn.release(); conn.end()});
 			});
 		}));
 	}
@@ -118,7 +118,7 @@ class Database
 			this.pool.getConnection().then((conn) => {
 				conn.query('SELECT id FROM accounts WHERE email = ?', [email]).then((row) => {
 					resolve(row.length != 0);
-				}).finally(() => {conn.release(), conn.end()});
+				}).finally(() => {conn.release(); conn.end()});
 			});
 		}));
 	}
@@ -141,7 +141,7 @@ class Database
 						for (let i = 0; i < user.pictures.length; i++)
 							conn.query('INSERT INTO users_images (local_url, user_id) VALUES (?, ?)', [user.pictures[i], user_id]);
 						})
-				}).finally(() => {conn.release(), conn.end()});
+				}).finally(() => {conn.release(); conn.end()});
 			});
 		});
 	}
@@ -155,7 +155,7 @@ class Database
 						resolve({alreadyBlocked: true});
 					else
 					{
-						conn.query('SELECT id FROM users_blocked WHERE id = ?', [block_id]).then((row) => {
+						conn.query('SELECT id FROM accounts WHERE id = ?', [block_id]).then((row) => {
 							if (row.length == 0)
 								resolve({alreadyBlocked: false, exist: false});
 							else
@@ -165,7 +165,7 @@ class Database
 							}
 						});
 					}
-				}).finally(() => {conn.release(), conn.end()});
+				}).finally(() => {conn.release(); conn.end()});
 			});
 		}));
 	}
@@ -179,7 +179,7 @@ class Database
 						resolve({alreadyReported: true});
 					else
 					{
-						conn.query('SELECT id FROM users_reported WHERE id = ?', [reported_id]).then((row) => {
+						conn.query('SELECT id FROM accounts WHERE id = ?', [reported_id]).then((row) => {
 							if (row.length == 0)
 								resolve({alreadyReported: false, exist: false});
 							else
@@ -189,7 +189,7 @@ class Database
 							}
 						});
 					}
-				}).finally(() => {conn.release(), conn.end()});
+				}).finally(() => {conn.release(); conn.end()});
 			});
 		}));
 	}
@@ -200,7 +200,7 @@ class Database
 			this.pool.getConnection().then((conn) => {
 				conn.query('SELECT * FROM users_reported WHERE user_reported_id = ?', [reported_id]).then((row) => {
 					resolve(row.length);
-				}).finally(() => {conn.release(), conn.end()});
+				}).finally(() => {conn.release(); conn.end()});
 			})
 		}));
 	}
