@@ -6,6 +6,9 @@
 }
 body {
 	font-size: 26px;
+	height: 100vh;
+	width: 100vw;
+	overflow: hidden;
 }
 .text {
 	font-size: 1.1rem;
@@ -55,9 +58,12 @@ body {
 }
 
 .input-slider {
-	/* width: 100vw; */
-	max-width: 35rem;
-	/* position: fixed; */
+	width: 100vw;
+	/* max-width: 35rem; */
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	/* left: 50%; */
 	/* transform: translateX(-50%); */
 }

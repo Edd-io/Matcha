@@ -15,6 +15,7 @@
         text-align: center;
         padding: 20px;
         color: #111111;
+        
     }
 
     #txt {
