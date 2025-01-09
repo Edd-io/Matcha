@@ -3,12 +3,17 @@
   import AppleLogo from './assets/apple-logo.svg'
   import GoogleLogo from './assets/google-logo.svg'
   import Register from './Register/Register.svelte'
+  import Main from './Main/Top-bar.svelte'
+  import Bottom from './Main/Bottom-bar.svelte'
+  import Mainmain from './Main/main.svelte'
   function redirect() {
     window.location.href = "./Register/Register.svelte";
   }
 </script>
-
-<Register matchaLogo={matchaLogo}/>
+<!-- <Main matchaLogo={matchaLogo}/> -->
+<!-- <Bottom /> -->
+<Mainmain />
+<!-- <Register matchaLogo={matchaLogo}/> -->
 <!-- <main>
   <div class="main-logo">
     <img class="matcha-logo" src={matchaLogo} alt="Matcha logo"/>

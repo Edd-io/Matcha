@@ -18,11 +18,13 @@
     }
 
     #txt1 {
-        margin-top: 100px;
+        margin-top: 60px;
     }
 
     #txt {
         margin-top: 40px;
+        width: 90%;
+        /* max-width: 35rem; */
     }
 
     #inp {
@@ -31,12 +33,13 @@
         resize: none;
     }
 
-    .next-button {
-        margin-top: 40px;
-        background: #F5F5F5;
-        border: none;
-        border-radius: 50%;
-        padding: 10px;
-        cursor: pointer;
+    button{
+        margin-top: 30px;
+    }
+
+    .next-button svg {
+        width: 18px;
+        height: 18px;
+        fill: #111111;
     }
 </style>
