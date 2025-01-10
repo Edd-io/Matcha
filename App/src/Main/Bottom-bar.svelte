@@ -53,6 +53,7 @@
     button img {
         width: 2.1rem;
         height: 2.1rem;
+
     }
 
     .selected {
@@ -69,5 +70,6 @@
     button{
         border: none;
         cursor: pointer;
+        background: none;
     }
 </style>
