@@ -1,6 +1,7 @@
 <script>
     import TopBar from "./Top-bar.svelte";
     import BottomBar from "./Bottom-bar.svelte";
+    import Notification from "./Notification.svelte";
 
     import positionLogo from "../assets/position.svg";
     import likeLogo from "../assets/heart.svg";
@@ -24,6 +25,7 @@
     let iPhoto = 0;
 
     import { onMount } from "svelte";
+    import NotificationPage from "./Notification-page.svelte";
 
     function skipPhoto(event) {
         const rect = event.currentTarget.getBoundingClientRect();
@@ -53,7 +55,9 @@
 
 <main>
     <TopBar />
+    <!-- <NotificationPage /> -->
     <div class="main">
+        <Notification />
         <!-- Scroll info (not finsihed) -->
         <!-- <div class="info-profil" style="transform: translate(-50%, calc(100px + {translateY}px));">
             <div class="user-info">
@@ -69,6 +73,8 @@
                 </div>
             </div>
         </div> -->
+
+
         <div class="photo" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
             <div class="centered">
                 <div class="nb-photo">

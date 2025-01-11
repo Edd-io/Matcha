@@ -5,7 +5,7 @@
   import Register from './Register/Register.svelte'
   import Main from './Main/Top-bar.svelte'
   import Bottom from './Main/Bottom-bar.svelte'
-  import Mainmain from './Main/main.svelte'
+  import Mainmain from './Main/Main.svelte'
   function redirect() {
     window.location.href = "./Register/Register.svelte";
   }
