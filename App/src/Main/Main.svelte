@@ -9,6 +9,13 @@
     import genderLogo from "../assets/gender.svg";
     import typeLogo from "../assets/type.svg";
 
+
+    let iPhoto = 0;
+
+    import { onMount } from "svelte";
+    import NotificationPage from "./Notification-page.svelte";
+    import ScrollProfile from "./Scroll-profile.svelte";
+
     let users = [
         {
             nbPhotos: 6,
@@ -21,11 +28,6 @@
             bio: "Salut, je suis John, j'aime les balades en forêt et les soirées entre amis."
         }
     ]
-
-    let iPhoto = 0;
-
-    import { onMount } from "svelte";
-    import NotificationPage from "./Notification-page.svelte";
 
     function skipPhoto(event) {
         const rect = event.currentTarget.getBoundingClientRect();
@@ -51,28 +53,27 @@
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll); // Nettoyage
     });
+
+    let showComponent = false;
+
+    function toggleScrollInfo() {
+        showComponent = !showComponent;
+        console.log(showComponent);
+    }
 </script>
 
 <main>
-    <TopBar />
-    <!-- <NotificationPage /> -->
-    <div class="main">
-        <Notification />
-        <!-- Scroll info (not finsihed) -->
-        <!-- <div class="info-profil" style="transform: translate(-50%, calc(100px + {translateY}px));">
-            <div class="user-info">
-                <p id="main-info">{users[0].name} • {users[0].age}</p>
-                <div class=low-info>
-                    <img src={positionLogo} alt="positionLogo"/>
-                    <p id="scd-info">{users[0].city}, {users[0].country}</p>
-                    <img src={genderLogo} alt="genderLogo"/>
-                    <p id="scd-info">{users[0].gender}</p>
-                    <img src={typeLogo} alt="typeLogo"/>
-                    <p id="scd-info">{users[0].type}</p>
 
-                </div>
-            </div>
-        </div> -->
+    <!-- <NotificationPage /> -->
+
+    <TopBar />
+    <div class="main">
+
+        <!-- <Notification /> -->
+
+        {#if showComponent}
+            <ScrollProfile bind:users={users}/>
+        {/if}
 
 
         <div class="photo" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
@@ -91,7 +92,7 @@
                 </div>
             </div>
             <div class=buttons>
-                <button id="dislike">
+                <button id="dislike" on:click={toggleScrollInfo}>
                     <img src={dislikeLogo} alt="dislikeLogo"/>
                 </button>
                 <button id="like">
@@ -109,18 +110,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.info-profil{
-    height: 78vh;
-    width: 93%;
-    border-radius: 2rem;
-    background-color: red;
-    position: fixed;
-    transform: translate(-50%);
-    transition: transform 0.2s ease-out; /* Animation fluide */
-    left: 50%;
-    z-index: 2;
 }
 
 .photo{
@@ -196,13 +185,13 @@
 
 #scd-info{
     font-size: 1rem;
-    color: white;
 }
 
 .low-info{
     display: flex;
     flex-direction: row;
     gap: 10px;
+    filter: invert(1);
 }
 
 #dislike{

@@ -20,6 +20,8 @@
         height: 100vh;
         width: 100vw;
         background-color: white;
+        top: 0;
+        left: 0;
         z-index: 4;
     }
 

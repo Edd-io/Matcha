@@ -14,7 +14,6 @@
         display: flex;
         width: 100%;
         height: 13%;
-        /* justify-content: center; */
         align-items: center;
     }
 
