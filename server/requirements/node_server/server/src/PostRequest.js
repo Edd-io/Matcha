@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/24 00:10:34 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/13 17:30:55 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class PostRequest
 
 	// Request to register
 	// {email: string}
+	// need to be tested
 	static register(req, res, db)
 	{
 		Debug.log(req);
@@ -60,6 +61,8 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
 		if (!req.body.email)
 			return (res.send(JSON.stringify({error: missing})));
+		if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)))
+			return (res.send(JSON.stringify({error: "Invalid mail"})));
 		db.checkIfMailExist(req.body.email).then((exist) => {
 			if (exist)
 			{
@@ -83,7 +86,8 @@ class PostRequest
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.token !== 'string' || typeof req.body.code !== 'string')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
-
+		if (req.body.code.length !== 4)
+			return (res.send(JSON.stringify({error: "Code must be 4 characters"})));
 		const resCode = checkIfCodeIsValid(req.body.token, req.body.code);
 		if (resCode.valid)
 		{
