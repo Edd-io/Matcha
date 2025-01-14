@@ -16,7 +16,7 @@
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 
-	let currentPage = 1;
+	let currentPage = 2;
 
 	function slideHorizontal(node) {
 		const delay = 0, duration = 800, easing = cubicOut;

@@ -23,7 +23,7 @@
         <button class="close-scroll" on:click={toggleScrollInfo} aria-label="Close">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
                 <path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+            </svg>
         </button>
         <div class="user-info">
             <p id="main-info-scroll">{users[0].name} • {users[0].age}</p>
@@ -61,7 +61,7 @@
         <div class="div-btn">
             <button class="scroll-btn">Lorem</button>
             <button class="scroll-btn">Bloquer</button>
-            <button class="scroll-btn">Signaler</button>
+            <button class="scroll-btn" id="signal-btn">Signaler</button>
         </div>
     </div>
 </main>
@@ -218,6 +218,10 @@
     justify-content: center;
     margin-block: 35px;
     margin-inline: 20px;
+}
+
+#signal-btn{
+    background-color: #C64141;
 }
 
 .scroll-btn{

@@ -85,14 +85,21 @@
                 </div>
             </div>
             <div class="user-info">
-                <p id="main-info">{users[0].name} • {users[0].age}</p>
+                <div class="info">
+                    <p id="main-info">{users[0].name} • {users[0].age}</p>
+                    <button class="open-scroll" on:click={toggleScrollInfo}>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+                            <path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </button>
+                </div>
                 <div class=low-info>
                     <img src={positionLogo} alt="positionLogo"/>
                     <p id="scd-info">{users[0].city}, {users[0].country}</p>
                 </div>
             </div>
             <div class=buttons>
-                <button id="dislike" on:click={toggleScrollInfo}>
+                <button id="dislike">
                     <img src={dislikeLogo} alt="dislikeLogo"/>
                 </button>
                 <button id="like">
@@ -181,6 +188,30 @@
     color: white;
     font-weight: 700;
     font-size: 2.5rem;
+}
+
+.info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-right: 27px;
+}
+
+.open-scroll {
+    /* position: relative; */
+    left: 85%;
+    top: 9.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2rem;
+    width: 2rem;
+    transform: rotate(-90deg);
+    border: none;
+    border-radius: 1.2rem;
+    cursor: pointer;
+    background: none;
+    background-color: #d9d9d9;
 }
 
 #scd-info{
