@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/01/14 15:27:17 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/14 17:30:47 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,6 @@ class PostRequest
 
 	// Request to register
 	// {email: string}
-	// need to be tested
 	static register(req, res, db)
 	{
 		Debug.log(req);

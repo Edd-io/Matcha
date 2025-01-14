@@ -16,6 +16,8 @@
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 
+	let token = null;
+
 	let currentPage = 1;
 
 	function slideHorizontal(node) {
@@ -44,13 +46,13 @@
 	
 	{#if currentPage === 1}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<EmailRegister bind:page={currentPage}/>
+			<EmailRegister bind:page={currentPage} bind:token={token}/>
 		</div>
 	{/if}
 
 	{#if currentPage === 2}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<CodeRegister bind:page={currentPage}/>
+			<CodeRegister bind:page={currentPage}  token={token}/>
 		</div>
 	{/if}
 

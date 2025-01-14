@@ -2,7 +2,10 @@
 	let code = ['', '', '', ''];
 	let	sent = false;
 
-	export let page;
+	export let page: number;
+	export let token: string;
+	
+	let err = false;
 
 	function handleInput(event: any, index: number)
 	{
@@ -23,6 +26,7 @@
 	{
 		if (sent)
 			return ;
+		err = false;
 		if (code.join('').length !== 4)
 			return ;
 		console.log(code.join(''));
@@ -32,13 +36,13 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ code: code.join('') })
+			body: JSON.stringify({ code: code.join(''), token: token })
 		})
 		.then(response => response.json())
 		.then(data => {
 			if (data.error)
 			{
-				console.log(data.error);
+				err = true;
 				sent = false;
 			}
 			else
@@ -62,7 +66,10 @@
 				on:keydown={(event) => handleKeydown(event, index)}
 			/>
 		{/each}
-	  </div>
+	</div>
+	{#if err}
+		<p class="error">Code invalide</p>
+	{/if}
 	<div class="resend-text">Vous n’avez pas reçu de code ? 
 		<a href="#" class="resend-link">Renvoyer</a>
 	</div>
@@ -115,5 +122,14 @@
 		border: none;
 		border-radius: 1rem;
 		background-color: #D9D9D9;
+	}
+
+	.error {
+		color: red;
+		font-size: 0.8rem;
+		font-weight: 600;
+		margin-top: 10px;
+		width: 100%;
+		text-align: center;
 	}
 </style>

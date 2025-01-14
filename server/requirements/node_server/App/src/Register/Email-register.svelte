@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	export let page;
+	export let page: number;
+	export let token: string;
 
 	let err = false;
 	let timeout = null;
+	let sent = false;
 
 	onMount(() => {
 		function clicked()
 		{
+			if (sent)
+				return ;
 			const elem = document.querySelector('#inp') as HTMLInputElement;
 			const value = elem?.value || '';
 			if (value === '')
@@ -30,14 +34,31 @@
 					}, 500);
 					return ;
 				}
+				sent = true;
 				fetch('/register', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({ email: value })
-				});
-				page++;
+				})
+				.then(res => res.json())
+				.then(data => {
+					if (data.error)
+					{
+						err = true;
+						timeout = setTimeout(() => {
+							err = false;
+							timeout = null;
+						}, 500);
+					}
+					else
+					{
+						token = data.token;
+						page++;
+					}
+					sent = false;
+				})
 			}
 			
 		}
