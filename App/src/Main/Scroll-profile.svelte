@@ -6,18 +6,25 @@
     import typeLogo from "../assets/type.svg";
 
     export let users;
+    export let showComponent;
+    let hideComponent = true;
 
-    import { fly } from 'svelte/transition';
-
-    let transitionOptions = {
-        y: 200,
-        duration: 500,
-        easing: t => (--t) * t * t + 1
-    };
+    function toggleScrollInfo() {
+        hideComponent = false;
+        setTimeout(() => {
+            showComponent = !showComponent;
+        }, 500);
+        console.log(showComponent);
+    }
 </script>
 
 <main>
-    <div class="info-profil" transition:fly={{...transitionOptions}}>
+    <div class={hideComponent ? "info-profil show" : "info-profil hide"}>
+        <button class="close-scroll" on:click={toggleScrollInfo} aria-label="Close">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+                <path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+        </button>
         <div class="user-info">
             <p id="main-info-scroll">{users[0].name} • {users[0].age}</p>
             <div class=low-info-scroll>
@@ -60,17 +67,66 @@
 </main>
 
 <style>
+
+@keyframes slideIn {
+    from {
+        bottom: -600px;
+    }
+    to {
+        bottom: 1rem;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        bottom: 1rem;
+    }
+    to {
+        bottom: -600px;
+    }
+}
+
+.info-profil.show {
+    animation: slideIn 0.5s ease forwards;
+}
+
+.info-profil.hide {
+    animation: slideOut 0.5s ease forwards;
+}
+
+.close-scroll{
+    position: relative;
+    left: 85%;
+    top: 9.5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2rem;
+    width: 2rem;
+    transform: rotate(90deg);
+    border: none;
+    border-radius: 1.2rem;
+    cursor: pointer;
+    background: none;
+    background-color: #d9d9d9;
+}
+
+.close-scroll svg{
+    width: 20px;
+    height: 20px;
+}
+
 .info-profil{
-    height: 65vh;
+    height: 70vh;
     width: 94%;
     border-radius: 2rem;
     background-color: white;
     position: fixed;
     transform: translate(-50%);
-    transition: transform 0.2s ease-out;
     left: 50%;
-    top: 33%;
+    /* bottom: -200px; */
     z-index: 2;
+    transition: bottom 0.5s;
 }
 
 .info-profil p {

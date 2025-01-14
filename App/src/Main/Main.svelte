@@ -72,7 +72,7 @@
         <!-- <Notification /> -->
 
         {#if showComponent}
-            <ScrollProfile bind:users={users}/>
+            <ScrollProfile bind:users={users} bind:showComponent={showComponent}/>
         {/if}
 
 
