@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 14:44:48 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/17 15:41:56 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/14 14:33:55 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ const Debug = require("../Debug");
 async function sendMail(to, subject, text, html)
 {
 	const transporter = nodemailer.createTransport({
-		host: credentials.host,
+		host: credentials.mail_host,
 		port: credentials.port,
 		secure: false,
 		auth: {

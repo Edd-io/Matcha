@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/23 23:39:40 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:49:20 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,12 @@ function init(db)
 
 	app.get('/', (req, res) => {
 		Debug.log(req);
-		res.send('Hello World');
+		res.sendFile('/app/website/index.html');
+	});
+	
+	// Move static files to nginx later
+	app.get('/assets/:file', (req, res) => {
+		res.sendFile(`/app/website/assets/${req.params.file}`);
 	});
 
 	app.post('/login', (req, res) => PostRequest.login(req, res, db));
@@ -60,7 +65,6 @@ function init(db)
 	app.post('/get_swipe_user', PostRequest.get_swipe_user);
 	app.post('/react_to_user', PostRequest.react_to_user);
 	app.get('/test', (req, res) => PostRequest.test(req, res, db));
-	
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
 	});

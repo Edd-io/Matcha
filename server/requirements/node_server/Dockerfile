@@ -36,11 +36,14 @@ ENV MAIL_FROM=${MAIL_FROM}
 ENV HOST=${HOST}
 ENV PORT=${PORT}
 
-RUN echo '{"host": "localhost", "user": "'$MYSQL_USER'", "password": "'$MYSQL_PASSWORD'", "database": "'$MYSQL_DATABASE'", "mail_id": "'$MAIL_ID'", "mail_pass": "'$MAIL_PASS'", "mail_from": "'$MAIL_FROM'", "host": "'$HOST'", "port": "'$PORT'"}' > /app/credentials.json
+RUN echo '{"host": "localhost", "user": "'$MYSQL_USER'", "password": "'$MYSQL_PASSWORD'", "database": "'$MYSQL_DATABASE'", "mail_id": "'$MAIL_ID'", "mail_pass": "'$MAIL_PASS'", "mail_from": "'$MAIL_FROM'", "mail_host": "'$HOST'", "port": "'$PORT'"}' > /app/credentials.json
 
 WORKDIR /app
 
 RUN mkdir -p /app/user_static_data/
+RUN mkdir -p /app/website/
+
+COPY ../App/dist /app/website
 
 RUN npm install
 

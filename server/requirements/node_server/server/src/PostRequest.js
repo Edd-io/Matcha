@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/01/13 17:30:55 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/14 15:27:17 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
 		if (!req.body.email)
 			return (res.send(JSON.stringify({error: missing})));
-		if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mail)))
+		if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)))
 			return (res.send(JSON.stringify({error: "Invalid mail"})));
 		db.checkIfMailExist(req.body.email).then((exist) => {
 			if (exist)

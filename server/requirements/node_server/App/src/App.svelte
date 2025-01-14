@@ -6,8 +6,8 @@
 
 <main>
   <!-- <Host /> -->
-  <!-- <Register /> -->
-  <Main />
+  <Register />
+  <!-- <Main /> -->
 </main>
 
 <style>
