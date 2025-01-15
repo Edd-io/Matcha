@@ -17,8 +17,8 @@
 	import { cubicOut } from 'svelte/easing';
 
 	let token = null;
-
-	let currentPage = 1;
+	let currentPage = 5;
+	let dataSecondStep = {};
 
 	function slideHorizontal(node) {
 		const delay = 0, duration = 800, easing = cubicOut;
@@ -52,19 +52,19 @@
 
 	{#if currentPage === 2}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<CodeRegister bind:page={currentPage}  token={token}/>
+			<CodeRegister bind:page={currentPage} token={token}/>
 		</div>
 	{/if}
 
 	{#if currentPage === 3}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<EssentialRegister/>
+			<EssentialRegister bind:page={currentPage} token={token}/>
 		</div>
 	{/if}
 
 	{#if currentPage === 4}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<BirthRegister/>
+			<BirthRegister bind:page={currentPage} dataSecondStep={dataSecondStep}/>
 		</div>
 	{/if}
 
