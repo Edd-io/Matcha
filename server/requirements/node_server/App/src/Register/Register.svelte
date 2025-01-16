@@ -69,7 +69,7 @@
 
 	{#if currentPage === 5}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<TypeRegister/>
+			<TypeRegister bind:page={currentPage} dataSecondStep={dataSecondStep}/>
 		</div>
 	{/if}
 
