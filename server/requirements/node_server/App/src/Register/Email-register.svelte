@@ -80,6 +80,9 @@
 <main>
 	<p id="txt" class="text">Pour commencer, entrez votre email pour accéder a Matcha.</p>
 	<input id="inp" class="input-text {err ? 'animation' : ''} " type="email" placeholder="johndoe@gmail.com"/>
+	{#if sent}
+		<div class="loading"></div>
+	{/if}
 </main>
 
 <style>
@@ -104,6 +107,25 @@
 	.animation {
 		border: 2px solid red;
 		animation: horizontal-shaking 0.5s;
+	}
+
+	.loading {
+		margin-top: 100px;
+		width: 50px;
+		height: 50px;
+		border: 5px solid #d9d9d9;
+		border-top: 5px solid #111111;
+		border-radius: 50%;
+		animation: spin 1s ease-in-out infinite;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	@keyframes horizontal-shaking {
