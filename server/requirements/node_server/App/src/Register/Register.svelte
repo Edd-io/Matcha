@@ -1,7 +1,4 @@
 <script lang="ts">
-
-	import matchaLogo from '../assets/Matcha.svg'
-	
 	import LogoRegister from './Logo-register.svelte'
 	import EmailRegister from './Email-register.svelte';
 	import NextButton from './Next-button.svelte';
@@ -20,7 +17,8 @@
 
 	let currentPage = 1;
 
-	function slideHorizontal(node) {
+	function slideHorizontal(node: HTMLElement) 
+	{
 		const delay = 0, duration = 800, easing = cubicOut;
 		const style = getComputedStyle(node);
 		const width = -parseFloat(style.width);
@@ -29,20 +27,21 @@
 			delay,
 			duration,
 			easing,
-			css: (t) => `
+			css: (t: number) => `
 				transform: translateX(${(1 - t) * width}px);
 				opacity: ${t}
 			`,
 		};
 	}
 
-	function flyWithDelay(node, { x = 0, y = 0, delay = 800 }) {
+	function flyWithDelay(node: HTMLElement, { x = 0, y = 0, delay = 800 }) 
+	{
 		return fly(node, { x, y, delay, duration: 800, easing: cubicOut });
 	}
 </script>
 
 <main>
-	<LogoRegister matchaLogo={matchaLogo}/>
+	<LogoRegister />
 	
 	{#if currentPage === 1}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
@@ -101,16 +100,14 @@
 
 
 <style>
+	#next-button {
+		position: absolute;
+		left: 50%;
+		bottom: 10%;
+		transform: translate(-50%, -50%);
+	}
 
-#next-button {
-	position: absolute;
-	left: 50%;
-	bottom: 10%;
-	transform: translate(-50%, -50%);
-}
-
-#next-button:hover {
-	cursor: pointer;
-}
-
+	#next-button:hover {
+		cursor: pointer;
+	}
 </style>

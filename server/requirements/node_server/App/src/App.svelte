@@ -3,12 +3,14 @@
   import Main from './Main/Main.svelte'
   import Register from './Register/Register.svelte'
   import Map from './Map/Map.svelte'
+  import Filter from './Main/Filter.svelte';
 </script>
 
 <main>
   <!-- <Host /> -->
   <Register />
   <!-- <Main /> -->
+  <!-- <Filter /> -->
   <!-- <Map /> -->
 </main>
 

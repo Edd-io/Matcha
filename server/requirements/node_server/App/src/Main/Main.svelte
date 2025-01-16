@@ -87,7 +87,7 @@
             <div class="user-info">
                 <div class="info">
                     <p id="main-info">{users[0].name} • {users[0].age}</p>
-                    <button class="open-scroll" on:click={toggleScrollInfo}>
+                    <button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
                             <path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
                         </svg>

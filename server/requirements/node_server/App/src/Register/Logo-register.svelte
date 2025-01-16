@@ -1,5 +1,5 @@
 <script>
-    export let matchaLogo;
+    import matchaLogo from '../assets/Matcha.svg';
 </script>
 
 <main>

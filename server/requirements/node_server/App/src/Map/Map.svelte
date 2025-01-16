@@ -30,46 +30,38 @@
 }
 
 .position {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 0);
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
+    align-items: center;
 }
 
 .position img {
-    width: 50px;
-    height: 50px;
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.position:hover img {
-    width: 60px;
-    height: 60px;
+    width: 3rem;
+    height: 3rem;
 }
 
 .info-profil {
-    background-color: white;
-    position: relative;
-    border-radius: 1.2rem;
-    width: 70%;
-    height: 10vh;
-}
-
-.info-profil p {
-    margin: 0;
-    padding: 0;
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    background-color: #d9d9d9;
+    border-radius: 1.1rem;
+    width: 16rem;
+    height: 7rem;
 }
 
 .photo {
-    background-color: #d9d9d9;
-    height: 70px;
-    width: 70px;
-    border-radius: 3rem;
-    margin: 20px;
+    display: flex;
+    align-items: center;
+    width: 5rem;
+    height: 5rem;
+    background-color: #000;
+    border-radius: 50%;
+    margin: 0.9rem;
 }
 
 .map{
