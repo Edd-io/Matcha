@@ -1,5 +1,7 @@
 <script lang='ts'>
 	import '@fortawesome/fontawesome-free/css/all.css';
+	export let selected_interests: number[];
+	export let visible: boolean;
 
 	let list_interests = [
 		{ "id": 1, "interest": "Programmation" },
@@ -29,9 +31,6 @@
 		{ "id": 25, "interest": "Théâtre" },
 	];
 
-	let selected_interests: number[] = [];
-	let count = 0;
-
 	function selectInterests(id: number)
 	{
 		if (selected_interests.includes(id))
@@ -39,22 +38,28 @@
 		else if (selected_interests.length < 5)
 			selected_interests.push(id);
 		list_interests = [...list_interests];
-		count++;
 	}
 </script>
 
 <main>
 	<div class='container'>
-		<h1>Choisis tes centres d'intérêts</h1>
+		<div class='top'>
+			<h1>Choisis tes centres d'intérêts</h1>
+			<button class="hide" aria-label="Cacher les centres d'intérêts" on:click={() => visible = false}>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" class="arrow-icon">
+					<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+				</svg>
+			</button>
+		</div>
 		<div class='interests'>
-				{#each list_interests as interest}
-					<button
-						class='interest-button {selected_interests.includes(interest.id) ? "selected" : ""}'
-						on:click={() => selectInterests(interest.id)}
-					>{interest.interest}
-					<i class="fa-regular fa-circle-check"></i>
-					</button>
-				{/each}
+			{#each list_interests as interest}
+				<button
+					class='interest-button {selected_interests.includes(interest.id) ? "selected" : ""}'
+					on:click={() => selectInterests(interest.id)}
+				>{interest.interest}
+				<i class="fa-regular fa-circle-check"></i>
+				</button>
+			{/each}
 		</div>
 	</div>
 </main>
@@ -86,7 +91,7 @@
 
 	h1 {
 		text-align: left;
-		margin-top: 2rem;
+		margin-top: 0.5rem;
 		font-size: 2rem;
 	}
 
@@ -135,6 +140,20 @@
 		transition: all 0.5s;
 		margin-inline: 0.5rem;
 		width: 1rem;
+	}
+
+	.hide {
+		background-color: transparent;
+		border: none;
+		cursor: pointer;
+		transform: rotate(90deg);
+		width: 2rem;
+		height: 2rem;
+	}
+
+	.top {
+		display: flex;
+		justify-content: space-between;
 	}
 
 	@keyframes showSelected {
