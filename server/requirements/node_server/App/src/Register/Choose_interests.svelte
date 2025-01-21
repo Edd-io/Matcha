@@ -2,6 +2,7 @@
 	import '@fortawesome/fontawesome-free/css/all.css';
 	export let selected_interests: number[];
 	export let visible: boolean;
+    import { cubicOut } from 'svelte/easing';
 
 	let list_interests = [
 		{ "id": 1, "interest": "Programmation" },
@@ -39,14 +40,31 @@
 			selected_interests.push(id);
 		list_interests = [...list_interests];
 	}
+
+
+    function slideVertical(node: HTMLElement)
+    {
+        const delay = 0, duration = 300, easing = cubicOut;
+        const style = getComputedStyle(node);
+        const height = parseFloat(style.height);
+
+        return {
+            delay,
+            duration,
+            easing,
+            css: (t: number) => `
+                transform: translate(-50%, ${(1 - t) * height}px);
+            `,
+        };
+    }
 </script>
 
 <main>
-	<div class='container'>
+	<div class='container' in:slideVertical out:slideVertical>
 		<div class='top'>
 			<h1>Choisis tes centres d'intérêts</h1>
 			<button class="hide" aria-label="Cacher les centres d'intérêts" on:click={() => visible = false}>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" class="arrow-icon">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35" class="arrow-icon">
 					<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
 				</svg>
 			</button>
@@ -57,7 +75,7 @@
 					class='interest-button {selected_interests.includes(interest.id) ? "selected" : ""}'
 					on:click={() => selectInterests(interest.id)}
 				>{interest.interest}
-				<i class="fa-regular fa-circle-check"></i>
+					<i class="fa-regular fa-circle-check"></i>
 				</button>
 			{/each}
 		</div>
@@ -154,6 +172,7 @@
 	.top {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 	}
 
 	@keyframes showSelected {

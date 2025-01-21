@@ -68,7 +68,7 @@
 			window.removeEventListener('btnClicked', clicked);
 			if (timeout)
 				clearTimeout(timeout);
-		})
+		});
 	});
 
 	function isValidMail(mail: string): boolean

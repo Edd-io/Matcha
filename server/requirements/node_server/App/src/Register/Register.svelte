@@ -14,7 +14,7 @@
 	import { cubicOut } from 'svelte/easing';
 
 	let token = null;
-	let currentPage = 6;
+	let currentPage = 1;
 	let dataSecondStep = {};
 
 	function slideHorizontal(node: HTMLElement) 
@@ -75,13 +75,13 @@
 
 	{#if currentPage === 6}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<InterestRegister/>
+			<InterestRegister bind:page={currentPage} dataSecondStep={dataSecondStep} token={token}/>
 		</div>
 	{/if}
 
 	{#if currentPage === 7}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<PhotoRegister/>
+			<PhotoRegister bind:page={currentPage}/>
 		</div>
 	{/if}
 

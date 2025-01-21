@@ -7,6 +7,7 @@
 	export let dataSecondStep: any;
 	export let page: number;
   
+	const sexeTypes = ['M', 'F', 'O']; 
 	let hisGender = null;
 	let hisType = null;
 	let err = false;
@@ -27,8 +28,8 @@
 			err = true;
 			return ;
 		}
-		dataSecondStep.gender = hisGender;
-		dataSecondStep.genderSearched = hisType;
+		dataSecondStep.sexe = sexeTypes[hisGender];
+		dataSecondStep.orientation = sexeTypes[hisType];
 		page++;
 	}
   
