@@ -4,11 +4,13 @@
   import Register from './Register/Register.svelte'
   import Map from './Map/Map.svelte'
   import Filter from './Main/Filter.svelte';
+  import Login from './Register/Login.svelte';
 </script>
 
 <main>
   <!-- <Host /> -->
-  <Register />
+  <!-- <Register /> -->
+  <Login />
   <!-- <Main /> -->
   <!-- <Filter /> -->
   <!-- <Map /> -->
