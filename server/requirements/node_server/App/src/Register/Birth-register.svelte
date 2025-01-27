@@ -23,7 +23,7 @@
 			else
 			{
 				err = false;
-				dataSecondStep.birthDate = birthDate;
+				dataSecondStep.date_of_birth = birthDate;
 				page++;
 			}
 		}
@@ -33,8 +33,6 @@
 		window.addEventListener('btnClicked', checkBirthDate);
 		return (() => {
 			window.removeEventListener('btnClicked', checkBirthDate);
-			if (timeout)
-				clearTimeout(timeout);
 		});
 	});
 

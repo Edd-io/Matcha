@@ -69,19 +69,19 @@
 
 	{#if currentPage === 5}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<TypeRegister/>
+			<TypeRegister bind:page={currentPage} dataSecondStep={dataSecondStep}/>
 		</div>
 	{/if}
 
 	{#if currentPage === 6}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<InterestRegister/>
+			<InterestRegister bind:page={currentPage} dataSecondStep={dataSecondStep} token={token}/>
 		</div>
 	{/if}
 
 	{#if currentPage === 7}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<PhotoRegister/>
+			<PhotoRegister bind:page={currentPage}/>
 		</div>
 	{/if}
 

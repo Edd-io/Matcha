@@ -1,23 +1,44 @@
 <script lang="ts">
-    const lstPhotos: string[] = [
-		"https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?cs=srgb&dl=pexels-olly-774909.jpg&fm=jpg",
-		"https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?cs=srgb&dl=pexels-olly-712513.jpg&fm=jpg",
-		"https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?cs=srgb&dl=pexels-danxavier-1212984.jpg&fm=jpg",
-	];
+	export let page: number;
+
+	let count = 0;
+	let lstPhotos = [];
+
+	function choose_picture()
+	{
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = 'image/*';
+		input.onchange = (e) =>
+		{
+			const file = (e.target as HTMLInputElement).files[0];
+			const reader = new FileReader();
+			reader.onload = (e) =>
+			{
+				lstPhotos.push(e.target.result);
+				console.log(lstPhotos);
+				count++;
+			};
+			reader.readAsDataURL(file);
+		};
+		input.click();
+	}
 </script>
 
 <main>
     <p id="txt" class="text">Pour finir, ajoute tes plus belles photos !</p>
     <div class="part">
-		{#each {length: 6} as _, i}
-			<button class="no-style-button button-image" aria-label='Photo {i + 1}'>
-				{#if lstPhotos[i]}
-					<img src={lstPhotos[i]} alt="Pfp 1" />
-				{:else}
-					<p style="color: #A0A0A0; font-size: 2rem">+</p>
-				{/if}
-			</button>
-		{/each}
+		{#key count}
+			{#each {length: 6} as _, i}
+				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={choose_picture}>
+					{#if lstPhotos[i]}
+						<img src={lstPhotos[i]} alt="Pfp 1" />
+					{:else}
+						<p style="color: #A0A0A0; font-size: 2rem">+</p>
+					{/if}
+				</button>
+			{/each}
+		{/key}
 	</div>
     <!-- Button add -->
 </main>
