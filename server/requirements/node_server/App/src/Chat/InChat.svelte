@@ -45,8 +45,6 @@
 		const	style = getComputedStyle(node);
 		let		width = parseFloat(style.width);
 
-		// if (!out)
-		// 	width = -width;
 		return {
 			delay,
 			duration,

@@ -1,11 +1,30 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
+
 	export let page: number;
+	export let token: string;
 
 	let count = 0;
 	let lstPhotos = [];
+	let err = false;
+
+	onMount(() => {
+		function clicked()
+		{
+			if (lstPhotos.length == 0)
+				return ;
+			page++;
+		}
+
+		window.addEventListener('btnClicked', clicked);
+		return (() => {
+			window.removeEventListener('btnClicked', clicked);
+		});
+	});
 
 	function choose_picture()
 	{
+		err = false;
 		const input = document.createElement('input');
 		input.type = 'file';
 		input.accept = 'image/*';
@@ -15,9 +34,34 @@
 			const reader = new FileReader();
 			reader.onload = (e) =>
 			{
-				lstPhotos.push(e.target.result);
-				console.log(lstPhotos);
-				count++;
+				try {
+					fetch('/add_picture_register', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							token: token,
+							base64: e.target.result,
+						})
+					}).then(res => {
+						if (!res.ok)
+							throw new Error("Error");
+						res.json()
+					})
+					.then(data => {
+						lstPhotos.push(e.target.result);
+						count++;
+					})
+					.catch(err => {
+						err = true;
+						count++;
+					});
+				}
+				catch {
+					err = true;
+					count++;
+				}
 			};
 			reader.readAsDataURL(file);
 		};
@@ -27,6 +71,11 @@
 
 <main>
     <p id="txt" class="text">Pour finir, ajoute tes plus belles photos !</p>
+	{#key count}
+		{#if err}
+			<p style="color: red">Erreur lors de l'ajout de la dernière photo</p>
+		{/if}
+	{/key}
     <div class="part">
 		{#key count}
 			{#each {length: 6} as _, i}
@@ -40,7 +89,6 @@
 			{/each}
 		{/key}
 	</div>
-    <!-- Button add -->
 </main>
 
 <style>

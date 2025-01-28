@@ -45,7 +45,13 @@
 			sent = false;
 			if (data.success)
 				page++;
-			console.log(data);
+			if (data.error)
+			{
+				if (data.error.startsWith('Bio must be'))
+					err_description = true;
+				else
+					err_interests = true;
+			}
 		});
 	}
 </script>

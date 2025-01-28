@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/01/14 17:30:47 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/28 14:50:43 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@ const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
 const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
+const base64ToFile = require('./utils/base64ToFile');
 
 const	missing = "Missing parameters";
 let		userCreatingAccount = [];
@@ -181,26 +182,27 @@ class PostRequest
 	}
 
 	// Request to add picture to register
-	// {file, token: string}
+	// {base64: string, token: string}
 	static add_picture_register(req, res)
 	{
 		let	index;
 
 		Debug.log(req, res);
-		req.body = JSON.parse(req.body.data);
-		if (!req.body.token)
+		if (!req.body.token || !req.body.base64)
 			return (res.send(JSON.stringify({error: missing})));
-		if (!req.file)
-			return (res.send(JSON.stringify({error: "No image sent"})));
-
 		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
 		if (index == -1)
 			return (res.send(JSON.stringify({error: "Invalid token"})));
-
-		res.send(JSON.stringify({success: "Image added", imgName: req.file.filename}));
 		if (!userCreatingAccount[index]?.pictures)
 			userCreatingAccount[index].pictures = [];
-		userCreatingAccount[index].pictures.push(req.file.filename);
+		try {
+			const img = base64ToFile(req.body.base64);
+			userCreatingAccount[index].pictures.push(img.split('/')[img.split('/').length - 1]);
+			res.send(JSON.stringify({success: "Image added", imgName: img.split('/')[img.split('/').length - 1]}));
+		}
+		catch (e) {
+			res.send(JSON.stringify({error: e.message}));
+		}
 	}
 
 	// Request to delete picture to register

@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/01/14 15:49:20 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/27 16:10:48 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@ const Debug = require('./src/Debug');
 const ws = require('ws');
 const session = require('express-session');
 const Database = require('./src/Database');
-const multer = require('multer');
-const upload = multer({ dest: 'user_static_data/pfp' });
 
 const app = express();
 const server = http.createServer(app);
@@ -27,6 +25,8 @@ const port = 3000;
 
 function init(db)
 {
+	app.use(express.json({ limit: '10mb' }));
+	app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 	app.use(session({
 		secret: 'dndlsahwp9u4hoe8uhdwnow1du81g',
 		resave: false,
@@ -57,7 +57,7 @@ function init(db)
 	app.post('/confirm_register', PostRequest.confirm_register);
 	app.post('/first_step_register', PostRequest.first_step_register);
 	app.post('/second_step_register', PostRequest.second_step_register);
-	app.post('/add_picture_register', upload.single('file'), PostRequest.add_picture_register);
+	app.post('/add_picture_register', PostRequest.add_picture_register);
 	app.post('/delete_picture_register', PostRequest.delete_picture_register);
 	app.post('/finish_register', (req, res) => PostRequest.finish_register(req, res, db));
 	app.post('/report_user', (req, res) => PostRequest.report_user(req, res, db));
