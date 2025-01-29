@@ -1,27 +1,39 @@
 <script>
     import BottomBar from "../Main/Bottom-bar.svelte";
     import TopBar from "../Main/Top-bar.svelte";
-
     import positionLogo from "../assets/position.svg";
+
+    import 'leaflet/dist/leaflet.css';
+    import { onMount } from 'svelte';
+
+    import * as L from 'leaflet';
+
+    let map;
+
+    onMount(() => {
+        map = L.map('map').setView([48.8566, 2.3522], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([48.8566, 2.3522]).addTo(map) 
+            .bindPopup('<div class="info-profil"><p>caca</p><p>oui</p></div>')
+            .openPopup();
+    });
 </script>
 
 <main>
     <TopBar />
     <div class="main">
-        <div class="map">
-            <div class="position">
-                <img src={positionLogo} alt="positionLogo"/>
-                <div class="info-profil">
-                    <div class="photo"></div>
-                    <p>Marie</p><p> 25</p>
-                </div>
-            </div>
+        <div id="map">
         </div>
     </div>
     <BottomBar />
 </main>
 
 <style>
+
+@import 'leaflet/dist/leaflet.css';
 
 .main {
     display: flex;
@@ -64,7 +76,17 @@
     margin: 0.9rem;
 }
 
-.map{
+#test{
+    /* display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10%;
+    height: 10%; */
+    background-color: red;
+    /* color: red; */
+}
+
+#map{
     height: 78vh;
     width: 93%;
     border-radius: 2rem;

@@ -1,6 +1,8 @@
 <script lang="ts">
 	export let page: number;
 
+	import crossLogo from "../assets/cross.svg";
+
 	let count = 0;
 	let lstPhotos = [];
 
@@ -33,6 +35,7 @@
 				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={choose_picture}>
 					{#if lstPhotos[i]}
 						<img src={lstPhotos[i]} alt="Pfp 1" />
+						<button class="test">{crossLogo}</button>
 					{:else}
 						<p style="color: #A0A0A0; font-size: 2rem">+</p>
 					{/if}
@@ -40,7 +43,6 @@
 			{/each}
 		{/key}
 	</div>
-    <!-- Button add -->
 </main>
 
 <style>
@@ -54,6 +56,20 @@
         
     }
 
+	.test{
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		height: 15px;
+		width: 15px;
+		border-radius: 50%;
+		border: none;
+		background-color: #111111;
+		color: white;
+		align-items: center;
+		justify-content: center;
+	}
+
     #txt {
         margin-top: 45px;
     }
@@ -63,7 +79,6 @@
 		flex-wrap: wrap;
 		width: 90%;
         margin-top: 40px;
-		/* margin-block: 1rem; */
 		margin-inline: auto;
 	}
 
@@ -71,6 +86,7 @@
 		background: none;
 		border: none;
 		cursor: pointer;
+		position: relative;
 	}
 
     .button-image {
@@ -82,6 +98,7 @@
 		background-color: #D9D9D9;
 		margin-bottom: 1rem;
 		transition: transform 0.2s;
+		position: relative;
 	}
 
 	.button-image:hover {

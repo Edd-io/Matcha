@@ -9,8 +9,8 @@
 
 <main>
   <!-- <Host /> -->
-  <!-- <Register /> -->
-  <Login />
+  <Register />
+  <!-- <Login /> -->
   <!-- <Main /> -->
   <!-- <Filter /> -->
   <!-- <Map /> -->
