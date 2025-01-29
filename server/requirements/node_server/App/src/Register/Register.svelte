@@ -81,13 +81,13 @@
 
 	{#if currentPage === 7}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<PhotoRegister bind:page={currentPage}/>
+			<PhotoRegister bind:page={currentPage} token={token}/>
 		</div>
 	{/if}
 
 	{#if currentPage === 8}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<FinishRegister/>
+			<FinishRegister token={token}/>
 		</div>
 	{/if}
 
