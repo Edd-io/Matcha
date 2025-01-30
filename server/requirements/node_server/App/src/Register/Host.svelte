@@ -2,10 +2,11 @@
 	import matchaLogo from '../assets/Matcha.svg';
 	import AppleLogo from '../assets/apple-logo.svg';
 	import GoogleLogo from '../assets/google-logo.svg';
+	import { navigate } from 'svelte-routing';
 
 	function redirect()
 	{
-		window.location.href = "./Register/Register.svelte";
+		navigate('/register');
 	}
 </script>
 
@@ -30,7 +31,7 @@
 				<img src={AppleLogo} alt="Apple logo"/>
 			</button>
 		</div>
-		<button class="login-button">
+		<button class="login-button" on:click={() => navigate('/login')}>
 			<p>J’ai déjà un compte</p>
 		</button>
 	</div>

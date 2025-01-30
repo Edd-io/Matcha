@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { Router, Route } from "svelte-routing";
 	import Host from './Register/Host.svelte';
 	import Main from './Main/Main.svelte'
@@ -7,9 +7,19 @@
 	import Filter from './Main/Filter.svelte';
 	import Login from './Register/Login.svelte';
 	import LoadingScreen from './LoadingScreen/LoadingScreen.svelte';
+
+	import { cubicOut } from "svelte/easing";
 	
 	let connected = false;
 
+	window.onerror = (msg, url, lineNo, columnNo, error) =>
+	{
+		if (String(error).includes("TypeError: Cannot read properties of undefined (reading 'before')"))
+			console.warn("This error is not important, it's a bug in svelte-routing\n\n", error);
+		else
+			console.error(msg, url, lineNo, columnNo, error);
+		return true;
+	}
 </script>
 
 <main>

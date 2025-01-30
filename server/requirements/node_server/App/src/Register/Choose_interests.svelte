@@ -42,21 +42,21 @@
 	}
 
 
-    function slideVertical(node: HTMLElement)
-    {
-        const delay = 0, duration = 300, easing = cubicOut;
-        const style = getComputedStyle(node);
-        const height = parseFloat(style.height);
+	function slideVertical(node: HTMLElement)
+	{
+		const delay = 0, duration = 300, easing = cubicOut;
+		const style = getComputedStyle(node);
+		const height = parseFloat(style.height);
 
-        return {
-            delay,
-            duration,
-            easing,
-            css: (t: number) => `
-                transform: translate(-50%, ${(1 - t) * height}px);
-            `,
-        };
-    }
+		return {
+			delay,
+			duration,
+			easing,
+			css: (t: number) => `
+				transform: translate(-50%, ${(1 - t) * height}px);
+			`,
+		};
+	}
 </script>
 
 <main>

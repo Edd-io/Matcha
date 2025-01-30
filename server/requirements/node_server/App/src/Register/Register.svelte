@@ -14,7 +14,7 @@
 	import { cubicOut } from 'svelte/easing';
 
 	let token = null;
-	let currentPage = 7;
+	let currentPage = 1;
 	let dataSecondStep = {};
 
 	function slideHorizontal(node: HTMLElement) 
