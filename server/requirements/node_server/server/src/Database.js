@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/24 13:21:59 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/01/29 14:00:26 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ class Database
 			conn.query(`CREATE TABLE IF NOT EXISTS users_images (
 				id INTEGER PRIMARY KEY AUTO_INCREMENT,
 				user_id INT,
-				local_url VARCHAR(64),
+				local_url VARCHAR(80),
 				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
 			conn.query(`CREATE TABLE IF NOT EXISTS users_blocked (
