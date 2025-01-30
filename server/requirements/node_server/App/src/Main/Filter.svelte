@@ -1,63 +1,132 @@
 <script>
-    let minAge = 18;
-    let maxAge = 99;
+    let sliderWidth = 0;
+    let buttonWidth = 0;
+    let position1 = 0;
+    let position2 = 100;
+    let isDragging = false;
+    let activeButton = null;
+  
+    let slider;
+    let button1;
+    let button2;
+  
+    import { onMount } from "svelte";
+  
+    onMount(() => {
+        sliderWidth = slider.offsetWidth;
+        buttonWidth = button1.offsetWidth;
+    });
+  
+    function startDrag(event, button) {
+        isDragging = true;
+        activeButton = button;
+        const startX = event.clientX || event.touches[0].clientX;
+        const startPosition1 = position1;
+        const startPosition2 = position2;
 
-    function handleInput(event, setter) {
-        let newValue = event.target.value;
-        newValue = newValue.replace(/[^0-9]/g, "");
-        if (newValue.length > 2) {
-            newValue = newValue.slice(0, 2);
+        function move(event) {
+            if (!isDragging) return;
+            const currentX = event.clientX || event.touches[0].clientX;
+            let newPos = (activeButton === 1 ? startPosition1 : startPosition2) + (currentX - startX);
+
+            if (activeButton === 1) {
+                position1 = Math.min(Math.max(newPos, 0), position2 - buttonWidth);
+            } else {
+                position2 = Math.max(Math.min(newPos, sliderWidth - buttonWidth), position1 + buttonWidth);
+            }
         }
-        setter(newValue);
+  
+        function stopDrag() {
+            isDragging = false;
+            activeButton = null;
+            window.removeEventListener("mousemove", move);
+            window.removeEventListener("mouseup", stopDrag);
+            window.removeEventListener("touchmove", move);
+            window.removeEventListener("touchend", stopDrag);
+        }
+  
+        window.addEventListener("mousemove", move);
+        window.addEventListener("mouseup", stopDrag);
+        window.addEventListener("touchmove", move);
+        window.addEventListener("touchend", stopDrag);
     }
-</script>
-
+  </script>
+  
 <main>
-    <div class="top-filter">
+    <div class="top-notif">
         <button class="back-button" aria-label='Retour'>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
                 <path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
         </button>
-        <p class="small-text" id="filter-txt">Filtrage</p>
+        <p class="small-text" id="notif-txt">Filtrage</p>
     </div>
-    <p>Age</p>
-    <div class="input-container">
-        <input
-            type="text"
-            bind:value={minAge}
-            on:input={(e) => handleInput(e, (v) => (minAge = v))}
-            placeholder="00"
-            maxlength="2"
-        />
-    
-        <input
-            type="text"
-            bind:value={maxAge}
-            on:input={(e) => handleInput(e, (v) => (maxAge = v))}
-            placeholder="00"
-            maxlength="2"
-        />
-    </div>
-    
-    <div>
-        <p>Valeur 1 : {minAge}</p>
-        <p>Valeur 2 : {maxAge}</p>
-    </div>
+    <p class="text">Tranche d'age</p>
+    <div bind:this={slider} class="slider-container">
+        <div class="slider-track"></div>
+      
+        <div 
+          class="slider-range" 
+          style="left: {position1}px; width: {position2 - position1}px"
+        ></div>
+        
+        <div 
+          bind:this={button1} 
+          class="slider-button" 
+          on:mousedown={(e) => startDrag(e, 1)} 
+          on:touchstart={(e) => startDrag(e, 1)}
+          style="left: {position1}px"
+        ></div>
+      
+        <div 
+          bind:this={button2} 
+          class="slider-button" 
+          on:mousedown={(e) => startDrag(e, 2)} 
+          on:touchstart={(e) => startDrag(e, 2)}
+          style="left: {position2}px"
+        ></div>
+      </div>
 </main>
 
-<style>
-main {
-        position: absolute;
-        height: 100vh;
-        width: 100vw;
-        background-color: white;
-        top: 0;
-        left: 0;
-        z-index: 4;
+  <style>
+    .slider-container {
+      width: 300px;
+      height: 10px;
+      background: #ddd;
+      position: relative;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+  
+    .slider-track {
+      width: 100%;
+      height: 100%;
+      background: #aaa;
+      position: absolute;
+      border-radius: 1rem;
+    }
+  
+    .slider-range {
+      height: 100%;
+      background: #007bff;
+      position: absolute;
+    }
+  
+    .slider-button {
+      width: 20px;
+      height: 20px;
+      background: #007bff;
+      border-radius: 50%;
+      position: absolute;
+      top: -5px;
+      cursor: grab;
+    }
+  
+    .slider-button:active {
+      cursor: grabbing;
     }
 
-    .top-filter {
+    .top-notif {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -76,11 +145,12 @@ main {
         transform: rotate(180deg) scale(2);
     }
 
-    #filter-txt {
+    #notif-txt {
         font-weight: 400;
         font-size: 1.1rem;
         text-align: center;
         justify-content: center;
         margin-top: 5px;
     }
-</style>
+  </style>
+  

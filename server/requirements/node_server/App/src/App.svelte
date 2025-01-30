@@ -9,10 +9,10 @@
 
 <main>
   <!-- <Host /> -->
-  <Register />
+  <!-- <Register /> -->
   <!-- <Login /> -->
   <!-- <Main /> -->
-  <!-- <Filter /> -->
+  <Filter />
   <!-- <Map /> -->
 </main>
 
