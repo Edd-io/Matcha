@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/01/28 14:50:43 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:24:46 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,16 @@ let		userCreatingAccount = [];
 
 class PostRequest
 {
+	// Request to get status of user connected
+	static get_status_self_connected(req, res)
+	{
+		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			res.send(JSON.stringify({logged: true}));
+		else
+			res.send(JSON.stringify({logged: false}));
+	}
+
 	// Request to login
 	// {email: string, password: string}
 	static login(req, res, db)
@@ -257,6 +267,9 @@ class PostRequest
 				!userCreatingAccount[index].pictures)
 			return (res.send(JSON.stringify({error: "Incomplete account"})));
 		db.addUser(userCreatingAccount[index]);
+		db.getIdFromMail(userCreatingAccount[index].mail).then((id) => {
+			req.session.info = {logged: true, id: id};
+		});
 		userCreatingAccount.pop(index);
 		res.send(JSON.stringify({success: "Account created"}));
 	}
