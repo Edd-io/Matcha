@@ -2,6 +2,7 @@
 	import LogoRegister from "./Logo-register.svelte";
 	import NextButton from './Next-button.svelte';
 	import { onMount } from 'svelte';
+	import { navigate } from 'svelte-routing';
 
 	onMount(() => {
 		window.addEventListener('btnClicked', log);
@@ -27,7 +28,10 @@
 		.then(response => response.json())
 		.then(data => {
 			if (data.success)
-				console.log('Success:', data);
+			{
+				globalThis.connected.set(true);
+				navigate('/');
+			}
 			else
 			{
 				err = true;

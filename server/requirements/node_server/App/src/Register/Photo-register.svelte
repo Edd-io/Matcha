@@ -84,7 +84,9 @@
 				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={choose_picture}>
 					{#if lstPhotos[i]}
 						<img src={lstPhotos[i]} alt="Pfp 1" />
-						<button class="test">{crossLogo}</button>
+						<div class="test" role="button" aria-label='Remove photo' tabindex="0">
+							<img src={crossLogo} alt="Remove"/>
+						</div>
 					{:else}
 						<p style="color: #A0A0A0; font-size: 2rem">+</p>
 					{/if}

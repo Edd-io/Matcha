@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/01/29 14:00:26 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/03 15:22:57 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,20 @@ class Database
 			conn.query('UPDATE accounts SET banned = ? WHERE id = ?', [true, banned_id])
 			.finally(() => {conn.release(), conn.end()});
 		})
+	}
+
+	getIdFromMail(email)
+	{
+		return (new Promise((resolve) => {
+			this.pool.getConnection().then((conn) => {
+				conn.query('SELECT id FROM accounts WHERE email = ?', [email]).then((row) => {
+					if (row.length == 0)
+						resolve(null);
+					else
+						resolve(row[0].id);
+				}).finally(() => {conn.release(); conn.end()});
+			});
+		}));
 	}
 }
 

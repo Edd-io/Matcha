@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Router, Route } from "svelte-routing";
+	import { writable } from "svelte/store";
 	import Host from './Register/Host.svelte';
 	import Main from './Main/Main.svelte'
 	import Register from './Register/Register.svelte'
@@ -8,14 +9,24 @@
 	import Login from './Register/Login.svelte';
 	import LoadingScreen from './LoadingScreen/LoadingScreen.svelte';
 
-	import { cubicOut } from "svelte/easing";
-	
-	let connected = false;
+	let isConnected = false;
+
+	globalThis.connected = writable(false);
+
+	globalThis.connected.subscribe(value => {
+		isConnected = value;
+	});
+
+	fetch('/get_status_self_connected')
+	.then(res => res.json())
+	.then(data => {
+		globalThis.connected.set(data.connected);
+	});
 
 	window.onerror = (msg, url, lineNo, columnNo, error) =>
 	{
 		if (String(error).includes("TypeError: Cannot read properties of undefined (reading 'before')"))
-			console.warn("This error is not important, it's a bug in svelte-routing\n\n", error);
+			console.debug("This error is not important, it's a bug in svelte-routing\n\n", error);
 		else
 			console.error(msg, url, lineNo, columnNo, error);
 		return true;
@@ -24,7 +35,7 @@
 
 <main>
 	<Router>
-		{#if connected}
+		{#if isConnected}
 			<Route path="/" component={Main} />
 		{:else}
 			<Route path="/" component={Host} />
