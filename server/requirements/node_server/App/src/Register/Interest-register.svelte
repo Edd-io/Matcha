@@ -63,15 +63,14 @@
 	<textarea id="inp" class="input-text" placeholder="Description..."></textarea>
 	<p id="txt" class="text">Quels sont tes centres d’interets ?</p>
 	<p class='error' style='display: {err_interests ? "block" : "none"}'>Veuillez choisir au moins un centre d'interet</p>
-	<button class="next-button" aria-label="Bouton ajout d'interets" on:click={() => choose_interests_visible = true}>
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#111111" d="M11 13H5v-2h6V5h2v6h6v2h-6v6h-2z"/></svg>
-	</button>
+	<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 20rem;">
+		<Choose_interests bind:selected_interests={interests}/>
+	</div>
 	{#if sent}
 		<div class="loading"></div>
 	{/if}
-	{#if choose_interests_visible}
-		<Choose_interests bind:selected_interests={interests} bind:visible={choose_interests_visible}/>
-	{/if}
+	<!-- {#if choose_interests_visible} -->
+	<!-- {/if} -->
 </main>
 
 <style>

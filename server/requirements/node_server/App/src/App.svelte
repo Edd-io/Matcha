@@ -8,6 +8,7 @@
 	import Filter from './Main/Filter.svelte';
 	import Login from './Register/Login.svelte';
 	import LoadingScreen from './LoadingScreen/LoadingScreen.svelte';
+	import SelfInfo from './SelfInfo/SelfInfo.svelte';
 
 	let isConnected = false;
 
@@ -45,6 +46,7 @@
 		<Route path="/login" component={Login} />
 		<Route path="/map" component={Map} />
 		<Route path="*" component={LoadingScreen} />
+		<Route path="/profile" component={SelfInfo} />
 	</Router>
 </main>
 
