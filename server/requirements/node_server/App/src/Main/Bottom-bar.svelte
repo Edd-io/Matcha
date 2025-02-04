@@ -5,6 +5,7 @@
     import profilLogo from "../assets/profil.svg";
     import chatLogo from "../assets/chat.svg";
     import settingsLogo from "../assets/settings.svg";
+    import { navigate } from "svelte-routing";
     let category = null;
 
     onMount(() => {
@@ -29,9 +30,13 @@
         {#if index === 0}
             <img src={homeLogo} alt="homeLogo"/>
         {:else if index === 1}
+        <button on:click={() => navigate('/profile')} ariel-label="profil">
             <img src={profilLogo} alt="profilLogo"/>
+        </button>
         {:else if index === 2}
-            <img src={chatLogo} alt="chatLogo"/>
+            <button on:click={() => navigate('/chat')} ariel-label="chat">
+                <img src={chatLogo} alt="chatLogo"/>
+            </button>
         {:else if index === 3}
             <img src={settingsLogo} alt="settingsLogo"/>
         {/if}

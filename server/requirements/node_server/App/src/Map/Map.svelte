@@ -42,12 +42,10 @@
 </script>
 
 <main>
-    <TopBar />
     <div class="main">
         <div id="map">
         </div>
     </div>
-    <BottomBar />
 </main>
 
 <style>

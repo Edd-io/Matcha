@@ -9,6 +9,10 @@
 	import Login from './Register/Login.svelte';
 	import LoadingScreen from './LoadingScreen/LoadingScreen.svelte';
 	import SelfInfo from './SelfInfo/SelfInfo.svelte';
+	import Chat from './Chat/Chat.svelte';
+    import TopBar from "./Main/Top-bar.svelte";
+    import BottomBar from "./Main/Bottom-bar.svelte";
+	import NotificationPage from "./Main/Notification-page.svelte";
 
 	let isConnected = false;
 
@@ -35,6 +39,7 @@
 </script>
 
 <main>
+	<TopBar />
 	<Router>
 		<!-- {#if isConnected}
 			<Route path="/" component={Main} />
@@ -48,7 +53,10 @@
 		<Route path="/map" component={Map} />
 		<Route path="*" component={LoadingScreen} />
 		<Route path="/profile" component={SelfInfo} />
+		<Route path="/chat" component={Chat} />
+		<Route path="/notification" component={NotificationPage} />
 	</Router>
+	<BottomBar />
 </main>
 
 <style>

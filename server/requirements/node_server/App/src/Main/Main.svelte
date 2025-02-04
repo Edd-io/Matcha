@@ -65,7 +65,7 @@
 
 	<!-- <NotificationPage /> -->
 
-	<TopBar />
+	<!-- <TopBar /> -->
 	<div class="main">
 
 		<!-- <Notification /> -->
@@ -107,7 +107,7 @@
 			</div>
 		</div>
 	</div>
-	<BottomBar />
+	<!-- <BottomBar /> -->
 </main>
 
 <style>

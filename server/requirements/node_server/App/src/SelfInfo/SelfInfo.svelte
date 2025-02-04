@@ -48,7 +48,6 @@
 	h2 {
 		font-size: 0.8em;
 		font-weight: 800;
-		margin-top: 1rem;
 	}
 	.no-style-button {
 		background: none;
