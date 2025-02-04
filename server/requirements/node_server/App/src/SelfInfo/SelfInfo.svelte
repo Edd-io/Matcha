@@ -1,4 +1,6 @@
 <script lang='ts'>
+	import Choose_interests from '../Register/Choose_interests.svelte';
+
 
 	const lstPhotos: string[] = [
 		"https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?cs=srgb&dl=pexels-olly-774909.jpg&fm=jpg",
@@ -6,7 +8,7 @@
 		"https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?cs=srgb&dl=pexels-danxavier-1212984.jpg&fm=jpg",
 	];
 	const aboutMeContent = "Salut, je suis un étudiant en informatique passionné par le développement web. J'aime aussi la musique et les jeux vidéos.";
-	const passsions = ["Développement web", "Musique", "Jeux vidéos", "Musique", "Jeux vidéos", "Musique", "Jeux vidéos", "Musique", "Jeux vidéos"];
+	let interests: number[] = [];
 </script>
 
 <main>
@@ -33,17 +35,9 @@
 	
 		<div class="input-container">
 			<h2>PASSIONS</h2>
-			<div class="part passions">
-				{#each passsions as passion}
-					<button class="no-style-button button-passion" aria-label='Supprimer cette passion'>
-						<p>{passion}</p>
-					</button>
-				{/each}
-				<button class="no-style-button button-add-passion" aria-label='Ajouter une passion'>
-					<span>+</span>
-				</button>
+			<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 100%;">
+				<Choose_interests bind:selected_interests={interests}/>
 			</div>
-		</div>
 	</div>
 </main>
 

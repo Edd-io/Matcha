@@ -1,8 +1,8 @@
 <script lang='ts'>
 	import '@fortawesome/fontawesome-free/css/all.css';
 	export let selected_interests: number[];
-	export let visible: boolean;
     import { cubicOut } from 'svelte/easing';
+    import { on } from 'svelte/events';
 
 	let list_interests = [
 		{ "id": 1, "interest": "Programmation" },
@@ -31,13 +31,18 @@
 		{ "id": 24, "interest": "Philosophie" },
 		{ "id": 25, "interest": "Théâtre" },
 	];
+	let visible = false;
+	let count = 0;
 
 	function selectInterests(id: number)
 	{
 		if (selected_interests.includes(id))
 			selected_interests = selected_interests.filter((interest) => interest !== id);
 		else if (selected_interests.length < 5)
+		{
 			selected_interests.push(id);
+			count++;
+		}
 		list_interests = [...list_interests];
 	}
 
@@ -60,30 +65,105 @@
 </script>
 
 <main>
-	<div class='container' in:slideVertical out:slideVertical>
-		<div class='top'>
-			<h1>Choisis tes centres d'intérêts</h1>
-			<button class="hide" aria-label="Cacher les centres d'intérêts" on:click={() => visible = false}>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35" class="arrow-icon">
-					<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-				</svg>
-			</button>
+	{#if visible}
+		<div class="bg_container">
+			<div class='container' in:slideVertical out:slideVertical>
+				<div class='top'>
+					<h1>Choisis tes centres d'intérêts</h1>
+					<button class="hide" aria-label="Cacher les centres d'intérêts" on:click={() => visible = false}>
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="35" height="35" class="arrow-icon">
+							<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+					</button>
+				</div>
+				<div class='interests'>
+					{#each list_interests as interest}
+						<button
+							class='interest-button {selected_interests.includes(interest.id) ? "selected" : ""}'
+							on:click={() => selectInterests(interest.id)}
+						>{interest.interest}
+							<i class="fa-regular fa-circle-check"></i>
+						</button>
+					{/each}
+				</div>
+			</div>
 		</div>
-		<div class='interests'>
-			{#each list_interests as interest}
-				<button
-					class='interest-button {selected_interests.includes(interest.id) ? "selected" : ""}'
-					on:click={() => selectInterests(interest.id)}
-				>{interest.interest}
-					<i class="fa-regular fa-circle-check"></i>
+	{/if}
+	{#key count}
+		<div class="passions">
+			{#each selected_interests as id}
+				<button class="no-style-button button-passion" aria-label='Supprimer cette passion' on:click={() => selected_interests = selected_interests.filter(interest => interest !== id)}>
+					<p>{list_interests.find(interest => interest.id === id).interest}</p>
 				</button>
 			{/each}
+			<button class="no-style-button button-add-passion" aria-label='Ajouter une passion' on:click={() => visible = true}>
+				<span>+</span>
+			</button>
 		</div>
-	</div>
+	{/key}
 </main>
 
 <style>
+	/* main {
+		
+	} */
+
 	main {
+		width: 100%;
+		height: 100%;
+	}
+
+	.no-style-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+	}
+
+	.passions {
+		display: flex;
+		flex-wrap: wrap;
+		width: 100%;
+		min-height: 8rem;
+		margin-block: 1rem;
+		margin-inline: auto;
+		background-color: #D9D9D9;
+		border-radius: 0.9rem;
+		justify-content: center;
+		align-items: center;
+		padding: 0.5rem;
+	}
+
+	.passions .button-add-passion {
+		width: 2rem;
+		height: 2rem;
+		background-color: #f7f7f7;
+		border-radius: 0.9rem;
+		font-size: 1.5rem;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin-inline: 0.2rem;
+		margin-block: auto;
+	}
+	.passions .button-passion {
+		margin-block: auto;
+		background-color: #f7f7f7;
+		border-radius: 0.9rem;
+		margin-inline: 0.2rem;
+		margin-block: 0.2rem;
+		transition: transform 0.2s, background-color 0.2s;
+	}
+	.passions .button-passion:hover {
+		transform: scale(1.05);
+		background-color: #f0f0f0;
+	}
+	.passions p {
+		font-size: 1rem;
+		height: 2.5rem;
+		padding: 0.5rem;
+	}
+
+	.bg_container {
 		position: fixed;
 		top: 0;
 		left: 0;
@@ -105,6 +185,12 @@
 		border-radius: 2rem 2rem 0 0;
 		padding: 2rem;
 		overflow-y: auto;
+	}
+
+	.container-interests {
+		width: 100%;
+		height: 100%;
+		background-color: rgb(201, 201, 201);
 	}
 
 	h1 {
