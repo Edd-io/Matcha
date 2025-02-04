@@ -37,8 +37,6 @@
 		} else if (clickX >= rect.width / 2 && iPhoto < users[0].nbPhotos - 1) {
 			iPhoto++;
 		}
-		console.log(iPhoto);
-		console.log("translateY:", translateY, "scrollY:", window.scrollY);
 	}
 
 	let translateY = 0;
