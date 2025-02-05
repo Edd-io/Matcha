@@ -70,18 +70,18 @@
 	<!-- <TopBar /> -->
 	<div class="main">
 
-		<!-- <Notification /> -->
 
 		{#if showComponent}
 			<ScrollProfile bind:users={users} bind:showComponent={showComponent}/>
 		{/if}
 
 
-		<div class="photo" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
+		<div class="photo">
+			<div class='zone-pass' on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0"></div>
 			<div class="centered">
 				<div class="nb-photo">
 					{#each Array(users[0].nbPhotos) as _, index}
-						<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
+					<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
 					{/each}
 				</div>
 			</div>
@@ -109,7 +109,6 @@
 			</div>
 		</div>
 	</div>
-	<!-- <BottomBar /> -->
 </main>
 
 <style>
@@ -120,6 +119,14 @@
 	align-items: center;
 }
 
+.zone-pass {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	z-index: 1;
+	border-radius: 2rem;
+}
+
 .photo{
 	height: 78vh;
 	width: 93%;
@@ -128,6 +135,7 @@
 	display: flex;
 	flex-direction: column;
 	justify-content: end;
+	position: relative;
 }
 
 .centered {
@@ -179,10 +187,12 @@
 	height: 45px;
 	border-radius: 1.5rem;
 	border: none;
+	z-index: 5;
 }
 
 .user-info{
 	margin-left: 20px;
+	z-index: 5;
 }
 
 #main-info{
@@ -199,7 +209,6 @@
 }
 
 .open-scroll {
-	/* position: relative; */
 	left: 85%;
 	top: 9.5%;
 	display: flex;
@@ -217,6 +226,7 @@
 
 #scd-info{
 	font-size: 1rem;
+	z-index: 5;
 }
 
 .low-info{
@@ -224,16 +234,19 @@
 	flex-direction: row;
 	gap: 10px;
 	filter: invert(1);
+	z-index: 5;
 }
 
 #dislike{
 	background-color: #111111;
 	color: white;
+	z-index: 5;
 }
 
 #like{
 	background-color: #15902F;
 	color: white;
+	z-index: 5;
 }
 
 </style>

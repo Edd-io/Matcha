@@ -86,6 +86,10 @@
     }
 }
 
+main {
+    z-index: 999;
+}
+
 .info-profil.show {
     animation: slideIn 0.5s ease forwards;
 }

@@ -17,32 +17,29 @@
   
     function handleClick(buttonIndex) {
         category = buttonIndex;
-      localStorage.setItem("category", JSON.stringify(category));
+        localStorage.setItem("category", JSON.stringify(category));
     }
 </script>
 
 <main>
     {#each [0, 1, 2, 3] as index}
-        <button
-        class={category === index ? "selected" : "default"}
-        on:click={() => handleClick(index)}
-        >
         {#if index === 0}
-        <button on:click={() => navigate('/')} ariel-label="home">
-            <img src={homeLogo} alt="homeLogo"/>
-        </button>
+            <button on:click={() => {navigate('/'), handleClick(index)}} ariel-label="home" class={category === index ? "selected" : "default"}>
+                <img src={homeLogo} alt="homeLogo"/>
+            </button>
         {:else if index === 1}
-        <button on:click={() => navigate('/profile')} ariel-label="profil">
-            <img src={profilLogo} alt="profilLogo"/>
-        </button>
+            <button on:click={() => {navigate('/profile'), handleClick(index)}} ariel-label="profil" class={category === index ? "selected" : "default"}>
+                <img src={profilLogo} alt="profilLogo"/>
+            </button>
         {:else if index === 2}
-            <button on:click={() => navigate('/chat')} ariel-label="chat">
+            <button on:click={() => {navigate('/chat'), handleClick(index)}} ariel-label="chat" class={category === index ? "selected" : "default"}>
                 <img src={chatLogo} alt="chatLogo"/>
             </button>
         {:else if index === 3}
-            <img src={settingsLogo} alt="settingsLogo"/>
+            <button on:click={() => {navigate('/settings'), handleClick(index)}} ariel-label="settings" class={category === index ? "selected" : "default"}>
+                <img src={settingsLogo} alt="settingsLogo"/>
+            </button>
         {/if}
-        </button>
     {/each}
 
 </main>
@@ -73,6 +70,7 @@
         border: none;
         cursor: pointer;
         opacity: 0.5;
+
     }
 
     button{
