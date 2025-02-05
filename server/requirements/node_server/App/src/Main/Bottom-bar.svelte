@@ -55,6 +55,7 @@
         align-items: center;
         padding: 20px;
         color: #111111;
+        margin-top: auto;
     }
 
     button img {
