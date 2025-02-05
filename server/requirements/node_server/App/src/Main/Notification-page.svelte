@@ -1,5 +1,6 @@
 <script>
     import NotifComp from "./Notif-comp.svelte";
+	globalThis.path.set('/notification');
 </script>
 
 <main>

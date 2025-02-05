@@ -10,6 +10,7 @@
 	];
 	const aboutMeContent = "Salut, je suis un étudiant en informatique passionné par le développement web. J'aime aussi la musique et les jeux vidéos.";
 	let interests: number[] = [];
+	globalThis.path.set('/profile');
 </script>
 
 <main>

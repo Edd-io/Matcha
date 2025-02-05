@@ -53,11 +53,12 @@
 		<TopBar />
 	{/if}
 	<Router>
-		{#if isConnected}
+		<!-- {#if isConnected}
 			<Route path="/" component={Main} />
 		{:else}
 			<Route path="/" component={Host} />
-		{/if}
+		{/if} -->
+		<Route path="/" component={Main} />
 		<Route path="/register" component={Register} />
 		<Route path="/filter" component={Filter} />
 		<Route path="/login" component={Login} />
@@ -67,7 +68,7 @@
 		<Route path="/chat" component={Chat} />
 		<Route path="/notification" component={NotificationPage} />
 	</Router>
-	{#if path !== "/login" && path !== "/register"}
+	{#if path !== "/login" && path !== "/register"  && path !== "/"}
 		<BottomBar />
 	{/if}
 </main>

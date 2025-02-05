@@ -15,7 +15,7 @@
 
 	let	chatOpened = false;
 	let selectedUser = null;
-
+	globalThis.path.set('/chat');
 </script>
 
 <main>

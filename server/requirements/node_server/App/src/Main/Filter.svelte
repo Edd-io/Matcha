@@ -36,6 +36,16 @@
 
 <style>
 
+	main {
+        position: absolute;
+        height: 100vh;
+        width: 100vw;
+        background-color: white;
+        top: 0;
+        left: 0;
+        z-index: 4;
+    }
+
 	.text{
 		margin-left: 3.5rem;
 		margin-top: 2rem;

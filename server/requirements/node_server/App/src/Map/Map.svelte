@@ -38,7 +38,12 @@
         L.marker([48.8566, 2.3522]).addTo(map) 
             .bindPopup(css_marker_info.replace("{name}", 'Poulet').replace("{age}", '42').replace("{distance}", '14,4km'))
             .openPopup();
+
+        // L.marker([28.8566, 72.3522]).addTo(map) 
+        //     .bindPopup(css_marker_info.replace("{name}", 'Kevin').replace("{age}", '18').replace("{distance}", '1214,4km'))
+        //     .openPopup();
     });
+    globalThis.path.set('/map');
 </script>
 
 <main>
