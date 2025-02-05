@@ -52,29 +52,39 @@
 	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
 		<TopBar />
 	{/if}
-	<Router>
-		<!-- {#if isConnected}
+	<div class="content">
+		<Router>
+			<!-- {#if isConnected}
+				<Route path="/" component={Main} />
+			{:else}
+				<Route path="/" component={Host} />
+			{/if} -->
 			<Route path="/" component={Main} />
-		{:else}
-			<Route path="/" component={Host} />
-		{/if} -->
-		<!-- <Route path="/" component={Main} />
-		<Route path="/register" component={Register} />
-		<Route path="/filter" component={Filter} />
-		<Route path="/login" component={Login} />
-		<Route path="/map" component={Map} />
-		<Route path="*" component={LoadingScreen} />
-		<Route path="/profile" component={SelfInfo} />
-		<Route path="/chat" component={Chat} />
-		<Route path="/notification" component={NotificationPage} /> -->
-		<Route path="/" component={Main} />
-
-	</Router>
+			<Route path="/register" component={Register} />
+			<Route path="/filter" component={Filter} />
+			<Route path="/login" component={Login} />
+			<Route path="/map" component={Map} />
+			<Route path="*" component={LoadingScreen} />
+			<Route path="/profile" component={SelfInfo} />
+			<Route path="/chat" component={Chat} />
+			<Route path="/notification" component={NotificationPage} />
+		</Router>
+	</div>
 	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
 		<BottomBar />
 	{/if}
 </main>
 
 <style>
+	main {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+		max-height: 100vh;
+	}
 
+	.content {
+		flex: 1;
+		overflow-y: auto;
+	}
 </style>

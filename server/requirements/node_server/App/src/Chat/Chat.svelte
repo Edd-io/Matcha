@@ -44,7 +44,9 @@
 <style>
 	main {
 		/* overflow: hidden; */
-		height: 100%;
+		display: flex;
+		flex-direction: column;
+		flex: 1;
 	}
 	.no-button-style {
 		background-color: transparent;

@@ -67,7 +67,6 @@
 
 	<!-- <NotificationPage /> -->
 
-	<!-- <TopBar /> -->
 	<div class="main">
 
 
