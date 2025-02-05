@@ -14,14 +14,14 @@
     import BottomBar from "./Main/Bottom-bar.svelte";
 	import NotificationPage from "./Main/Notification-page.svelte";
 
-	let path = window.location.pathname;
+	let path: string = window.location.pathname;
 
 	window.addEventListener('popstate', () => {
 		path = window.location.pathname;
 	});
-	let isConnected = false;
+	let isConnected = true;
 
-	globalThis.connected = writable(false);
+	globalThis.connected = writable(true);
 	globalThis.connected.subscribe(value => {
 		isConnected = value;
 	});
@@ -49,15 +49,17 @@
 </script>
 
 <main>
-	{#if path !== "/login" && path !== "/register"  && path !== "/"}
+	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
 		<TopBar />
 	{/if}
 	<Router>
-		{#if isConnected}
+		<!-- {#if isConnected}
 			<Route path="/" component={Main} />
 		{:else}
 			<Route path="/" component={Host} />
-		{/if}
+		{/if} -->
+		<Route path="/" component={Main} />
+
 		<Route path="/register" component={Register} />
 		<Route path="/filter" component={Filter} />
 		<Route path="/login" component={Login} />
@@ -67,7 +69,7 @@
 		<Route path="/chat" component={Chat} />
 		<Route path="/notification" component={NotificationPage} />
 	</Router>
-	{#if path !== "/login" && path !== "/register"}
+	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
 		<BottomBar />
 	{/if}
 </main>
