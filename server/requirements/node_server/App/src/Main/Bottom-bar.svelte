@@ -28,7 +28,9 @@
         on:click={() => handleClick(index)}
         >
         {#if index === 0}
+        <button on:click={() => navigate('/')} ariel-label="home">
             <img src={homeLogo} alt="homeLogo"/>
+        </button>
         {:else if index === 1}
         <button on:click={() => navigate('/profile')} ariel-label="profil">
             <img src={profilLogo} alt="profilLogo"/>
