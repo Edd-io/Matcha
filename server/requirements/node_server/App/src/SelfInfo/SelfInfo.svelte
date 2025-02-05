@@ -1,6 +1,7 @@
 <script lang='ts'>
 	import Choose_interests from '../Register/Choose_interests.svelte';
 
+	globalThis.path.set('/self_info');
 
 	const lstPhotos: string[] = [
 		"https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?cs=srgb&dl=pexels-olly-774909.jpg&fm=jpg",
@@ -38,12 +39,14 @@
 			<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 100%;">
 				<Choose_interests bind:selected_interests={interests}/>
 			</div>
+		</div>
 	</div>
 </main>
 
 <style>
 	main {
 		padding: 2rem;
+		padding-top: 0.5rem;
 	}
 	h2 {
 		font-size: 0.8em;
@@ -85,47 +88,6 @@
 		color: #111;
 		font-size: 0.9rem;
 		resize: none;
-	}
-	.passions {
-		background-color: #D9D9D9;
-		width: 100%;
-		min-height: 8rem;
-		max-width: none;
-		border-radius: 0.9rem;
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-		padding: 0.5rem;
-	}
-	.passions .button-add-passion {
-		width: 2rem;
-		height: 2rem;
-		background-color: #f7f7f7;
-		border-radius: 0.9rem;
-		font-size: 1.5rem;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-inline: 0.2rem;
-		margin-block: auto;
-	}
-	.passions .button-passion {
-		margin-block: auto;
-		background-color: #f7f7f7;
-		border-radius: 0.9rem;
-		margin-inline: 0.2rem;
-		margin-block: 0.2rem;
-		transition: transform 0.2s, background-color 0.2s;
-	}
-	.passions .button-passion:hover {
-		transform: scale(1.05);
-		background-color: #f0f0f0;
-	}
-	.passions p {
-		font-size: 1rem;
-		height: 2.5rem;
-		padding: 0.5rem;
 	}
 	@media (min-aspect-ratio: 1/1) {
 		.button-image {

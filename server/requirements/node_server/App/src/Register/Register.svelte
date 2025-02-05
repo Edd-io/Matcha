@@ -40,6 +40,7 @@
 	{
 		return fly(node, { x, y, delay, duration: 800, easing: cubicOut });
 	}
+	globalThis.path.set('/register');
 </script>
 
 <main>

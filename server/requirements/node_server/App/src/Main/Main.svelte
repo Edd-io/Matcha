@@ -59,6 +59,8 @@
 		showComponent = !showComponent;
 		console.log(showComponent);
 	}
+
+	globalThis.path.set('/');
 </script>
 
 <main>

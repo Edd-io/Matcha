@@ -8,6 +8,7 @@
 	{
 		navigate('/register');
 	}
+	globalThis.path.set('/');
 </script>
 
 <main>
