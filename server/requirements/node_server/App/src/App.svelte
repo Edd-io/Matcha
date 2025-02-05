@@ -58,7 +58,7 @@
 		{:else}
 			<Route path="/" component={Host} />
 		{/if} -->
-		<!-- <Route path="/" component={Main} />
+		<Route path="/" component={Main} />
 		<Route path="/register" component={Register} />
 		<Route path="/filter" component={Filter} />
 		<Route path="/login" component={Login} />
@@ -66,7 +66,7 @@
 		<Route path="*" component={LoadingScreen} />
 		<Route path="/profile" component={SelfInfo} />
 		<Route path="/chat" component={Chat} />
-		<Route path="/notification" component={NotificationPage} /> -->
+		<Route path="/notification" component={NotificationPage} />
 		<Route path="/" component={Main} />
 
 	</Router>

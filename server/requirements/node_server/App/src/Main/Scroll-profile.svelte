@@ -56,6 +56,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#111111" d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83l3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
                 <p>Passions</p>
             </div>
+            <!-- ICI tu mets le ton composant sans le '+' -->
             <p>Vegan - Geek - Kcorp</p>
         </div>
         <div class="div-btn">
@@ -90,6 +91,11 @@ main {
     z-index: 999;
 }
 
+p {
+    color: #111111;
+    font-size: 1.3rem;
+}
+
 .info-profil.show {
     animation: slideIn 0.5s ease forwards;
 }
@@ -121,14 +127,13 @@ main {
 }
 
 .info-profil{
-    height: 70vh;
+    height: 60vh;
     width: 94%;
     border-radius: 2rem;
     background-color: white;
     position: fixed;
     transform: translate(-50%);
     left: 50%;
-    /* bottom: -200px; */
     z-index: 2;
     transition: bottom 0.5s;
 }
