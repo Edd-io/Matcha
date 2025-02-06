@@ -1,13 +1,15 @@
-<script>
+<script lang="ts">
     import positionLogo from "../assets/position.svg";
     import likeLogo from "../assets/heart.svg";
     import dislikeLogo from "../assets/cross.svg";
     import genderLogo from "../assets/gender.svg";
     import typeLogo from "../assets/type.svg";
+    import ChooseInterests from "../Register/Choose_interests.svelte";
 
     export let users;
     export let showComponent;
     let hideComponent = true;
+    let selected_interests: number[] = [2,5,7,9,11];
 
     function toggleScrollInfo() {
         hideComponent = false;
@@ -57,7 +59,7 @@
                 <p>Passions</p>
             </div>
             <!-- ICI tu mets le ton composant sans le '+' -->
-            <p>Vegan - Geek - Kcorp</p>
+            <ChooseInterests bind:selected_interests={selected_interests} disabled={true}/>
         </div>
         <div class="div-btn">
             <button class="scroll-btn">Lorem</button>

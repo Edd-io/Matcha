@@ -1,4 +1,5 @@
 <script lang="ts">
+		import { navigate } from "svelte-routing";
 		import ChooseInterests from "../Register/Choose_interests.svelte";
 		import DoubleRangeSlider from "./Double-range-slider.svelte";
 		import SimpleRangeSlider from "./Simple-range-slider.svelte";
@@ -16,7 +17,7 @@
 	
 <main>
 		<div class="top-notif">
-				<button class="back-button" aria-label='Retour'>
+				<button class="back-button" aria-label='Retour' on:click={() => navigate(globalThis.last_path)}>
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
 								<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
 							</svg>
