@@ -41,7 +41,6 @@
             </button>
         {/if}
     {/each}
-
 </main>
 
 <style>
@@ -58,7 +57,6 @@
     button img {
         width: 2.1rem;
         height: 2.1rem;
-
     }
 
     .selected {
@@ -70,7 +68,6 @@
         border: none;
         cursor: pointer;
         opacity: 0.5;
-
     }
 
     button{

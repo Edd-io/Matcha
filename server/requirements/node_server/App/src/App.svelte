@@ -50,14 +50,14 @@
 
 <main>
 	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
-		<TopBar />
+	<TopBar />
 	{/if}
 	<div class="content">
 		<Router>
 			<!-- {#if isConnected}
-				<Route path="/" component={Main} />
+			<Route path="/" component={Main} />
 			{:else}
-				<Route path="/" component={Host} />
+			<Route path="/" component={Host} />
 			{/if} -->
 			<Route path="/" component={Main} />
 			<Route path="/register" component={Register} />

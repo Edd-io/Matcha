@@ -19,9 +19,9 @@
                 style='width: 5rem; height: 5rem; border-radius: 50%; margin: 0.9rem; object-fit: cover; margin-inline: auto;'
             />
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-left: 1rem;">
-                <h2 style='margin: 0'>{name}</h2>
-                <p style='margin: 0'>{age} ans</p>
-                <p style='margin: 0'>{distance}</p>
+                <h2 style='margin: 0'>${name}</h2>
+                <p style='margin: 0'>${age} ans</p>
+                <p style='margin: 0'>${distance}</p>
                 <button style='background-color: transparent; text-align: left; margin-top: 0.5rem; border: none; border-bottom: 1px solid black;'>
                     Voir le profil
                 </button>
@@ -36,7 +36,7 @@
         }).addTo(map);
 
         L.marker([48.8566, 2.3522]).addTo(map) 
-            .bindPopup(css_marker_info.replace("{name}", 'Poulet').replace("{age}", '42').replace("{distance}", '14,4km'))
+            .bindPopup(css_marker_info)
             .openPopup();
 
         // L.marker([28.8566, 72.3522]).addTo(map) 

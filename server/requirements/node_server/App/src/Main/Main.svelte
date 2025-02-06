@@ -127,7 +127,7 @@
 }
 
 .photo{
-	height: 78vh;
+	height: 79vh;
 	width: 93%;
 	border-radius: 2rem;
 	background-color: rgb(199, 199, 199);

@@ -16,7 +16,7 @@
 	export let connected: boolean;
 
 	let token = null;
-	let currentPage = 1;
+	let currentPage = 7;
 	let dataSecondStep = {};
 
 	function slideHorizontal(node: HTMLElement) 
