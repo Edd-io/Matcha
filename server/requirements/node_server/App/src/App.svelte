@@ -15,8 +15,11 @@
 	import NotificationPage from "./Main/Notification-page.svelte";
 
 	let path: string = window.location.pathname;
+	globalThis.last_path = path;
+
 
 	window.addEventListener('popstate', () => {
+		globalThis.last_path = path;
 		path = window.location.pathname;
 	});
 	let isConnected = true;
@@ -28,6 +31,7 @@
 
 	globalThis.path = writable(path);
 	globalThis.path.subscribe(value => {
+		globalThis.last_path = path;
 		path = value;
 	});
 
