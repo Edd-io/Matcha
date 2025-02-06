@@ -1,8 +1,10 @@
 <script lang='ts'>
 	import '@fortawesome/fontawesome-free/css/all.css';
-	export let selected_interests: number[];
     import { cubicOut } from 'svelte/easing';
     import { on } from 'svelte/events';
+
+	export let selected_interests: number[];
+	export let disabled: boolean = false;
 
 	let list_interests = [
 		{ "id": 1, "interest": "Programmation" },
@@ -44,6 +46,13 @@
 			count++;
 		}
 		list_interests = [...list_interests];
+	}
+
+	function deleteInterest(id: number)
+	{
+		if (disabled)
+			return;
+		selected_interests = selected_interests.filter((interest) => interest !== id);
 	}
 
 
@@ -92,13 +101,15 @@
 	{#key count}
 		<div class="passions">
 			{#each selected_interests as id}
-				<button class="no-style-button button-passion" aria-label='Supprimer cette passion' on:click={() => selected_interests = selected_interests.filter(interest => interest !== id)}>
+				<button class="no-style-button button-passion" aria-label='Supprimer cette passion' on:click={() => deleteInterest(id)}>
 					<p>{list_interests.find(interest => interest.id === id).interest}</p>
 				</button>
 			{/each}
-			<button class="no-style-button button-add-passion" aria-label='Ajouter une passion' on:click={() => visible = true}>
-				<span>+</span>
-			</button>
+			{#if disabled == false}
+				<button class="no-style-button button-add-passion" aria-label='Ajouter une passion' on:click={() => visible = true}>
+					<span>+</span>
+				</button>
+			{/if}
 		</div>
 	{/key}
 </main>
