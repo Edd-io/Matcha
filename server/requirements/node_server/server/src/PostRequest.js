@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/03 15:24:46 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/09 08:44:35 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,12 @@ class PostRequest
 	static login(req, res, db)
 	{
 		Debug.log(req);
+
+		// just to get the hash of the password for testing
+		bcrypt.hash(req.body.email + req.body.password, 10, (err, hash) => {
+			console.log('Password hash:', hash);
+		});
+
 		if (req.session.info && req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
 		if (!req.body.email || !req.body.password)
@@ -272,6 +278,17 @@ class PostRequest
 		});
 		userCreatingAccount.pop(index);
 		res.send(JSON.stringify({success: "Account created"}));
+	}
+
+	static change_location(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.body.lat || !req.body.lon)
+			return (res.send(JSON.stringify({error: missing})));
+		db.addLocation(req.session.info.id, req.body.lat, req.body.lon);
+		res.send(JSON.stringify({success: "Location changed"}));
 	}
 
 	// Request to logout
