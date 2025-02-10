@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/09 09:21:14 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/10 16:53:41 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -350,14 +350,14 @@ class PostRequest
 
 	////// SWIPE ZONE //////
 	// Request to get user profile on page "Swipe zone"
-	static get_swipe_user(req, res)
+	static get_swipe_user(req, res, db)
 	{
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.distance || !req.body.range_age || !req.body.interests)
 			return (res.send(JSON.stringify({error: missing})));
-		res.send("Get swipe user request");
+		db.getNeverSeenUser(req.session.info.id).then((ret) => {res.send(ret)});
 	}
 
 	// Request when user swipe left or right

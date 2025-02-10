@@ -61,6 +61,7 @@
 
 	function getSwipeUser()
 	{
+		console.log('Sending request');
 		fetch('/get_swipe_user', {
 			method: 'POST',
 			headers: {
@@ -77,7 +78,6 @@
 			users = data;
 		})
 	}
-
 	getSwipeUser();
 </script>
 

@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/09 09:19:58 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/10 16:52:24 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,9 +64,8 @@ function init(db)
 	app.post('/report_user', (req, res) => PostRequest.report_user(req, res, db));
 	app.post('/change_location', (req, res) => PostRequest.change_location(req, res, db));
 	app.post('/logout', PostRequest.logout);
-	app.post('/get_swipe_user', PostRequest.get_swipe_user);
+	app.post('/get_swipe_user', (req, res) => PostRequest.get_swipe_user(req, res, db));
 	app.post('/react_to_user', PostRequest.react_to_user);
-	app.get('/test', (req, res) => PostRequest.test(req, res, db));
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
 	});

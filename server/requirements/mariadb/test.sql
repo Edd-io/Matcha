@@ -15,22 +15,22 @@ INSERT INTO accounts (email, password) VALUES
 ('n@n.com', 'password'),
 ('o@o.com', 'password');
 
-INSERT INTO users_info (user_id, first_name, last_name, nickname, date_of_birth, sexe, orientation, bio) VALUES 
+INSERT INTO users_info (user_id, first_name, last_name, nickname, date_of_birth, sexe, orientation, bio, location) VALUES 
 (1, 'John', 'Doe', 'JohnDoe454', '1990-07-01', 'M', 'F', 'hello world, I am John Doe, nice to meet you !'),
-(2, 'Pierre', 'Doe', 'PierreDoe454', '1970-02-09', 'M', 'F', 'hello world, I am Pierre Doe, nice to meet you !'),
-(3, 'Celine', 'Doe', 'CelineDoe454', '2001-09-17', 'F', 'M', 'hello world, I am Celine Doe, nice to meet you !'),
-(4, 'Alice', 'Smith', 'AliceWonder', '1995-03-12', 'F', 'M', 'Exploring life, one adventure at a time.'),
-(5, 'Bob', 'Johnson', 'BobbyJ', '1988-10-04', 'M', 'F', 'Coder by day, gamer by night.'),
-(6, 'Emma', 'Brown', 'EmmyB', '2000-06-21', 'F', 'M', 'Coffee lover and bookworm.'),
-(7, 'Lucas', 'Davis', 'LukeD', '1993-11-30', 'M', 'F', 'Fitness enthusiast and tech geek.'),
-(8, 'Olivia', 'Garcia', 'LivG', '1998-01-15', 'F', 'M', 'Traveling the world, one step at a time.'),
-(9, 'Liam', 'Martinez', 'LiamM', '1991-04-09', 'M', 'F', 'Passionate about photography and nature.'),
-(10, 'Sophia', 'Anderson', 'SophA', '1996-12-25', 'F', 'M', 'Living life with love and laughter.'),
-(11, 'Ethan', 'Thomas', 'EthanT', '1992-08-14', 'M', 'F', 'Dream big, work hard.'),
-(12, 'Isabella', 'Moore', 'IsaM', '1997-09-05', 'F', 'M', 'Designing my way through life.'),
-(13, 'Mason', 'Taylor', 'MaseT', '1985-05-22', 'M', 'F', 'Music is my escape.'),
-(14, 'Mia', 'Harris', 'MiaH', '2003-07-19', 'F', 'M', 'Student, dreamer, doer.'),
-(15, 'James', 'Clark', 'JamesC', '1999-02-11', 'M', 'F', 'Tech enthusiast and avid learner.');
+(2, 'Pierre', 'Doe', 'PierreDoe454', '1970-02-09', 'M', 'F', 'hello world, I am Pierre Doe, nice to meet you !', '{"latitude": 45.73908, "longitude": 0.37865}'),
+(3, 'Celine', 'Doe', 'CelineDoe454', '2001-09-17', 'F', 'M', 'hello world, I am Celine Doe, nice to meet you !', '{"latitude": 45.72291, "longitude": 0.20854}'),
+(4, 'Alice', 'Smith', 'AliceWonder', '1995-03-12', 'F', 'M', 'Exploring life, one adventure at a time.', '{"latitude": 45.80974, "longitude": 2.56102}'),
+(5, 'Bob', 'Johnson', 'BobbyJ', '1988-10-04', 'M', 'F', 'Coder by day, gamer by night.', null),
+(6, 'Emma', 'Brown', 'EmmyB', '2000-06-21', 'F', 'M', 'Coffee lover and bookworm.', null),
+(7, 'Lucas', 'Davis', 'LukeD', '1993-11-30', 'M', 'F', 'Fitness enthusiast and tech geek.', null),
+(8, 'Olivia', 'Garcia', 'LivG', '1998-01-15', 'F', 'M', 'Traveling the world, one step at a time.', null),
+(9, 'Liam', 'Martinez', 'LiamM', '1991-04-09', 'M', 'F', 'Passionate about photography and nature.', null),
+(10, 'Sophia', 'Anderson', 'SophA', '1996-12-25', 'F', 'M', 'Living life with love and laughter.', null),
+(11, 'Ethan', 'Thomas', 'EthanT', '1992-08-14', 'M', 'F', 'Dream big, work hard.', null),
+(12, 'Isabella', 'Moore', 'IsaM', '1997-09-05', 'F', 'M', 'Designing my way through life.', null),
+(13, 'Mason', 'Taylor', 'MaseT', '1985-05-22', 'M', 'F', 'Music is my escape.', null),
+(14, 'Mia', 'Harris', 'MiaH', '2003-07-19', 'F', 'M', 'Student, dreamer, doer.', null),
+(15, 'James', 'Clark', 'JamesC', '1999-02-11', 'M', 'F', 'Tech enthusiast and avid learner.', null);
 
 INSERT INTO users_tags (user_id, tag) VALUES 
 (1, '4'), (1, '5'), (1, '1'), (1, '12'), (1, '9'),

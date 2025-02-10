@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/10 14:30:14 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/10 18:00:33 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,20 +277,69 @@ class Database
 		return (seen);
 	}
 
+	buffer_neverSeenUser = [];
+
 	getNeverSeenUser(user_id)
 	{
-		return (new Promise(async (resolve) => {
-			const nbUsers = await this.#getNbUsers();
-			const seen = await this.#getListSeenUsers(user_id);
-			const neverSeen = [];
+		let	selfInfo = null;
 
-			for (let i = 1; i <= nbUsers; i++)
+		const getScore = async (other_id) => {
+			const	otherInfo = await getOtherInfo(other_id);
+
+			if (!selfInfo)
 			{
-				if (i < seen.length && seen.includes(i))
-					continue;
-				neverSeen.push(i);
+				selfInfo = getOtherInfo(user_id);
+				console.log(selfInfo);
 			}
+			console.log(otherInfo);
+			return (199);
+		}
+
+		const getOtherInfo = async (other_id) => {
+			const conn = await this.pool.getConnection();
+			const rowLocation = await conn.query('SELECT location FROM users_info WHERE user_id = ?', [other_id]);
+			const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [other_id]);
+
+			conn.release();
+			conn.end();
+			return ({location: rowLocation[0], tags: rowTags});
+		}
+
+		return (new Promise(async (resolve) => {
+			const	nbUsers = await this.#getNbUsers();
+			const	seen = await this.#getListSeenUsers(user_id);
+			let		index = -1;
 			
+			while (++index && index < this.buffer_neverSeenUser.length)
+			{
+				if (this.buffer_neverSeenUser[index].id == user_id)
+					break;
+			}
+			if (index == this.buffer_neverSeenUser.length)
+			{
+				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers})
+				for (let i = 1; i <= nbUsers; i++)
+				{
+					if (i < seen.length && seen.includes(i))
+						continue;
+					this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -1});
+				}
+			}
+			else
+			{
+				while (this.buffer_neverSeenUser[index].lastNb < nbUsers)
+				{
+					this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: -1});
+					this.buffer_neverSeenUser[index].lastNb++;
+				}
+			}
+			for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
+			{
+				if (this.buffer_neverSeenUser[index].neverSeen[i].score == -1)
+					this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
+			}
+			console.log(this.buffer_neverSeenUser[index]);
+			resolve({})
 		}));
 	}
 

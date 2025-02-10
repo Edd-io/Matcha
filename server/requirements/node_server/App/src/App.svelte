@@ -42,7 +42,7 @@
 	fetch('/get_status_self_connected')
 	.then(res => res.json())
 	.then(data => {
-		globalThis.connected.set(data.connected);
+		globalThis.connected.set(data.logged);
 	});
 
 	window.onerror = (msg, url, lineNo, columnNo, error) =>
