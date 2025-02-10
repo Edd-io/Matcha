@@ -53,6 +53,13 @@
 		return true;
 	}
 
+	globalThis.filterData = {
+		min_age: 18,
+		max_age: 100,
+		range: 100,
+		interests: []
+	};
+
 	let latitude = null;
 	let longitude = null;
 

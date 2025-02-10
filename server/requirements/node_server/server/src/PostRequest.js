@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/09 08:44:35 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/09 09:21:14 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -355,6 +355,8 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.body.distance || !req.body.range_age || !req.body.interests)
+			return (res.send(JSON.stringify({error: missing})));
 		res.send("Get swipe user request");
 	}
 
@@ -384,14 +386,6 @@ class PostRequest
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		res.send("Get chat request");
-	}
-
-
-	////// TEST //////
-	static test(req, res, db)
-	{
-		db.banUser(1);
-		res.send("Test ok");
 	}
 }
 

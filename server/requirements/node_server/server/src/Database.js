@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/09 08:38:41 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/10 14:30:14 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,11 +93,19 @@ class Database
 				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE,
 				FOREIGN KEY(user_reported_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
-			conn.query(`CREATE TABLE IF NOT EXISTS users_interactions (
+			conn.query(`CREATE TABLE IF NOT EXISTS users_likes (
 				id INTEGER PRIMARY KEY AUTO_INCREMENT,
 				user_id INT,
-				arrs_seen TEXT,
-				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE				
+				user_liked_id INT,
+				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE,
+				FOREIGN KEY(user_liked_id) REFERENCES accounts(id) ON DELETE CASCADE
+			)`);
+			conn.query(`CREATE TABLE IF NOT EXISTS users_dislikes (
+				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				user_id INT,
+				user_disliked_id INT,
+				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE,
+				FOREIGN KEY(user_disliked_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
 			conn.release();
 			conn.end();
@@ -253,40 +261,39 @@ class Database
 		return (row[0]['COUNT(*)']);
 	}
 
-	getNeverSeenUsers(self_id)
+	async #getListSeenUsers(user_id)
 	{
-		// return (new Promise((resolve) => {
-		// 	this.pool.getConnection().then((conn) => {
-		// 		conn.query('SELECT arrs_seen FROM users_interactions WHERE user_id = ?', [self_id]).then(async (row) => {
-		// 			if (row.length == 0)
-		// 			{
-		// 				const cursorOne = [await this.#getNbUsers() / 4, 0];
-		// 				cursorOne[1] = cursorOne[0];
-		// 				const cursorTwo = [cursorOne * 2, cursorOne * 2];
-		// 				let str_data = null;
-					
-		// 				if (cursorOne[0] == cursorTwo[0])
-		// 					str_data = JSON.stringify([cursorOne]);
-		// 				else
-		// 					str_data = JSON.stringify([cursorOne, cursorTwo]);
-		// 				conn.query('INSERT INTO users_interactions (user_id, arrs_seen) VALUES (?, ?)', [self_id, str_data]);
-		// 				resolve([]);
-		// 			}
-		// 			else
-		// 			{
-		// 				const arrs_seen = JSON.parse(row[0].arrs_seen);
-		// 				const cursor = Math.floor(Math.random() * arrs_seen.length);
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT user_liked_id FROM users_likes WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT user_disliked_id FROM users_dislikes WHERE user_id = ?', [user_id]);
+		const seen = [];
 
-		// 				if (arrs_seen[cursor][0] == 0)
-		// 				{
-		// 					if (arrs_)
-		// 				}
-
-		// 			}
-		// 		}).finally(() => {conn.release(); conn.end()});
-		// 	});
-		// }));
+		conn.release();
+		conn.end();
+		for (let i = 0; i < row.length; i++)
+			seen.push(row[i].user_liked_id);
+		for (let i = 0; i < row2.length; i++)
+			seen.push(row2[i].user_disliked_id);
+		return (seen);
 	}
+
+	getNeverSeenUser(user_id)
+	{
+		return (new Promise(async (resolve) => {
+			const nbUsers = await this.#getNbUsers();
+			const seen = await this.#getListSeenUsers(user_id);
+			const neverSeen = [];
+
+			for (let i = 1; i <= nbUsers; i++)
+			{
+				if (i < seen.length && seen.includes(i))
+					continue;
+				neverSeen.push(i);
+			}
+			
+		}));
+	}
+
 }
 
 module.exports = Database;

@@ -15,18 +15,16 @@
 	import NotificationPage from "./Notification-page.svelte";
 	import ScrollProfile from "./Scroll-profile.svelte";
 
-	let users = [
-		{
-			nbPhotos: 6,
-			name: "John",
-			age: 25,
-			city: "Paris",
-			country: "France",
-			gender: "Homme",
-			type: "Hétéro",
-			bio: "Salut, je suis John, j'aime les balades en forêt et les soirées entre amis."
-		}
-	]
+	let users = {
+		nbPhotos: 6,
+		name: "John",
+		age: 25,
+		city: "Paris",
+		country: "France",
+		gender: "Homme",
+		type: "Hétéro",
+		bio: "Salut, je suis John, j'aime les balades en forêt et les soirées entre amis."
+	}
 
 	function skipPhoto(event) {
 		const rect = event.currentTarget.getBoundingClientRect();
@@ -34,7 +32,7 @@
 
 		if (clickX < rect.width / 2 && iPhoto > 0) {
 			iPhoto--;
-		} else if (clickX >= rect.width / 2 && iPhoto < users[0].nbPhotos - 1) {
+		} else if (clickX >= rect.width / 2 && iPhoto < users.nbPhotos - 1) {
 			iPhoto++;
 		}
 	}
@@ -57,10 +55,30 @@
 	function toggleScrollInfo() 
 	{
 		showComponent = !showComponent;
-		console.log(showComponent);
 	}
 
 	globalThis.path.set('/');
+
+	function getSwipeUser()
+	{
+		fetch('/get_swipe_user', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				distance: globalThis.filterData.range,
+				range_age: [globalThis.filterData.min_age, globalThis.filterData.max_age],
+				interests: globalThis.filterData.interests
+			})
+		}).then(res => res.json())
+		.then(data => {
+			console.log(data);
+			users = data;
+		})
+	}
+
+	getSwipeUser();
 </script>
 
 <main>
@@ -79,14 +97,14 @@
 			<div class='zone-pass' on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0"></div>
 			<div class="centered">
 				<div class="nb-photo">
-					{#each Array(users[0].nbPhotos) as _, index}
+					{#each Array(users.nbPhotos) as _, index}
 					<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
 					{/each}
 				</div>
 			</div>
 			<div class="user-info">
 				<div class="info">
-					<p id="main-info">{users[0].name} • {users[0].age}</p>
+					<p id="main-info">{users.name} • {users.age}</p>
 					<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
 							<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
@@ -95,7 +113,7 @@
 				</div>
 				<div class=low-info>
 					<img src={positionLogo} alt="positionLogo"/>
-					<p id="scd-info">{users[0].city}, {users[0].country}</p>
+					<p id="scd-info">{users.city}, {users.country}</p>
 				</div>
 			</div>
 			<div class=buttons>
