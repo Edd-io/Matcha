@@ -13,6 +13,7 @@
     import TopBar from "./Main/Top-bar.svelte";
     import BottomBar from "./Main/Bottom-bar.svelte";
 	import NotificationPage from "./Main/Notification-page.svelte";
+	import Settings from "./Main/Settings.svelte";
 
 	let path: string = window.location.pathname;
 	globalThis.last_path = path;
@@ -108,6 +109,7 @@
 			<Route path="/profile" component={SelfInfo} />
 			<Route path="/chat" component={Chat} />
 			<Route path="/notification" component={NotificationPage} />
+			<Route path="/settings" component={Settings} />
 		</Router>
 	</div>
 	{#if (path !== "/login" && path !== "/register" && isConnected === true)}

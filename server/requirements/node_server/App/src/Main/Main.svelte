@@ -130,140 +130,144 @@
 
 <style>
 
-.main {
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
+	main{
+		height: 100%;
+	}
 
-.zone-pass {
-	width: 100%;
-	height: 100%;
-	position: absolute;
-	z-index: 1;
-	border-radius: 2rem;
-}
+	.main {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 100%;
+	}
 
-.photo{
-	height: 79vh;
-	width: 93%;
-	border-radius: 2rem;
-	background-color: rgb(199, 199, 199);
-	display: flex;
-	flex-direction: column;
-	justify-content: end;
-	position: relative;
-}
+	.zone-pass {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		z-index: 1;
+		border-radius: 2rem;
+	}
 
-.centered {
-	height: 100%;
-	width: 100%;
-	display: flex;
-	justify-content: center;
-}
+	.photo{
+		height: 100%;
+		width: 93%;
+		border-radius: 2rem;
+		background-color: rgb(199, 199, 199);
+		display: flex;
+		flex-direction: column;
+		justify-content: end;
+		position: relative;
+	}
 
-.nb-photo{
-	display: flex;
-	justify-content: center;
-	margin-top: 20px;
-	flex-direction: row;
-	height: 100%;
-	width: 90%;
-	gap: 10px;
-}
+	.centered {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		justify-content: center;
+	}
 
-.bar-photo-default{
-	height: 1%;
-	width: 80%;
-	background-color: #111111;
-	border-radius: 1rem;
-}
+	.nb-photo{
+		display: flex;
+		justify-content: center;
+		margin-top: 20px;
+		flex-direction: row;
+		height: 100%;
+		width: 90%;
+		gap: 10px;
+	}
 
-.bar-photo-selected{
-	height: 1%;
-	width: 80%;
-	background-color: #d9d9d9;
-	border-radius: 1rem;
-}
+	.bar-photo-default{
+		height: 1%;
+		width: 80%;
+		background-color: #111111;
+		border-radius: 1rem;
+	}
 
-.buttons{
-	display: flex;
-	flex-direction: row;
-	gap: 10px;
-	justify-content: center;
-	margin-top: 15px;
-	margin-bottom: 15px;
-}
+	.bar-photo-selected{
+		height: 1%;
+		width: 80%;
+		background-color: #d9d9d9;
+		border-radius: 1rem;
+	}
 
-.buttons button{
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	text-decoration: none;
-	width: 45%;
-	height: 45px;
-	border-radius: 1.5rem;
-	border: none;
-	z-index: 5;
-}
+	.buttons{
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
+		justify-content: center;
+		margin-top: 15px;
+		margin-bottom: 15px;
+	}
 
-.user-info{
-	margin-left: 20px;
-	z-index: 5;
-}
+	.buttons button{
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		text-decoration: none;
+		width: 45%;
+		height: 45px;
+		border-radius: 1.5rem;
+		border: none;
+		z-index: 5;
+	}
 
-#main-info{
-	color: white;
-	font-weight: 700;
-	font-size: 2.5rem;
-}
+	.user-info{
+		margin-left: 20px;
+		z-index: 5;
+	}
 
-.info {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-right: 27px;
-}
+	#main-info{
+		color: white;
+		font-weight: 700;
+		font-size: 2.5rem;
+	}
 
-.open-scroll {
-	left: 85%;
-	top: 9.5%;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 2rem;
-	width: 2rem;
-	transform: rotate(-90deg);
-	border: none;
-	border-radius: 1.2rem;
-	cursor: pointer;
-	background: none;
-	background-color: #d9d9d9;
-}
+	.info {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-right: 27px;
+	}
 
-#scd-info{
-	font-size: 1rem;
-	z-index: 5;
-}
+	.open-scroll {
+		left: 85%;
+		top: 9.5%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: 2rem;
+		width: 2rem;
+		transform: rotate(-90deg);
+		border: none;
+		border-radius: 1.2rem;
+		cursor: pointer;
+		background: none;
+		background-color: #d9d9d9;
+	}
 
-.low-info{
-	display: flex;
-	flex-direction: row;
-	gap: 10px;
-	filter: invert(1);
-	z-index: 5;
-}
+	#scd-info{
+		font-size: 1rem;
+		z-index: 5;
+	}
 
-#dislike{
-	background-color: #111111;
-	color: white;
-	z-index: 5;
-}
+	.low-info{
+		display: flex;
+		flex-direction: row;
+		gap: 10px;
+		filter: invert(1);
+		z-index: 5;
+	}
 
-#like{
-	background-color: #15902F;
-	color: white;
-	z-index: 5;
-}
+	#dislike{
+		background-color: #111111;
+		color: white;
+		z-index: 5;
+	}
 
+	#like{
+		background-color: #15902F;
+		color: white;
+		z-index: 5;
+	}
 </style>

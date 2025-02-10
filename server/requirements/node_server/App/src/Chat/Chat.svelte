@@ -26,7 +26,12 @@
 				selectedUser = user;
 				chatOpened = true;
 			}}>
+			<div class="pfp-container">
+				{#if !user.seen}
+					<div class="notif"></div>
+				{/if}
 				<img src={user.pfp} alt="Pfp de {user.name}" />
+			</div>
 				<div style="padding-inline: 1rem;">
 					<h3>{user.name}</h3>
 					<p style="{!user.seen ? 'font-weight: 700; color: #111' : ''}">
@@ -42,8 +47,22 @@
 	</main>
 
 <style>
+	.notif {
+		position: absolute;
+		background-color: #C64141;
+		border: solid 0.2rem #fff;
+		width: 1.2rem;
+		height: 1.2rem;
+		border-radius: 100%;
+		right: 0.1rem;
+		top: 0.1rem;
+	}
+
+	.pfp-container {
+		position: relative;
+	}
+
 	main {
-		/* overflow: hidden; */
 		display: flex;
 		flex-direction: column;
 		flex: 1;
