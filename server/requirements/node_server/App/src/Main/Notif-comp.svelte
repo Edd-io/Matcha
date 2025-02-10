@@ -1,11 +1,11 @@
 <script>
-    let test = "Christelle";
+    let name = "Christelle";
 </script>
 
 <main>
     <div class="notification">
         <div class="pfp-notif"></div>
-        <p class="small-txt" id="msg-notif"><strong>{test}</strong><br>Vous avez un nouveau match !</p>
+        <p class="small-txt" id="msg-notif"><strong>{name}</strong><br>Vous avez un nouveau match !</p>
     </div>
 </main>
 

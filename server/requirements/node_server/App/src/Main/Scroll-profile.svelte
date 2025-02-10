@@ -58,7 +58,6 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#111111" d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83l3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
                 <p>Passions</p>
             </div>
-            <!-- ICI tu mets le ton composant sans le '+' -->
             <ChooseInterests bind:selected_interests={selected_interests} disabled={true}/>
         </div>
         <div class="div-btn">
@@ -73,19 +72,19 @@
 
 @keyframes slideIn {
     from {
-        bottom: -600px;
+        bottom: -700px;
     }
     to {
-        bottom: 1rem;
+        bottom: 0;
     }
 }
 
 @keyframes slideOut {
     from {
-        bottom: 1rem;
+        bottom: 0;
     }
     to {
-        bottom: -600px;
+        bottom: -700px;
     }
 }
 
@@ -109,7 +108,7 @@ p {
 .close-scroll{
     position: relative;
     left: 85%;
-    top: 9.5%;
+    top: 3.9rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -119,7 +118,6 @@ p {
     border: none;
     border-radius: 1.2rem;
     cursor: pointer;
-    background: none;
     background-color: #d9d9d9;
 }
 
@@ -129,7 +127,6 @@ p {
 }
 
 .info-profil{
-    height: 60vh;
     width: 94%;
     border-radius: 2rem;
     background-color: white;
@@ -138,6 +135,7 @@ p {
     left: 50%;
     z-index: 2;
     transition: bottom 0.5s;
+    padding-bottom: 20px;
 }
 
 .info-profil p {
@@ -174,7 +172,8 @@ p {
     margin: 5%;
     margin-top: 100px;
     border: 0;
-    height: 5px;
+    border-radius: 1px;
+    height: 3px;
     align-items: center;
     justify-content: center;
     background: #d9d9d9;
@@ -185,9 +184,8 @@ p {
 .bio{
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-left: 20px;
-    margin-block: 20px;
+    gap: 20px;
+    padding: 20px;
 }
 
 .cat-bio{
@@ -206,8 +204,7 @@ p {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-left: 20px;
-    margin-block: 20px;
+    padding: 20px;
 }
 
 .cat-passion{
@@ -227,7 +224,6 @@ p {
     flex-direction: row;
     gap: 10px;
     justify-content: center;
-    margin-block: 35px;
     margin-inline: 20px;
 }
 
