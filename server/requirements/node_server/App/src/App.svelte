@@ -23,11 +23,13 @@
 		globalThis.last_path = path;
 		path = window.location.pathname;
 	});
-	let isConnected = true;
+	let isConnected = false;
 
-	globalThis.connected = writable(true);
+	globalThis.connected = writable(isConnected);
 	globalThis.connected.subscribe(value => {
 		isConnected = value;
+		if (isConnected)
+			getLocation();
 	});
 
 	globalThis.path = writable(path);
@@ -51,20 +53,47 @@
 			console.error(msg, url, lineNo, columnNo, error);
 		return true;
 	}
+
+	let latitude = null;
+	let longitude = null;
+
+	function getLocation()
+	{
+		if (navigator.geolocation)
+		{
+			navigator.geolocation.getCurrentPosition(
+				(position) => {
+					latitude = position.coords.latitude;
+					longitude = position.coords.longitude;
+					fetch('/change_location', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({lat: latitude, lon: longitude})
+					}).then(res => res.json())
+				},
+				(err) => {
+					console.warn("Error getLocation: ", err.message);
+				}
+			);
+		}
+		else
+			console.warn("Geolocation is not supported by this browser.");
+	}
 </script>
 
 <main>
 	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
-	<TopBar />
+		<TopBar />
 	{/if}
 	<div class="content">
 		<Router>
-			<!-- {#if isConnected}
-			<Route path="/" component={Main} />
+			{#if isConnected}
+				<Route path="/" component={Main} />
 			{:else}
-			<Route path="/" component={Host} />
-			{/if} -->
-			<Route path="/" component={Main} />
+				<Route path="/" component={Host} />
+			{/if}
 			<Route path="/register" component={Register} />
 			<Route path="/filter" component={Filter} />
 			<Route path="/login" component={Login} />

@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/03 15:22:57 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/09 08:38:41 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,7 @@ class Database
 				sexe VARCHAR(1),
 				orientation VARCHAR(1),
 				bio VARCHAR(500),
+				location VARCHAR(50),
 				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
 			conn.query(`CREATE TABLE IF NOT EXISTS users_tags (
@@ -91,6 +92,12 @@ class Database
 				user_reported_id INT,
 				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE,
 				FOREIGN KEY(user_reported_id) REFERENCES accounts(id) ON DELETE CASCADE
+			)`);
+			conn.query(`CREATE TABLE IF NOT EXISTS users_interactions (
+				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				user_id INT,
+				arrs_seen TEXT,
+				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE				
 			)`);
 			conn.release();
 			conn.end();
@@ -225,6 +232,60 @@ class Database
 				}).finally(() => {conn.release(); conn.end()});
 			});
 		}));
+	}
+
+	addLocation(user_id, latitude, longitude)
+	{
+		const location = JSON.stringify({latitude: latitude, longitude: longitude});
+		this.pool.getConnection().then((conn) => {
+			conn.query('UPDATE users_info SET location = ? WHERE user_id = ?', [location, user_id])
+			.finally(() => {conn.release(); conn.end()});
+		});
+	}
+
+	async #getNbUsers()
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT COUNT(*) FROM accounts');
+
+		conn.release();
+		conn.end();
+		return (row[0]['COUNT(*)']);
+	}
+
+	getNeverSeenUsers(self_id)
+	{
+		// return (new Promise((resolve) => {
+		// 	this.pool.getConnection().then((conn) => {
+		// 		conn.query('SELECT arrs_seen FROM users_interactions WHERE user_id = ?', [self_id]).then(async (row) => {
+		// 			if (row.length == 0)
+		// 			{
+		// 				const cursorOne = [await this.#getNbUsers() / 4, 0];
+		// 				cursorOne[1] = cursorOne[0];
+		// 				const cursorTwo = [cursorOne * 2, cursorOne * 2];
+		// 				let str_data = null;
+					
+		// 				if (cursorOne[0] == cursorTwo[0])
+		// 					str_data = JSON.stringify([cursorOne]);
+		// 				else
+		// 					str_data = JSON.stringify([cursorOne, cursorTwo]);
+		// 				conn.query('INSERT INTO users_interactions (user_id, arrs_seen) VALUES (?, ?)', [self_id, str_data]);
+		// 				resolve([]);
+		// 			}
+		// 			else
+		// 			{
+		// 				const arrs_seen = JSON.parse(row[0].arrs_seen);
+		// 				const cursor = Math.floor(Math.random() * arrs_seen.length);
+
+		// 				if (arrs_seen[cursor][0] == 0)
+		// 				{
+		// 					if (arrs_)
+		// 				}
+
+		// 			}
+		// 		}).finally(() => {conn.release(); conn.end()});
+		// 	});
+		// }));
 	}
 }
 
