@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/10 16:53:41 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/11 06:44:16 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -357,7 +357,7 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.distance || !req.body.range_age || !req.body.interests)
 			return (res.send(JSON.stringify({error: missing})));
-		db.getNeverSeenUser(req.session.info.id).then((ret) => {res.send(ret)});
+		db.getNeverSeenUser(req.session.info.id, req.body).then((ret) => {res.send(ret)});
 	}
 
 	// Request when user swipe left or right

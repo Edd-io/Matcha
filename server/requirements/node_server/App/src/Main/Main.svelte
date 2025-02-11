@@ -9,11 +9,12 @@
 	import genderLogo from "../assets/gender.svg";
 	import typeLogo from "../assets/type.svg";
 
-	let iPhoto = 0;
-
 	import { onMount } from "svelte";
 	import NotificationPage from "./Notification-page.svelte";
 	import ScrollProfile from "./Scroll-profile.svelte";
+
+	let iPhoto = 0;
+	let counter = 0;
 
 	let users = globalThis.userInfoSwipeZone ? globalThis.userInfoSwipeZone : {};
 
@@ -67,6 +68,9 @@
 		.then(data => {
 			console.log(data);
 			globalThis.userInfoSwipeZone = data;
+			users = data;
+			counter++;
+			iPhoto = 0;
 		})
 	}
 	if (!globalThis.pageLoaded)
@@ -82,44 +86,44 @@
 
 	<div class="main">
 
+		{#key counter}
+			{#if showComponent}
+				<ScrollProfile bind:users={users} bind:showComponent={showComponent}/>
+			{/if}
 
-		{#if showComponent}
-			<ScrollProfile bind:users={users} bind:showComponent={showComponent}/>
-		{/if}
-
-
-		<div class="photo">
-			<div class='zone-pass' on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0"></div>
-			<div class="centered">
-				<div class="nb-photo">
-					{#each Array(users.nbPhotos) as _, index}
-					<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
-					{/each}
+			<div class="photo">
+				<div class='zone-pass' on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0"></div>
+				<div class="centered">
+					<div class="nb-photo">
+						{#each Array(users.nbPhotos) as _, index}
+						<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
+						{/each}
+					</div>
 				</div>
-			</div>
-			<div class="user-info">
-				<div class="info">
-					<p id="main-info">{users.name} • {users.age}</p>
-					<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-							<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-						</svg>
+				<div class="user-info">
+					<div class="info">
+						<p id="main-info">{users.name} • {users.age}</p>
+						<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+								<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+							</svg>
+						</button>
+					</div>
+					<div class=low-info>
+						<img src={positionLogo} alt="positionLogo"/>
+						<p id="scd-info">{users.city}, {users.country}</p>
+					</div>
+				</div>
+				<div class=buttons>
+					<button id="dislike">
+						<img src={dislikeLogo} alt="dislikeLogo"/>
+					</button>
+					<button id="like">
+						<img src={likeLogo} alt="likeLogo"/>
 					</button>
 				</div>
-				<div class=low-info>
-					<img src={positionLogo} alt="positionLogo"/>
-					<p id="scd-info">{users.city}, {users.country}</p>
-				</div>
 			</div>
-			<div class=buttons>
-				<button id="dislike">
-					<img src={dislikeLogo} alt="dislikeLogo"/>
-				</button>
-				<button id="like">
-					<img src={likeLogo} alt="likeLogo"/>
-				</button>
-			</div>
-		</div>
+		{/key}
 	</div>
 </main>
 

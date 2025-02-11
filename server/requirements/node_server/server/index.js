@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/10 16:52:24 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/11 08:27:50 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ function init(db)
 			req.session.info = {logged: false, id: -1};
 		next();
 	})
-	app.use(express.static('user_static_data'));
+	app.use('/static', express.static('user_static_data'));
 
 	init_ws();
 

@@ -6,13 +6,14 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/10 18:00:33 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/11 08:25:49 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const credientials = require('../credentials.json');
 const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
+const haversine = require('./utils/haversine');
 
 class Database
 {
@@ -277,32 +278,111 @@ class Database
 		return (seen);
 	}
 
+	async getUserInfo(user_id)
+	{
+		const getCityName = async (lat, lon) => {
+			const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+			if (!response.ok)
+				return (null);
+			const data = await response.json();
+			return (data);
+		}
+
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
+		const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [user_id]);
+		const rowImages = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
+		const location = row[0].location ? await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude) : "Position inconnue";
+		const tags = [];
+		const images = [];
+		let	  sexe = row[0].sexe == 'M' ? "Homme" : (row[0].sexe == 'F' ? "Femme" : "Autre");
+		let	  orientation = null;
+
+		if (row[0].orientation == 'M' && row[0].sexe == 'M')
+			orientation = "Homosexuel";
+		else if (row[0].orientation == 'F' && row[0].sexe == 'F')
+			orientation = "Lesbienne";
+		else if ((row[0].orientation == 'M' && row[0].sexe == 'F') || (row[0].orientation == 'F' && row[0].sexe == 'M'))
+			orientation = "Hétérosexuel";
+		else
+			orientation = "Autre";
+
+		for (let i = 0; i < rowTags.length; i++)
+			tags.push(rowTags[i].tag);
+		for (let i = 0; i < rowImages.length; i++)
+			images.push(rowImages[i].local_url);
+		conn.release();
+		conn.end();
+		return ({
+			nbPhotos: images.length,
+			name: row[0].first_name,
+			age: new Date().getFullYear() - new Date(row[0].date_of_birth).getFullYear(),
+			city: typeof location == 'string' ? "Position inconnue" : (location.address.city || location.address.town || location.address.village),
+			country: typeof location == 'string' ? "Pays inconnue" : location.address.country,
+			sexe,
+			orientation,
+			bio: row[0].bio,
+			tags,
+			images
+		});
+	}
+
 	buffer_neverSeenUser = [];
 
-	getNeverSeenUser(user_id)
+	getNeverSeenUser(user_id, filter)
 	{
 		let	selfInfo = null;
 
 		const getScore = async (other_id) => {
 			const	otherInfo = await getOtherInfo(other_id);
+			let		distance = 0;
+			let		scoreDistance = 0;
+			let		scoreTags = 0;
+			let		tags = [];
 
 			if (!selfInfo)
+				selfInfo = await getOtherInfo(user_id);
+
+			if (otherInfo.age < filter.range_age[0] || otherInfo.age > filter.range_age[1])
+				return (0);
+			if (filter.distance == 100)
+				filter.distance = 32089;
+			// calcul score for interests
+			if (filter.interests.length == 0)
+				tags = selfInfo.tags;
+			else
+				tags = filter.interests;
+			for (let i = 0; i < tags.length; i++)
 			{
-				selfInfo = getOtherInfo(user_id);
-				console.log(selfInfo);
+				if (otherInfo.tags.includes(tags[i]))
+					scoreTags++;
 			}
-			console.log(otherInfo);
-			return (199);
+
+			// calcul score for distance
+			if (selfInfo.location && otherInfo.location)
+			{
+				distance = haversine([selfInfo.location.latitude, selfInfo.location.longitude], [otherInfo.location.latitude, otherInfo.location.longitude]);
+				if (distance < filter.distance)
+					scoreDistance = 5 - ((distance * 100 / filter.distance) / 100);
+			}
+			if (filter.interests.length > 0 && scoreTags != filter.interests.length)
+				return (0);
+			if (filter.distance < 100 && scoreDistance == 0)
+				return (0);
+			return (scoreTags + scoreDistance);
 		}
 
 		const getOtherInfo = async (other_id) => {
 			const conn = await this.pool.getConnection();
-			const rowLocation = await conn.query('SELECT location FROM users_info WHERE user_id = ?', [other_id]);
+			const rowInfo = await conn.query('SELECT location, date_of_birth FROM users_info WHERE user_id = ?', [other_id]);
 			const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [other_id]);
+			const tags = [];
 
+			for (let i = 0; i < rowTags.length; i++)
+				tags.push(rowTags[i].tag);
 			conn.release();
 			conn.end();
-			return ({location: rowLocation[0], tags: rowTags});
+			return ({location: rowInfo[0] ? JSON.parse(rowInfo[0].location) : null, tags, age: rowInfo[0] ? new Date().getFullYear() - new Date(rowInfo[0].age).getFullYear() : null});
 		}
 
 		return (new Promise(async (resolve) => {
@@ -318,15 +398,16 @@ class Database
 			if (index == this.buffer_neverSeenUser.length)
 			{
 				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers})
-				for (let i = 1; i <= nbUsers; i++)
-				{
-					if (i < seen.length && seen.includes(i))
-						continue;
+				for (let i = 0; i <= nbUsers; i++)
 					this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -1});
-				}
 			}
 			else
 			{
+				for (let i = 0; i <= nbUsers; i++)
+				{
+					if (seen.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
+				}
 				while (this.buffer_neverSeenUser[index].lastNb < nbUsers)
 				{
 					this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: -1});
@@ -338,8 +419,9 @@ class Database
 				if (this.buffer_neverSeenUser[index].neverSeen[i].score == -1)
 					this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
 			}
+			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 			console.log(this.buffer_neverSeenUser[index]);
-			resolve({})
+			resolve(this.getUserInfo(this.buffer_neverSeenUser[index].neverSeen[0].id));
 		}));
 	}
 
