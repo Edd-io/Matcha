@@ -16,15 +16,18 @@
 	let iPhoto = 0;
 	let counter = 0;
 
-	let users = globalThis.userInfoSwipeZone ? globalThis.userInfoSwipeZone : {};
+	let user = null;
 
-	function skipPhoto(event) {
+	function skipPhoto(event)
+	{
 		const rect = event.currentTarget.getBoundingClientRect();
 		const clickX = event.clientX - rect.left;
 
+		if (!globalThis.userInfoSwipeZone)
+			return;
 		if (clickX < rect.width / 2 && iPhoto > 0) {
 			iPhoto--;
-		} else if (clickX >= rect.width / 2 && iPhoto < users.nbPhotos - 1) {
+		} else if (clickX >= rect.width / 2 && iPhoto < globalThis.userInfoSwipeZone.nbPhotos - 1) {
 			iPhoto++;
 		}
 	}
@@ -66,9 +69,8 @@
 			})
 		}).then(res => res.json())
 		.then(data => {
-			console.log(data);
 			globalThis.userInfoSwipeZone = data;
-			users = data;
+			user = data;
 			counter++;
 			iPhoto = 0;
 		})
@@ -78,6 +80,11 @@
 		globalThis.pageLoaded = true;
 		getSwipeUser();
 	}
+	else
+	{
+		user = globalThis.userInfoSwipeZone;
+	}
+	counter++;
 </script>
 
 <main>
@@ -88,21 +95,25 @@
 
 		{#key counter}
 			{#if showComponent}
-				<ScrollProfile bind:users={users} bind:showComponent={showComponent}/>
+				<ScrollProfile bind:users={globalThis.userInfoSwipeZone} bind:showComponent={showComponent}/>
 			{/if}
 
 			<div class="photo">
-				<div class='zone-pass' on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0"></div>
+				<div class='zone-pass' on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
+					<div class="centered">
+						<img src={user?.images ? user?.images[iPhoto] : null} alt="" style="height: 100%; width: 100%; object-fit: cover; border-radius: 2rem;"/>
+					</div>
+				</div>
 				<div class="centered">
 					<div class="nb-photo">
-						{#each Array(users.nbPhotos) as _, index}
-						<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
+						{#each Array(user?.nbPhotos) as _, index}
+							<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
 						{/each}
 					</div>
 				</div>
 				<div class="user-info">
 					<div class="info">
-						<p id="main-info">{users.name} • {users.age}</p>
+						<p id="main-info">{user?.name} • {user?.age}</p>
 						<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
 							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
 								<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
@@ -111,7 +122,7 @@
 					</div>
 					<div class=low-info>
 						<img src={positionLogo} alt="positionLogo"/>
-						<p id="scd-info">{users.city}, {users.country}</p>
+						<p id="scd-info">{user?.city}, {user?.country}</p>
 					</div>
 				</div>
 				<div class=buttons>
@@ -174,6 +185,7 @@
 		height: 100%;
 		width: 90%;
 		gap: 10px;
+		z-index: 5;
 	}
 
 	.bar-photo-default{

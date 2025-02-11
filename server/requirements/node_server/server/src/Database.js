@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/11 08:25:49 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/11 09:14:22 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,8 +345,13 @@ class Database
 
 			if (otherInfo.age < filter.range_age[0] || otherInfo.age > filter.range_age[1])
 				return (0);
+			
+			if (selfInfo.orientation != otherInfo.sexe || otherInfo.orientation != selfInfo.sexe)
+				return (0);
+
 			if (filter.distance == 100)
 				filter.distance = 32089;
+
 			// calcul score for interests
 			if (filter.interests.length == 0)
 				tags = selfInfo.tags;
@@ -374,7 +379,7 @@ class Database
 
 		const getOtherInfo = async (other_id) => {
 			const conn = await this.pool.getConnection();
-			const rowInfo = await conn.query('SELECT location, date_of_birth FROM users_info WHERE user_id = ?', [other_id]);
+			const rowInfo = await conn.query('SELECT location, date_of_birth, sexe, orientation FROM users_info WHERE user_id = ?', [other_id]);
 			const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [other_id]);
 			const tags = [];
 
@@ -382,7 +387,13 @@ class Database
 				tags.push(rowTags[i].tag);
 			conn.release();
 			conn.end();
-			return ({location: rowInfo[0] ? JSON.parse(rowInfo[0].location) : null, tags, age: rowInfo[0] ? new Date().getFullYear() - new Date(rowInfo[0].age).getFullYear() : null});
+			return ({
+				location: rowInfo[0] && rowInfo[0].location ? JSON.parse(rowInfo[0].location) : null,
+				tags,
+				age: rowInfo[0] && rowInfo[0] ? new Date().getFullYear() - new Date(rowInfo[0].age).getFullYear() : null,
+				sexe: rowInfo[0] && rowInfo[0].sexe ? rowInfo[0].sexe : null,
+				orientation: rowInfo[0] && rowInfo[0].orientation ? rowInfo[0].orientation : null
+			});
 		}
 
 		return (new Promise(async (resolve) => {
@@ -399,7 +410,12 @@ class Database
 			{
 				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers})
 				for (let i = 0; i <= nbUsers; i++)
-					this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -1});
+				{
+					if (i != user_id)
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -1});
+					else
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
+				}
 			}
 			else
 			{

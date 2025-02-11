@@ -6,17 +6,15 @@
     import typeLogo from "../assets/type.svg";
     import ChooseInterests from "../Register/Choose_interests.svelte";
 
-    export let users;
-    export let showComponent;
+    export let users: any;
+    export let showComponent = false;
     let hideComponent = true;
-    let selected_interests: number[] = [2,5,7,9,11];
 
     function toggleScrollInfo() {
         hideComponent = false;
         setTimeout(() => {
             showComponent = !showComponent;
         }, 500);
-        console.log(showComponent);
     }
 </script>
 
@@ -28,19 +26,19 @@
             </svg>
         </button>
         <div class="user-info">
-            <p id="main-info-scroll">{users[0].name} • {users[0].age}</p>
+            <p id="main-info-scroll">{users.name} • {users.age}</p>
             <div class=low-info-scroll>
                 <div class="min-info">
                     <img src={positionLogo} alt="positionLogo"/>
-                    <p id="scd-info">{users[0].city}, {users[0].country}</p>
+                    <p id="scd-info">{users.city}, {users.country}</p>
                 </div>
                 <div class="min-info">
                     <img src={genderLogo} alt="genderLogo"/>
-                    <p id="scd-info">{users[0].gender}</p>
+                    <p id="scd-info">{users.sexe}</p>
                 </div>
                 <div class="min-info">
                     <img src={typeLogo} alt="typeLogo"/>
-                    <p id="scd-info">{users[0].type}</p>
+                    <p id="scd-info">{users.orientation}</p>
                 </div>
             </div>
         </div>
@@ -50,7 +48,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256"><path fill="#111111" d="M216 32v160a8 8 0 0 1-8 8H72a16 16 0 0 0-16 16h136a8 8 0 0 1 0 16H48a8 8 0 0 1-8-8V56a32 32 0 0 1 32-32h136a8 8 0 0 1 8 8"/></svg>
                 <p>Bio</p>
             </div>
-            <p>{users[0].bio}</p>
+            <p>{users.bio}</p>
         </div>
         <div class="bar-scroll"></div>
         <div class="passion">
@@ -58,7 +56,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#111111" d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83l3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75z"/></svg>
                 <p>Passions</p>
             </div>
-            <ChooseInterests bind:selected_interests={selected_interests} disabled={true}/>
+            <ChooseInterests selected_interests={users.tags} disabled={true}/>
         </div>
         <div class="div-btn">
             <button class="scroll-btn">Lorem</button>

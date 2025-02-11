@@ -50,20 +50,20 @@ INSERT INTO users_tags (user_id, tag) VALUES
 (15, '7'), (15, '1'), (15, '11');
 
 INSERT INTO users_images (user_id, local_url) VALUES 
-(1, 'test1.png'), (1, 'test2.png'), (1, 'test3.png'),
-(2, 'test2.png'), (2, 'test3.png'), (2, 'test1.png'),
-(3, 'test4.png'), (3, 'test5.png'), (3, 'test6.png'),
-(4, 'test7.png'), (4, 'test8.png'), (4, 'test9.png'),
-(5, 'test3.png'), (5, 'test2.png'), (5, 'test1.png'),
-(6, 'test6.png'), (6, 'test5.png'), (6, 'test4.png'),
-(7, 'test9.png'), (7, 'test8.png'), (7, 'test7.png'),
-(8, 'test1.png'), (8, 'test2.png'), (8, 'test3.png'),
-(9, 'test2.png'), (9, 'test3.png'), (9, 'test1.png'),
-(10, 'test4.png'), (10, 'test5.png'), (10, 'test6.png'),
-(11, 'test7.png'), (11, 'test8.png'), (11, 'test9.png'),
-(12, 'test3.png'), (12, 'test2.png'), (12, 'test1.png'),
-(13, 'test6.png'), (13, 'test5.png'), (13, 'test4.png'),
-(14, 'test9.png'), (14, 'test8.png'), (14, 'test7.png'),
-(15, 'test1.png'), (15, 'test2.png'), (15, 'test3.png');
+(1, 'test1.jpg'), (1, 'test2.jpg'), (1, 'test3.jpg'),
+(2, 'test2.jpg'), (2, 'test3.jpg'), (2, 'test1.jpg'),
+(3, 'test4.jpg'), (3, 'test5.jpg'), (3, 'test6.jpg'),
+(4, 'test7.jpg'), (4, 'test8.jpg'), (4, 'test9.jpg'),
+(5, 'test3.jpg'), (5, 'test2.jpg'), (5, 'test1.jpg'),
+(6, 'test6.jpg'), (6, 'test5.jpg'), (6, 'test4.jpg'),
+(7, 'test9.jpg'), (7, 'test8.jpg'), (7, 'test7.jpg'),
+(8, 'test1.jpg'), (8, 'test2.jpg'), (8, 'test3.jpg'),
+(9, 'test2.jpg'), (9, 'test3.jpg'), (9, 'test1.jpg'),
+(10, 'test4.jpg'), (10, 'test5.jpg'), (10, 'test6.jpg'),
+(11, 'test7.jpg'), (11, 'test8.jpg'), (11, 'test9.jpg'),
+(12, 'test3.jpg'), (12, 'test2.jpg'), (12, 'test1.jpg'),
+(13, 'test6.jpg'), (13, 'test5.jpg'), (13, 'test4.jpg'),
+(14, 'test9.jpg'), (14, 'test8.jpg'), (14, 'test7.jpg'),
+(15, 'test1.jpg'), (15, 'test2.jpg'), (15, 'test3.jpg');
 
 
