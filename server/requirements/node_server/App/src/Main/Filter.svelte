@@ -37,7 +37,7 @@
 		</div>
 		<p class="text">Tranche d'age [{min_age} - {max_age}]</p>
 		<DoubleRangeSlider bind:min_age={min_age} bind:max_age={max_age} />
-		<p class="text">Distance [{range}] km</p>
+		<p class="text">Distance [{range == 100 ? '100+' : range}] km</p>
 		<SimpleRangeSlider bind:range={range}/>
 		<p class="text">Interets</p>
 		<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 100%; padding-inline: 3.5rem;">

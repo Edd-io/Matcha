@@ -15,16 +15,7 @@
 	import NotificationPage from "./Notification-page.svelte";
 	import ScrollProfile from "./Scroll-profile.svelte";
 
-	let users = {
-		nbPhotos: 6,
-		name: "John",
-		age: 25,
-		city: "Paris",
-		country: "France",
-		gender: "Homme",
-		type: "Hétéro",
-		bio: "Salut, je suis John, j'aime les balades en forêt et les soirées entre amis."
-	}
+	let users = globalThis.userInfoSwipeZone ? globalThis.userInfoSwipeZone : {};
 
 	function skipPhoto(event) {
 		const rect = event.currentTarget.getBoundingClientRect();
@@ -75,10 +66,14 @@
 		}).then(res => res.json())
 		.then(data => {
 			console.log(data);
-			users = data;
+			globalThis.userInfoSwipeZone = data;
 		})
 	}
-	getSwipeUser();
+	if (!globalThis.pageLoaded)
+	{
+		globalThis.pageLoaded = true;
+		getSwipeUser();
+	}
 </script>
 
 <main>
