@@ -16,7 +16,7 @@ INSERT INTO accounts (email, password) VALUES
 ('o@o.com', 'password');
 
 INSERT INTO users_info (user_id, first_name, last_name, nickname, date_of_birth, sexe, orientation, bio, location) VALUES 
-(1, 'John', 'Doe', 'JohnDoe454', '1990-07-01', 'M', 'F', 'hello world, I am John Doe, nice to meet you !'),
+(1, 'John', 'Doe', 'JohnDoe454', '1990-07-01', 'M', 'F', 'hello world, I am John Doe, nice to meet you !', null),
 (2, 'Pierre', 'Doe', 'PierreDoe454', '1970-02-09', 'M', 'F', 'hello world, I am Pierre Doe, nice to meet you !', '{"latitude": 45.73908, "longitude": 0.37865}'),
 (3, 'Celine', 'Doe', 'CelineDoe454', '2001-09-17', 'F', 'M', 'hello world, I am Celine Doe, nice to meet you !', '{"latitude": 45.72291, "longitude": 0.20854}'),
 (4, 'Alice', 'Smith', 'AliceWonder', '1995-03-12', 'F', 'M', 'Exploring life, one adventure at a time.', '{"latitude": 45.80974, "longitude": 2.56102}'),
@@ -31,23 +31,6 @@ INSERT INTO users_info (user_id, first_name, last_name, nickname, date_of_birth,
 (13, 'Mason', 'Taylor', 'MaseT', '1985-05-22', 'M', 'F', 'Music is my escape.', null),
 (14, 'Mia', 'Harris', 'MiaH', '2003-07-19', 'F', 'M', 'Student, dreamer, doer.', null),
 (15, 'James', 'Clark', 'JamesC', '1999-02-11', 'M', 'F', 'Tech enthusiast and avid learner.', null);
-
-INSERT INTO users_tags (user_id, tag) VALUES 
-(1, '4'), (1, '5'), (1, '1'), (1, '12'), (1, '9'),
-(2, '16'), (2, '6'), (2, '9'), (2, '13'), (2, '1'),
-(3, '2'), (3, '6'), (3, '14'), (3, '7'),
-(4, '3'), (4, '10'), (4, '8'),
-(5, '5'), (5, '12'), (5, '9'),
-(6, '7'), (6, '1'), (6, '11'),
-(7, '4'), (7, '9'), (7, '13'),
-(8, '2'), (8, '6'), (8, '14'),
-(9, '7'), (9, '1'), (9, '11'),
-(10, '3'), (10, '10'), (10, '8'),
-(11, '5'), (11, '12'), (11, '9'),
-(12, '7'), (12, '1'), (12, '11'),
-(13, '4'), (13, '9'), (13, '13'),
-(14, '2'), (14, '6'), (14, '14'),
-(15, '7'), (15, '1'), (15, '11');
 
 INSERT INTO users_images (user_id, local_url) VALUES 
 (1, 'test1.jpg'), (1, 'test2.jpg'), (1, 'test3.jpg'),
@@ -67,3 +50,20 @@ INSERT INTO users_images (user_id, local_url) VALUES
 (15, 'test1.jpg'), (15, 'test2.jpg'), (15, 'test3.jpg');
 
 
+
+INSERT INTO users_tags (user_id, tag) VALUES 
+(1, '4'), (1, '5'), (1, '1'), (1, '12'), (1, '9'),
+(2, '16'), (2, '6'), (2, '9'), (2, '13'), (2, '1'),
+(3, '2'), (3, '6'), (3, '14'), (3, '7'),
+(4, '3'), (4, '10'), (4, '8'),
+(5, '5'), (5, '12'), (5, '9'),
+(6, '7'), (6, '1'), (6, '11'),
+(7, '4'), (7, '9'), (7, '13'),
+(8, '2'), (8, '6'), (8, '14'),
+(9, '7'), (9, '1'), (9, '11'),
+(10, '3'), (10, '10'), (10, '8'),
+(11, '5'), (11, '12'), (11, '9'),
+(12, '7'), (12, '1'), (12, '11'),
+(13, '4'), (13, '9'), (13, '13'),
+(14, '2'), (14, '6'), (14, '14'),
+(15, '7'), (15, '1'), (15, '11');

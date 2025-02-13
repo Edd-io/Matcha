@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/11 09:14:22 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/13 10:15:10 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ class Database
 				sexe VARCHAR(1),
 				orientation VARCHAR(1),
 				bio VARCHAR(500),
-				location VARCHAR(50),
+				location VARCHAR(100),
 				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
 			conn.query(`CREATE TABLE IF NOT EXISTS users_tags (
@@ -292,7 +292,7 @@ class Database
 		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
 		const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [user_id]);
 		const rowImages = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
-		const location = row[0].location ? await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude) : "Position inconnue";
+		const location = row[0]?.location ? await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude) : "Position inconnue";
 		const tags = [];
 		const images = [];
 		let	  sexe = row[0].sexe == 'M' ? "Homme" : (row[0].sexe == 'F' ? "Femme" : "Autre");

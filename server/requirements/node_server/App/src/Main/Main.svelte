@@ -12,24 +12,28 @@
 	import { onMount } from "svelte";
 	import NotificationPage from "./Notification-page.svelte";
 	import ScrollProfile from "./Scroll-profile.svelte";
+    import { writable } from "svelte/store";
 
 	let iPhoto = 0;
 	let counter = 0;
 
 	let user = null;
+	if (!globalThis.userInfoSwipeZone)
+		globalThis.userInfoSwipeZone = writable(null);
+
+	globalThis.userInfoSwipeZone.subscribe(value => {
+		user = value;
+	});
 
 	function skipPhoto(event)
 	{
 		const rect = event.currentTarget.getBoundingClientRect();
 		const clickX = event.clientX - rect.left;
 
-		if (!globalThis.userInfoSwipeZone)
-			return;
-		if (clickX < rect.width / 2 && iPhoto > 0) {
+		if (clickX < rect.width / 2 && iPhoto > 0)
 			iPhoto--;
-		} else if (clickX >= rect.width / 2 && iPhoto < globalThis.userInfoSwipeZone.nbPhotos - 1) {
+		else if (clickX >= rect.width / 2 && iPhoto < user.nbPhotos - 1)
 			iPhoto++;
-		}
 	}
 
 	let translateY = 0;
@@ -69,8 +73,7 @@
 			})
 		}).then(res => res.json())
 		.then(data => {
-			globalThis.userInfoSwipeZone = data;
-			user = data;
+			globalThis.userInfoSwipeZone.set(data);
 			counter++;
 			iPhoto = 0;
 		})
@@ -79,10 +82,6 @@
 	{
 		globalThis.pageLoaded = true;
 		getSwipeUser();
-	}
-	else
-	{
-		user = globalThis.userInfoSwipeZone;
 	}
 	counter++;
 </script>
@@ -95,16 +94,16 @@
 
 		{#key counter}
 			{#if showComponent}
-				<ScrollProfile bind:users={globalThis.userInfoSwipeZone} bind:showComponent={showComponent}/>
+				<ScrollProfile bind:users={user} bind:showComponent={showComponent}/>
 			{/if}
 
 			<div class="photo">
-				<div class='zone-pass' on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
+				<div class='zone-pass'>
 					<div class="centered">
 						<img src={user?.images ? user?.images[iPhoto] : null} alt="" style="height: 100%; width: 100%; object-fit: cover; border-radius: 2rem;"/>
 					</div>
 				</div>
-				<div class="centered">
+				<div class="centered" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
 					<div class="nb-photo">
 						{#each Array(user?.nbPhotos) as _, index}
 							<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
