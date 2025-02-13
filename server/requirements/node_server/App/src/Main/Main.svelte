@@ -129,7 +129,7 @@
 						<img src={dislikeLogo} alt="dislikeLogo"/>
 					</button>
 					<button id="like">
-						<img src={likeLogo} alt="likeLogo"/>
+						<img src={likeLogo} alt="likeLogo" on:click={}/>
 					</button>
 				</div>
 			</div>
@@ -138,6 +138,15 @@
 </main>
 
 <style>
+
+	@keyframes slideIn {
+		from {
+			transform: translateY(0);
+		}
+		to {
+			transform: translateY(200px);
+		}
+	}
 
 	main{
 		height: 100%;
@@ -197,7 +206,8 @@
 	.bar-photo-selected{
 		height: 1%;
 		width: 80%;
-		background-color: #d9d9d9;
+		background-color: #111111;
+		opacity: 0.5;
 		border-radius: 1rem;
 	}
 

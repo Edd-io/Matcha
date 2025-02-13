@@ -43,6 +43,7 @@
         //     .bindPopup(css_marker_info.replace("{name}", 'Kevin').replace("{age}", '18').replace("{distance}", '1214,4km'))
         //     .openPopup();
     });
+    globalThis.bottomBarCategory.set(-1);
     globalThis.path.set('/map');
 </script>
 
@@ -55,47 +56,53 @@
 
 <style>
 
-@import 'leaflet/dist/leaflet.css';
+    @import 'leaflet/dist/leaflet.css';
 
-.main {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    main {
+        height: 100%;
+    }
 
-.position {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, 0);
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
+    .main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
 
-.position img {
-    width: 3rem;
-    height: 3rem;
-}
+    .position {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, 0);
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+    }
 
-.photo {
-    display: flex;
-    align-items: center;
-    width: 5rem;
-    height: 5rem;
-    background-color: #000;
-    border-radius: 50%;
-    margin: 0.9rem;
-}
+    .position img {
+        width: 3rem;
+        height: 3rem;
+    }
 
-#map{
-    height: 78vh;
-    width: 93%;
-    border-radius: 2rem;
-    background-color: rgb(199, 199, 199);
-    display: flex;
-    flex-direction: column;
-    justify-content: end;
-}
+    .photo {
+        display: flex;
+        align-items: center;
+        width: 5rem;
+        height: 5rem;
+        background-color: #000;
+        border-radius: 50%;
+        margin: 0.9rem;
+        height: 100%;
+    }
+
+    #map{
+        height: 100%;
+        width: 93%;
+        border-radius: 2rem;
+        background-color: rgb(199, 199, 199);
+        display: flex;
+        flex-direction: column;
+        justify-content: end;
+    }
 </style>

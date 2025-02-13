@@ -6,6 +6,7 @@
     import chatLogo from "../assets/chat.svg";
     import settingsLogo from "../assets/settings.svg";
     import { navigate } from "svelte-routing";
+    import { writable } from "svelte/store";
     let category = null;
 
     onMount(() => {
@@ -19,6 +20,12 @@
         category = buttonIndex;
         localStorage.setItem("category", JSON.stringify(category));
     }
+
+    globalThis.bottomBarCategory = writable(0);
+
+    bottomBarCategory.subscribe(value => {
+        category = value;
+    });
 </script>
 
 <main>
