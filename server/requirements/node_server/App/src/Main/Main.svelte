@@ -84,6 +84,30 @@
 		getSwipeUser();
 	}
 	counter++;
+
+	function reactToUser(like)
+	{
+		return function()
+		{
+			fetch('/react_to_user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					liked: like,
+				})
+			}).then(res => res.json())
+			.then(data => {
+				if (data.finished)
+					console.log('Finished');
+				else if (data.success)
+					getSwipeUser();
+				else
+					console.log('Error');
+			})
+		}
+	}
 </script>
 
 <main>
@@ -125,11 +149,11 @@
 					</div>
 				</div>
 				<div class=buttons>
-					<button id="dislike">
+					<button id="dislike" on:click={reactToUser(true)}>
 						<img src={dislikeLogo} alt="dislikeLogo"/>
 					</button>
-					<button id="like">
-						<img src={likeLogo} alt="likeLogo" on:click={}/>
+					<button id="like" on:click={reactToUser(true)}>
+						<img src={likeLogo} alt="likeLogo"/>
 					</button>
 				</div>
 			</div>

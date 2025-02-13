@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostRequest.js                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/11 06:44:16 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/13 17:33:16 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,12 +361,17 @@ class PostRequest
 	}
 
 	// Request when user swipe left or right
-	static react_to_user(req, res)
+	// {liked: boolean}
+	static react_to_user(req, res, db)
 	{
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		res.send("React to user request");
+		if (!req.body.liked)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.liked !== 'boolean')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.reactToUser(req.session.info.id, req.body.liked).then((ret) => {res.send(ret)});
 	}
 
 	////// CHAT ZONE //////

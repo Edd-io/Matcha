@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/13 10:15:10 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/13 17:48:12 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -412,7 +412,7 @@ class Database
 				for (let i = 0; i <= nbUsers; i++)
 				{
 					if (i != user_id)
-						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -1});
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: seen.includes(i) ? -2 : -1});
 					else
 						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
 				}
@@ -437,10 +437,40 @@ class Database
 			}
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 			console.log(this.buffer_neverSeenUser[index]);
-			resolve(this.getUserInfo(this.buffer_neverSeenUser[index].neverSeen[0].id));
+			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0)
+				resolve({finished: true});
+			else
+				resolve(this.getUserInfo(this.buffer_neverSeenUser[index].neverSeen[0].id));
 		}));
 	}
 
+	async reactToUser(user_id, react)
+	{
+		let		index = -1;
+		let		other_id = -1;
+			
+		while (++index && index < this.buffer_neverSeenUser.length)
+		{
+			if (this.buffer_neverSeenUser[index].id == user_id)
+				break;
+		}
+		if (index == this.buffer_neverSeenUser.length)
+			return ({error: "User never initialized"});
+		if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0)
+			return ({error: "No more user to see"});
+		other_id = this.buffer_neverSeenUser[index].neverSeen[0].id;
+		this.buffer_neverSeenUser[index].neverSeen[0].score = -2;
+		this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
+
+		const conn = await this.pool.getConnection();
+		if (react == true)
+			await conn.query('INSERT INTO users_likes (user_id, user_liked_id) VALUES (?, ?)', [user_id, other_id]);
+		else
+			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
+		conn.release();
+		conn.end();
+		return ({success: true});
+	}
 }
 
 module.exports = Database;
