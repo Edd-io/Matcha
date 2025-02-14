@@ -107,11 +107,11 @@
 			{:else}
 				<Route path="/" component={Host} />
 			{/if}
-			<Route path="/register" component={Register} />
-			<Route path="/filter" component={Filter} />
-			<Route path="/login" component={Login} />
-			<Route path="/map" component={Map} />
 			<Route path="*" component={LoadingScreen} />
+			<Route path="/register" component={Register}/>
+			<Route path="/filter" component={Filter}/>
+			<Route path="/login" component={Login}/>
+			<Route path="/map" component={Map}/>
 			<Route path="/profile" component={SelfInfo} />
 			<Route path="/chat" component={Chat} />
 			<Route path="/notification" component={NotificationPage} />

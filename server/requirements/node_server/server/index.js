@@ -3,10 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   index.js                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
+<<<<<<< HEAD
 /*   Updated: 2025/02/14 23:01:15 by edbernar         ###   ########.fr       */
+=======
+/*   Updated: 2025/02/13 17:16:38 by edbernar         ###   ########.fr       */
+>>>>>>> ac26b0dfd3b5910182ce99defeab764781460627
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +69,7 @@ function init(db)
 	app.post('/change_location', (req, res) => PostRequest.change_location(req, res, db));
 	app.post('/logout', PostRequest.logout);
 	app.post('/get_swipe_user', (req, res) => PostRequest.get_swipe_user(req, res, db));
-	app.post('/react_to_user', PostRequest.react_to_user);
+	app.post('/react_to_user', (req, res) => PostRequest.react_to_user(req, res, db));
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
 	});

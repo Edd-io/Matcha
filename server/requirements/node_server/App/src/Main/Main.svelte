@@ -85,6 +85,30 @@
 		getSwipeUser();
 	}
 	counter++;
+
+	function reactToUser(like)
+	{
+		return function()
+		{
+			fetch('/react_to_user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					liked: like,
+				})
+			}).then(res => res.json())
+			.then(data => {
+				if (data.finished)
+					console.log('Finished');
+				else if (data.success)
+					getSwipeUser();
+				else
+					console.log('Error');
+			})
+		}
+	}
 </script>
 
 <main>
@@ -138,14 +162,35 @@
 					<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
 						<p>Aucun profil trouvé avec vos critères</p>
 					</div>
+<<<<<<< HEAD
 				{/if}
 
+=======
+				</div>
+				<div class=buttons>
+					<button id="dislike" on:click={reactToUser(true)}>
+						<img src={dislikeLogo} alt="dislikeLogo"/>
+					</button>
+					<button id="like" on:click={reactToUser(true)}>
+						<img src={likeLogo} alt="likeLogo"/>
+					</button>
+				</div>
+>>>>>>> ac26b0dfd3b5910182ce99defeab764781460627
 			</div>
 		{/key}
 	</div>
 </main>
 
 <style>
+
+	@keyframes slideIn {
+		from {
+			transform: translateY(0);
+		}
+		to {
+			transform: translateY(200px);
+		}
+	}
 
 	main{
 		height: 100%;
@@ -205,7 +250,8 @@
 	.bar-photo-selected{
 		height: 1%;
 		width: 80%;
-		background-color: #d9d9d9;
+		background-color: #111111;
+		opacity: 0.5;
 		border-radius: 1rem;
 	}
 
