@@ -162,11 +162,7 @@
 					<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
 						<p>Aucun profil trouvé avec vos critères</p>
 					</div>
-<<<<<<< HEAD
 				{/if}
-
-=======
-				</div>
 				<div class=buttons>
 					<button id="dislike" on:click={reactToUser(true)}>
 						<img src={dislikeLogo} alt="dislikeLogo"/>
@@ -175,7 +171,6 @@
 						<img src={likeLogo} alt="likeLogo"/>
 					</button>
 				</div>
->>>>>>> ac26b0dfd3b5910182ce99defeab764781460627
 			</div>
 		{/key}
 	</div>
