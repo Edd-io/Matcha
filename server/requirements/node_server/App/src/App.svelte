@@ -14,9 +14,12 @@
     import BottomBar from "./Main/Bottom-bar.svelte";
 	import NotificationPage from "./Main/Notification-page.svelte";
 	import Settings from "./Main/Settings.svelte";
+	import Ws from './websocket/ws';
 
 	let path: string = window.location.pathname;
 	globalThis.last_path = path;
+
+	let ws = null;
 
 
 	window.addEventListener('popstate', () => {
@@ -29,7 +32,10 @@
 	globalThis.connected.subscribe(value => {
 		isConnected = value;
 		if (isConnected)
+		{
+			ws = new Ws();
 			getLocation();
+		}
 	});
 
 	globalThis.path = writable(path);

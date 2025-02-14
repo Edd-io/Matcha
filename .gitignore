@@ -5,3 +5,4 @@ credentials.json
 node_modules
 img_test
 .DS_Store
+package-lock.json

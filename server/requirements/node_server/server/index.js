@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/11 10:06:54 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/14 23:01:15 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ function init_ws()
 	const wss = new ws.Server({ noServer: true });
 
 	server.on('upgrade', (request, socket, head) => {
-		if (!req.session.info || !req.session.info.logged)
+		if (!request.session.info || !request.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		wss.handleUpgrade(request, socket, head, (ws) => {
 			wss.emit('connection', ws, request);

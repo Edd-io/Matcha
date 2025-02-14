@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/15 21:39:02 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/14 14:08:07 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ class Websocket
 
 		try {
 			json = JSON.parse(message);
+			console.log(json);
 		} catch (e) {
 			Debug.errorWebsocket("Invalid JSON", message.toString('utf-8'));
 			return;
