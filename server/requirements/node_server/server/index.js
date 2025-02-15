@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/14 23:19:15 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/15 19:01:02 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,17 @@ const Database = require('./src/Database');
 const app = express();
 const server = http.createServer(app);
 const port = 3000;
+const sessionParser = session({
+		secret: 'dndlsahwp9u4hoe8uhdwnow1du81g',
+		resave: false,
+		saveUninitialized: true,
+	});
 
 function init(db)
 {
 	app.use(express.json({ limit: '10mb' }));
 	app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-	app.use(session({
-		secret: 'dndlsahwp9u4hoe8uhdwnow1du81g',
-		resave: false,
-		saveUninitialized: true,
-	}));
+	app.use(sessionParser);
 	app.use(express.json());
 	app.use((req, res, next) => {
 		if (!req.session.info)
@@ -66,6 +67,7 @@ function init(db)
 	app.post('/logout', PostRequest.logout);
 	app.post('/get_swipe_user', (req, res) => PostRequest.get_swipe_user(req, res, db));
 	app.post('/react_to_user', (req, res) => PostRequest.react_to_user(req, res, db));
+	app.post('/get_chat_list', (req, res) => PostRequest.get_chat_list(req, res, db));
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
 	});
@@ -77,10 +79,12 @@ function init_ws()
 	const wss = new ws.Server({ noServer: true });
 
 	server.on('upgrade', (request, socket, head) => {
-		if (!request.session.info || !request.session.info.logged)
-			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		wss.handleUpgrade(request, socket, head, (ws) => {
-			wss.emit('connection', ws, request);
+		sessionParser(request, {}, () => {
+			if (!request.session.info || !request.session.info.logged)
+				return (res.send(JSON.stringify({error: "You are not logged in"})));
+			wss.handleUpgrade(request, socket, head, (ws) => {
+				wss.emit('connection', ws, request);
+			});
 		});
 	});
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostRequest.js                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/13 17:33:16 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/15 18:28:16 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -376,7 +376,7 @@ class PostRequest
 
 	////// CHAT ZONE //////
 	// Request to get chat list (user list with their last message)
-	static get_chat_list(req, res)
+	static get_chat_list(req, res, db)
 	{
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)

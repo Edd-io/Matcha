@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/13 17:48:12 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/15 18:51:31 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,6 +107,24 @@ class Database
 				user_disliked_id INT,
 				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE,
 				FOREIGN KEY(user_disliked_id) REFERENCES accounts(id) ON DELETE CASCADE
+			)`);
+			conn.query(`CREATE TABLE IF NOT EXISTS users_messages (
+				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				from_id INT,
+				to_id INT,
+				message TEXT,
+				date DATETIME,
+				FOREIGN KEY(from_id) REFERENCES accounts(id) ON DELETE CASCADE,
+				FOREIGN KEY(to_id) REFERENCES accounts(id) ON DELETE CASCADE
+			)`);
+			conn.query(`CREATE TABLE IF NOT EXISTS users_last_message (
+				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				from_id INT,
+				to_id INT,
+				message TEXT,
+				date DATETIME,
+				FOREIGN KEY(from_id) REFERENCES accounts(id) ON DELETE CASCADE,
+				FOREIGN KEY(to_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
 			conn.release();
 			conn.end();
@@ -464,13 +482,49 @@ class Database
 
 		const conn = await this.pool.getConnection();
 		if (react == true)
+		{
 			await conn.query('INSERT INTO users_likes (user_id, user_liked_id) VALUES (?, ?)', [user_id, other_id]);
+			if (await this.#hasMatch(user_id, other_id))
+			{
+				// send notification on websocket
+			}
+		}
 		else
 			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
+
 		conn.release();
 		conn.end();
 		return ({success: true});
 	}
+
+	async #hasMatch(user_id, other_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [other_id, user_id]);
+
+		conn.release();
+		conn.end();
+		return (row.length != 0);
+	}
+
+	// async getChatList(user_id)
+	// {
+	// 	const conn = await this.pool.getConnection();
+	// 	const row = await conn.query('SELECT * FROM users_messages WHERE from_id = ? OR to_id = ?', [user_id, user_id]);
+
+	// 	conn.release();
+	// 	conn.end();
+	// 	for (let i = 0; i < row.length; i++)
+	// 		row[i].id = undefined;
+	// 	return (row);
+	// }
+
+	// async sendMessage(from_id, to_id, message)
+	// {
+	// 	const conn = await this.pool.getConnection();
+	// 	const date = new Date().toISOString();
+	// }
+		
 }
 
 module.exports = Database;
