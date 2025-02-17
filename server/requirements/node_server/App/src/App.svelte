@@ -94,9 +94,11 @@
 		else
 			console.warn("Geolocation is not supported by this browser.");
 	}
+
+	const pageWithoutBorder = ["/register", "/"];
 </script>
 
-<main>
+<main style={pageWithoutBorder.includes(path) && !isConnected ? "" : "max-width: 80rem;"}>
 	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
 		<TopBar />
 	{/if}
@@ -129,6 +131,7 @@
 		flex-direction: column;
 		height: 100vh;
 		max-height: 100vh;
+		margin: 0 auto;
 	}
 
 	.content {
