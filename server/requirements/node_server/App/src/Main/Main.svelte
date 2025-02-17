@@ -74,7 +74,6 @@
 			})
 		}).then(res => res.json())
 		.then(data => {
-			console.log(data);
 			globalThis.userInfoSwipeZone.set(data);
 			counter++;
 			iPhoto = 0;
@@ -103,6 +102,7 @@
 			.then(data => {
 				if (data.finished)
 				{
+					console.log('Finished');
 					finished = true;
 					globalThis.userInfoSwipeZone.set(null);	
 				}
