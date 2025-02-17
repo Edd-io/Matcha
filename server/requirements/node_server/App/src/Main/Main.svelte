@@ -16,7 +16,7 @@
 
 	let iPhoto = 0;
 	let counter = 0;
-	let finished = true;
+	let finished = false;
 	let user = null;
 
 	if (!globalThis.userInfoSwipeZone)
@@ -74,6 +74,7 @@
 			})
 		}).then(res => res.json())
 		.then(data => {
+			console.log(data);
 			globalThis.userInfoSwipeZone.set(data);
 			counter++;
 			iPhoto = 0;
@@ -101,7 +102,10 @@
 			}).then(res => res.json())
 			.then(data => {
 				if (data.finished)
-					console.log('Finished');
+				{
+					finished = true;
+					globalThis.userInfoSwipeZone.set(null);	
+				}
 				else if (data.success)
 					getSwipeUser();
 				else
@@ -151,10 +155,10 @@
 						</div>
 					</div>
 					<div class=buttons>
-						<button id="dislike">
+						<button id="dislike" on:click={reactToUser(false)}>
 							<img src={dislikeLogo} alt="dislikeLogo"/>
 						</button>
-						<button id="like">
+						<button id="like" on:click={reactToUser(true)}>
 							<img src={likeLogo} alt="likeLogo"/>
 						</button>
 					</div>
@@ -163,14 +167,6 @@
 						<p>Aucun profil trouvé avec vos critères</p>
 					</div>
 				{/if}
-				<div class=buttons>
-					<button id="dislike" on:click={reactToUser(true)}>
-						<img src={dislikeLogo} alt="dislikeLogo"/>
-					</button>
-					<button id="like" on:click={reactToUser(true)}>
-						<img src={likeLogo} alt="likeLogo"/>
-					</button>
-				</div>
 			</div>
 		{/key}
 	</div>

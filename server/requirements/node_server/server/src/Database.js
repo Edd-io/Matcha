@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/15 18:51:31 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/16 11:50:21 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,9 @@ class Database
 				from_id INT,
 				to_id INT,
 				message TEXT,
-				date DATETIME,
+				date DATETIME DEFAULT CURRENT_TIMESTAMP,
+				system BOOLEAN DEFAULT FALSE,
+				seen BOOLEAN DEFAULT FALSE,
 				FOREIGN KEY(from_id) REFERENCES accounts(id) ON DELETE CASCADE,
 				FOREIGN KEY(to_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
@@ -417,12 +419,13 @@ class Database
 		return (new Promise(async (resolve) => {
 			const	nbUsers = await this.#getNbUsers();
 			const	seen = await this.#getListSeenUsers(user_id);
-			let		index = -1;
-			
-			while (++index && index < this.buffer_neverSeenUser.length)
+			let		index = 0;
+
+			while (index < this.buffer_neverSeenUser.length)
 			{
 				if (this.buffer_neverSeenUser[index].id == user_id)
 					break;
+				index++;
 			}
 			if (index == this.buffer_neverSeenUser.length)
 			{
@@ -454,7 +457,6 @@ class Database
 					this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
 			}
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
-			console.log(this.buffer_neverSeenUser[index]);
 			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0)
 				resolve({finished: true});
 			else
@@ -464,13 +466,14 @@ class Database
 
 	async reactToUser(user_id, react)
 	{
-		let		index = -1;
+		let		index = 0;
 		let		other_id = -1;
 			
-		while (++index && index < this.buffer_neverSeenUser.length)
+		while (index < this.buffer_neverSeenUser.length)
 		{
 			if (this.buffer_neverSeenUser[index].id == user_id)
 				break;
+			index++;
 		}
 		if (index == this.buffer_neverSeenUser.length)
 			return ({error: "User never initialized"});
@@ -483,14 +486,19 @@ class Database
 		const conn = await this.pool.getConnection();
 		if (react == true)
 		{
+			console.log("User liked");
 			await conn.query('INSERT INTO users_likes (user_id, user_liked_id) VALUES (?, ?)', [user_id, other_id]);
 			if (await this.#hasMatch(user_id, other_id))
 			{
 				// send notification on websocket
+				await conn.query('INSERT INTO users_last_message (from_id, to_id, message, system) VALUES (?, ?, ?, ?, ?)', [user_id, other_id, "Commence la conversation !", true]);
 			}
 		}
 		else
+		{
+			console.log("User disliked");
 			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
+		}
 
 		conn.release();
 		conn.end();

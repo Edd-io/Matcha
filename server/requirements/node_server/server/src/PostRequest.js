@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/15 18:28:16 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/16 11:47:11 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -357,6 +357,7 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.distance || !req.body.range_age || !req.body.interests)
 			return (res.send(JSON.stringify({error: missing})));
+		console.log("Request by user", req.session.info.id);
 		db.getNeverSeenUser(req.session.info.id, req.body).then((ret) => {res.send(ret)});
 	}
 
@@ -367,7 +368,8 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.liked)
+		console.log("req.body.liked", req.body.liked);	
+		if (req.body.liked === undefined)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.liked !== 'boolean')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));

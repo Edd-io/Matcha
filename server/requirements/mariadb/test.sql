@@ -4,7 +4,7 @@ INSERT INTO accounts (email, password) VALUES
 ('c@c.com', 'password'),
 ('d@d.com', 'password'),
 ('e@e.com', 'password'),
-('f@f.com', 'password'),
+('f@f.com', '$2b$10$80WJ/.Ul71MS/QUmt/HqJunMRtPoN.lZkRt7iKH/wIC/qjwCanD4.'),
 ('g@g.com', 'password'),
 ('h@h.com', 'password'),
 ('i@i.com', 'password'),
@@ -16,21 +16,21 @@ INSERT INTO accounts (email, password) VALUES
 ('o@o.com', 'password');
 
 INSERT INTO users_info (user_id, first_name, last_name, nickname, date_of_birth, sexe, orientation, bio, location) VALUES 
-(1, 'John', 'Doe', 'JohnDoe454', '1990-07-01', 'M', 'F', 'hello world, I am John Doe, nice to meet you !', null),
+(1, 'John', 'Doe', 'JohnDoe454', '1990-07-01', 'M', 'F', 'hello world, I am John Doe, nice to meet you !', '{"latitude": 45.7640, "longitude": 4.8357}'),
 (2, 'Pierre', 'Doe', 'PierreDoe454', '1970-02-09', 'M', 'F', 'hello world, I am Pierre Doe, nice to meet you !', '{"latitude": 45.73908, "longitude": 0.37865}'),
 (3, 'Celine', 'Doe', 'CelineDoe454', '2001-09-17', 'F', 'M', 'hello world, I am Celine Doe, nice to meet you !', '{"latitude": 45.72291, "longitude": 0.20854}'),
 (4, 'Alice', 'Smith', 'AliceWonder', '1995-03-12', 'F', 'M', 'Exploring life, one adventure at a time.', '{"latitude": 45.80974, "longitude": 2.56102}'),
-(5, 'Bob', 'Johnson', 'BobbyJ', '1988-10-04', 'M', 'F', 'Coder by day, gamer by night.', null),
-(6, 'Emma', 'Brown', 'EmmyB', '2000-06-21', 'F', 'M', 'Coffee lover and bookworm.', null),
-(7, 'Lucas', 'Davis', 'LukeD', '1993-11-30', 'M', 'F', 'Fitness enthusiast and tech geek.', null),
-(8, 'Olivia', 'Garcia', 'LivG', '1998-01-15', 'F', 'M', 'Traveling the world, one step at a time.', null),
-(9, 'Liam', 'Martinez', 'LiamM', '1991-04-09', 'M', 'F', 'Passionate about photography and nature.', null),
-(10, 'Sophia', 'Anderson', 'SophA', '1996-12-25', 'F', 'M', 'Living life with love and laughter.', null),
-(11, 'Ethan', 'Thomas', 'EthanT', '1992-08-14', 'M', 'F', 'Dream big, work hard.', null),
-(12, 'Isabella', 'Moore', 'IsaM', '1997-09-05', 'F', 'M', 'Designing my way through life.', null),
-(13, 'Mason', 'Taylor', 'MaseT', '1985-05-22', 'M', 'F', 'Music is my escape.', null),
-(14, 'Mia', 'Harris', 'MiaH', '2003-07-19', 'F', 'M', 'Student, dreamer, doer.', null),
-(15, 'James', 'Clark', 'JamesC', '1999-02-11', 'M', 'F', 'Tech enthusiast and avid learner.', null);
+(5, 'Bob', 'Johnson', 'BobbyJ', '1988-10-04', 'M', 'F', 'Coder by day, gamer by night.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(6, 'Emma', 'Brown', 'EmmyB', '2000-06-21', 'F', 'M', 'Coffee lover and bookworm.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(7, 'Lucas', 'Davis', 'LukeD', '1993-11-30', 'M', 'F', 'Fitness enthusiast and tech geek.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(8, 'Olivia', 'Garcia', 'LivG', '1998-01-15', 'F', 'M', 'Traveling the world, one step at a time.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(9, 'Liam', 'Martinez', 'LiamM', '1991-04-09', 'M', 'F', 'Passionate about photography and nature.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(10, 'Sophia', 'Anderson', 'SophA', '1996-12-25', 'F', 'M', 'Living life with love and laughter.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(11, 'Ethan', 'Thomas', 'EthanT', '1992-08-14', 'M', 'F', 'Dream big, work hard.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(12, 'Isabella', 'Moore', 'IsaM', '1997-09-05', 'F', 'M', 'Designing my way through life.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(13, 'Mason', 'Taylor', 'MaseT', '1985-05-22', 'M', 'F', 'Music is my escape.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(14, 'Mia', 'Harris', 'MiaH', '2003-07-19', 'F', 'M', 'Student, dreamer, doer.', '{"latitude": 48.8566, "longitude": 2.3522}'),
+(15, 'James', 'Clark', 'JamesC', '1999-02-11', 'M', 'F', 'Tech enthusiast and avid learner.', '{"latitude": 48.8566, "longitude": 2.3522}');
 
 INSERT INTO users_images (user_id, local_url) VALUES 
 (1, 'test1.jpg'), (1, 'test2.jpg'), (1, 'test3.jpg'),
