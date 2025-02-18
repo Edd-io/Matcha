@@ -3,17 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   index.js                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/16 11:22:30 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/18 10:58:52 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const express = require('express');
 const http = require('http');
 const PostRequest = require('./src/PostRequest');
-const Websocket = require('./src/Websocket');
+const Websocket = require('./src/Websocket/Websocket');
 const Debug = require('./src/Debug');
 const ws = require('ws');
 const session = require('express-session');
@@ -67,7 +67,8 @@ function init(db)
 	app.post('/logout', PostRequest.logout);
 	app.post('/get_swipe_user', (req, res) => PostRequest.get_swipe_user(req, res, db));
 	app.post('/react_to_user', (req, res) => PostRequest.react_to_user(req, res, db));
-	app.post('/get_chat_list', (req, res) => PostRequest.get_chat_list(req, res, db));
+	app.get('/get_chat_list', (req, res) => PostRequest.get_chat_list(req, res, db));
+	app.post('/get_chat', (req, res) => PostRequest.get_chat(req, res, db));
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
 	});
@@ -88,15 +89,8 @@ function init_ws()
 		});
 	});
 
-	wss.on('connection', (ws) => {
-		Websocket.newConnection(ws);
-
-		ws.on('message', (message) => {
-			Websocket.onMessage(ws, message)
-		});
-		ws.on('close', () => Websocket.onClose(ws));
-
-		ws.send('Connected to websocket. Welcome !');
+	wss.on('connection', (ws, req) => {
+		new Websocket(ws, req.session.info.id);
 	});
 }
 

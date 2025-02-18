@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/17 08:09:49 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/18 11:17:42 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -515,17 +515,64 @@ class Database
 		return (row.length != 0);
 	}
 
-	// async getChatList(user_id)
-	// {
-	// 	const conn = await this.pool.getConnection();
-	// 	const row = await conn.query('SELECT * FROM users_messages WHERE from_id = ? OR to_id = ?', [user_id, user_id]);
+	async getChatList(user_id)
+	{
+		const getOtherInfo = async (other_id) => {
+			const conn = await this.pool.getConnection();
+			const rowInfo = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [other_id]);
+			const rowPfp = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [other_id]);
 
-	// 	conn.release();
-	// 	conn.end();
-	// 	for (let i = 0; i < row.length; i++)
-	// 		row[i].id = undefined;
-	// 	return (row);
-	// }
+			conn.release();
+			conn.end();
+			return ({
+				name: rowInfo[0].first_name,
+				pfp: rowPfp[0].local_url
+			})
+		}
+
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_last_message WHERE from_id = ? OR to_id = ?', [user_id, user_id]);
+		const chatList = [];
+
+		conn.release();
+		conn.end();
+		for (let i = 0; i < row.length; i++)
+		{
+			const other_id = row[i].from_id == user_id ? row[i].to_id : row[i].from_id;
+			const otherInfo = await getOtherInfo(other_id);
+			chatList.push({
+				name: otherInfo.name,
+				pfp: otherInfo.pfp,
+				lastMessage: row[i].message,
+				date: row[i].date,
+				seen: row[i].from_id == user_id ? true : row[i].seen,
+				sendBySelf: row[i].from_id == user_id,
+				id: other_id,
+				sendBySystem: row[i].system
+			});
+		}
+		return (chatList);
+	}
+
+	async getChat(from_id, to_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_messages WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', [from_id, to_id, to_id, from_id]);
+		const chat = [];
+
+		conn.release();
+		conn.end();
+		for (let i = 0; i < row.length; i++)
+		{
+			chat.push({
+				from_id: row[i].from_id,
+				to_id: row[i].to_id,
+				message: row[i].message,
+				date: row[i].date
+			});
+		}
+		return (chat);
+	}
 
 	// async sendMessage(from_id, to_id, message)
 	// {

@@ -34,6 +34,7 @@
 		if (isConnected)
 		{
 			ws = new Ws();
+			globalThis.ws = ws;
 			getLocation();
 		}
 	});

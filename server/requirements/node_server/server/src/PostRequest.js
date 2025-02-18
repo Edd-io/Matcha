@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/17 08:01:52 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/18 10:15:35 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -382,16 +382,20 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		res.send("Get chat list request");
+		db.getChatList(req.session.info.id).then((ret) => {res.send(ret)});
 	}
 
 	// Request to get chat with a specific user
-	static get_chat(req, res)
+	static get_chat(req, res, db)
 	{
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		res.send("Get chat request");
+		if (req.body.id === undefined)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.id !== 'number')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.getChat(req.session.info.id, req.body.id).then((ret) => {res.send(ret)});
 	}
 }
 

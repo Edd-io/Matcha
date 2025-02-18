@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ws.ts                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/02/18 11:03:32 by edbernar          #+#    #+#             */
+/*   Updated: 2025/02/18 11:09:08 by edbernar         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 class Ws
 {
 	private socket: any;
@@ -9,10 +21,9 @@ class Ws
 		this.socket.onopen = function()
 		{
 			console.log("Connection established");
-			this.socket.send("Hello");
 		};
 
-		this.socket.onmessage = function(event)
+		this.socket.onmessage = function(event: any)
 		{
 			console.log("Message received: " + event.data);
 		};
@@ -26,7 +37,11 @@ class Ws
 		{
 			console.log("Error");
 		};
+	}
 
+	send(message: any)
+	{
+		this.socket.send(message);
 	}
 }
 

@@ -3,31 +3,43 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/14 14:08:07 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/18 10:57:54 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-const Debug = require('./Debug');
+const Debug = require('../Debug');
 const users = [];
 
 class Websocket
 {
-	static newConnection(ws)
+	id = -1;
+	ws = null;
+
+	constructor(ws, id)
 	{
-		users.push(ws);
+		users[id] = this;
+		this.id = id;
+		this.ws = ws;
 		Debug.newConnection(ws);
+
+		ws.on('message', (message) => {
+			this.onMessage(ws, message)
+		});
+		ws.on('close', () => this.onClose(ws));
+
+		ws.send('Connected to websocket. Welcome !');
 	}
 
-	static onClose(ws)
+	onClose(ws)
 	{
-		users.splice(users.indexOf(ws), 1);
+		users.splice(users.indexOf(this), 1);
 		Debug.closeConnection(ws);
 	}
 
-	static onMessage(ws, message)
+	onMessage(ws, message)
 	{
 		let	json;
 

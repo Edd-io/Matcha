@@ -2,35 +2,35 @@
 	import { onMount } from 'svelte';
 	import threeDotsIcon from '../assets/3-dots.svg';
 	import sendIcon from '../assets/send.svg';
-	import { fly } from 'svelte/transition';
     import { cubicOut } from 'svelte/easing';
+    import { get } from 'svelte/store';
 
 	export let user;
 	export let chatOpened;
 
-	const listMessages = [
+	let listMessages = [
 		{content: 'Salut ça va ?', sendBySelf: false},
-		{content: 'Oui et toi ?', sendBySelf: true},
-		{content: 'Je vais bien merci', sendBySelf: false},
-		{content: 'Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?', sendBySelf: false},
-		{content: 'Je suis en train de coder', sendBySelf: true},
-		{content: 'Ah cool', sendBySelf: false},
-		{content: 'Tu fais quoi de beau ?', sendBySelf: false},
-		{content: 'Je suis en train de coder', sendBySelf: true},
-		{content: 'Ah cool', sendBySelf: false},
-		{content: 'On se répète un peu là non ?', sendBySelf: true},
-		{content: 'Oui c’est vrai', sendBySelf: false},
-		{content: 'Salut ça va ?', sendBySelf: false},
-		{content: 'Oui et toi ?', sendBySelf: true},
-		{content: 'Je vais bien merci', sendBySelf: false},
-		{content: 'Tu fais quoi de beau ?', sendBySelf: false},
-		{content: 'Je suis en train de coder', sendBySelf: true},
-		{content: 'Ah cool', sendBySelf: false},
-		{content: 'Tu fais quoi de beau ?', sendBySelf: false},
-		{content: 'Je suis en train de coder', sendBySelf: true},
-		{content: 'Ah cool', sendBySelf: false},
-		{content: 'On se répète un peu là non ?', sendBySelf: true},
-		{content: 'Oui c’est vrai', sendBySelf: false},
+		// {content: 'Oui et toi ?', sendBySelf: true},
+		// {content: 'Je vais bien merci', sendBySelf: false},
+		// {content: 'Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?', sendBySelf: false},
+		// {content: 'Je suis en train de coder', sendBySelf: true},
+		// {content: 'Ah cool', sendBySelf: false},
+		// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
+		// {content: 'Je suis en train de coder', sendBySelf: true},
+		// {content: 'Ah cool', sendBySelf: false},
+		// {content: 'On se répète un peu là non ?', sendBySelf: true},
+		// {content: 'Oui c’est vrai', sendBySelf: false},
+		// {content: 'Salut ça va ?', sendBySelf: false},
+		// {content: 'Oui et toi ?', sendBySelf: true},
+		// {content: 'Je vais bien merci', sendBySelf: false},
+		// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
+		// {content: 'Je suis en train de coder', sendBySelf: true},
+		// {content: 'Ah cool', sendBySelf: false},
+		// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
+		// {content: 'Je suis en train de coder', sendBySelf: true},
+		// {content: 'Ah cool', sendBySelf: false},
+		// {content: 'On se répète un peu là non ?', sendBySelf: true},
+		// {content: 'Oui c’est vrai', sendBySelf: false},
 	]
 
 	onMount(() => {
@@ -54,6 +54,47 @@
 			`,
 		};
 	}
+
+	function getChat()
+	{
+		fetch('/get_chat', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({id: user.id})
+		})
+		.then(res => res.json())
+		.then(data => {
+			listMessages = data;
+		});
+		return listMessages;
+	}
+
+	getChat();
+
+	function sendMessage(event: any)
+	{
+		if (event.key === 'Enter')
+		{
+			const inputMessage = document.querySelector('.input-message');
+			const message = (inputMessage as HTMLInputElement).value;
+			if (message.trim() !== '')
+			{
+				globalThis.ws.send(JSON.stringify({
+					type: 'message',
+					content: message,
+					to: user.id
+				}));
+				listMessages.push({content: message, sendBySelf: true});
+				(inputMessage as HTMLInputElement).value = '';
+				const listMessagesDiv = document.querySelector('.list-messages');
+				setTimeout(() => {
+					listMessagesDiv.scrollTop = listMessagesDiv.scrollHeight;
+				}, 10);
+			}
+		}
+	}
 </script>
 
 <main in:slideHorizontal out:slideHorizontal>
@@ -70,14 +111,16 @@
 		<img src={threeDotsIcon} alt="Options" />
 	</div>
 	<div class="list-messages">
-		{#each listMessages as message}
-			<div class="message {message.sendBySelf ? 'self' : 'other'}">
-				<p>{message.content}</p>
-			</div>
-		{/each}
+		{#key listMessages}
+			{#each listMessages as message}
+				<div class="message {message.sendBySelf ? 'self' : 'other'}">
+					<p>{message.content}</p>
+				</div>
+			{/each}
+		{/key}
 	</div>
 	<div class=input-message-container>
-		<input type="text" placeholder="Écris un message..." class="input-message"/>
+		<input type="text" placeholder="Écris un message..." class="input-message" on:keypress={(e) => sendMessage(e)} />
 		
 		<button class="send-button no-button-style">
 			<img src={sendIcon} alt="Send" />
