@@ -4,36 +4,9 @@
 	import threeDotsIcon from '../assets/3-dots.svg';
 	import sendIcon from '../assets/send.svg';
     import { cubicOut } from 'svelte/easing';
-    import { get } from 'svelte/store';
-    import { on } from 'svelte/events';
 
-	export let user;
-	export let chatOpened;
-
-	// let listMessages = [
-	// 	{content: 'Salut ça va ?', sendBySelf: false},
-	// 	// {content: 'Oui et toi ?', sendBySelf: true},
-	// 	// {content: 'Je vais bien merci', sendBySelf: false},
-	// 	// {content: 'Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?', sendBySelf: false},
-	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
-	// 	// {content: 'Ah cool', sendBySelf: false},
-	// 	// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
-	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
-	// 	// {content: 'Ah cool', sendBySelf: false},
-	// 	// {content: 'On se répète un peu là non ?', sendBySelf: true},
-	// 	// {content: 'Oui c’est vrai', sendBySelf: false},
-	// 	// {content: 'Salut ça va ?', sendBySelf: false},
-	// 	// {content: 'Oui et toi ?', sendBySelf: true},
-	// 	// {content: 'Je vais bien merci', sendBySelf: false},
-	// 	// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
-	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
-	// 	// {content: 'Ah cool', sendBySelf: false},
-	// 	// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
-	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
-	// 	// {content: 'Ah cool', sendBySelf: false},
-	// 	// {content: 'On se répète un peu là non ?', sendBySelf: true},
-	// 	// {content: 'Oui c’est vrai', sendBySelf: false},
-	// ]
+	export let user: any;
+	export let chatOpened: boolean;
 
 	let listMessages = [];
 	const writableListMessages = writable(listMessages);
@@ -68,7 +41,7 @@
 			delay,
 			duration,
 			easing,
-			css: (t) => `
+			css: (t: number) => `
 				transform: translateX(${(1 - t) * width}px);
 			`,
 		};
@@ -94,7 +67,7 @@
 
 	function sendMessage(event: any)
 	{
-		const inputMessage = document.querySelector('.input-message');
+		const inputMessage = document.querySelector('#inputMessage');
 		const message = (inputMessage as HTMLInputElement).value;
 	
 		if (event.key === 'Enter')
@@ -118,10 +91,10 @@
 				(inputMessage as HTMLInputElement).value = '';
 			}
 		}
-		else
+		else if (message.length >= 1000)
 		{
-			if (message.length > 1000)
-				event.preventDefault();
+			event.preventDefault();
+			(inputMessage as HTMLInputElement).value = message.slice(0, 1000);
 		}
 	}
 </script>
@@ -147,7 +120,7 @@
 		{/each}
 	</div>
 	<div class=input-message-container>
-		<input type="text" placeholder="Écris un message..." class="input-message" on:keypress={(e) => sendMessage(e)}/>
+		<input type="text" placeholder="Écris un message..." class="input-message" id='inputMessage' on:keypress={(e) => sendMessage(e)}/>
 		
 		<button class="send-button no-button-style" on:click={(e) => sendMessage({key: 'Enter'})}>
 			<img src={sendIcon} alt="Send" />

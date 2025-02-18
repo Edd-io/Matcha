@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/18 11:17:42 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/18 19:13:17 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -574,11 +574,15 @@ class Database
 		return (chat);
 	}
 
-	// async sendMessage(from_id, to_id, message)
-	// {
-	// 	const conn = await this.pool.getConnection();
-	// 	const date = new Date().toISOString();
-	// }
+	async sendMessage(from_id, to_id, message)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('INSERT INTO users_messages (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
+		await conn.query('INSERT INTO users_last_message (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
+		conn.release();
+		conn.end();
+	}
 		
 }
 

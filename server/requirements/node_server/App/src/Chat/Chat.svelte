@@ -1,17 +1,7 @@
 <script lang='ts'>
 	import InChat from './InChat.svelte'
 
-	let userList = [
-		{name: 'Jean', pfp: "https://images.pexels.com/photos/837358/pexels-photo-837358.jpeg?cs=srgb&dl=pexels-olly-837358.jpg&fm=jpg", lastMessage: 'Salut ça va ?', seen: false, sendBySelf: false, id: 1},
-		// {name: 'Marie', pfp: "https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg", lastMessage: 'Dispo ce soir pour parler ?', seen: true, sendBySelf: true, id: 2},
-		// {name: 'Pierre', pfp: "https://images.pexels.com/photos/699604/pexels-photo-699604.jpeg?cs=srgb&dl=pexels-johnmark-smith-699604.jpg&fm=jpg", lastMessage: 'T’es toujours partant pour demain ?', seen: false, sendBySelf: false, id: 3},
-		// {name: 'Lucie', pfp: "https://images.pexels.com/photos/3723701/pexels-photo-3723701.jpeg?cs=srgb&dl=pexels-rodnae-productions-3723701.jpg&fm=jpg", lastMessage: 'On se retrouve à 18h ?', seen: true, sendBySelf: true, id: 4},
-		// {name: 'Marc', pfp: "https://images.pexels.com/photos/457878/pexels-photo-457878.jpeg?cs=srgb&dl=pexels-brett-sayles-457878.jpg&fm=jpg", lastMessage: 'Tu as vu le match hier ?', seen: true, sendBySelf: false, id: 5},
-		// {name: 'Sophie', pfp: "https://images.pexels.com/photos/3288817/pexels-photo-3288817.jpeg?cs=srgb&dl=pexels-pixabay-3288817.jpg&fm=jpg", lastMessage: 'Tu veux faire du shopping ce weekend ?', seen: false, sendBySelf: true, id: 6},
-		// {name: 'Alexandre', pfp: "https://images.pexels.com/photos/4386439/pexels-photo-4386439.jpeg?cs=srgb&dl=pexels-pixabay-4386439.jpg&fm=jpg", lastMessage: 'On se capte vendredi pour boire un verre ?', seen: true, sendBySelf: false, id: 7},
-		// {name: 'Claire', pfp: "https://images.pexels.com/photos/5490791/pexels-photo-5490791.jpeg?cs=srgb&dl=pexels-cottonbro-studio-5490791.jpg&fm=jpg", lastMessage: 'Je te retrouve à 14h ?', seen: true, sendBySelf: true, id: 8},
-		// {name: 'Tom', pfp: "https://images.pexels.com/photos/1191623/pexels-photo-1191623.jpeg?cs=srgb&dl=pexels-pixabay-1191623.jpg&fm=jpg", lastMessage: 'T’as fait quoi ce weekend ?', seen: false, sendBySelf: false, id: 9},
-	];
+	let userList = [];
 
 	let	chatOpened = false;
 	let selectedUser = null;

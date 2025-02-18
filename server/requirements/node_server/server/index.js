@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/18 10:58:52 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/18 17:36:35 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ function init(db)
 	})
 	app.use(express.static('user_static_data'));
 
-	init_ws();
+	init_ws(db);
 
 	app.get('/', (req, res) => {
 		Debug.log(req);
@@ -75,7 +75,7 @@ function init(db)
 
 }
 
-function init_ws()
+function init_ws(db)
 {
 	const wss = new ws.Server({ noServer: true });
 
@@ -90,7 +90,7 @@ function init_ws()
 	});
 
 	wss.on('connection', (ws, req) => {
-		new Websocket(ws, req.session.info.id);
+		new Websocket(ws, req.session.info.id, db);
 	});
 }
 
