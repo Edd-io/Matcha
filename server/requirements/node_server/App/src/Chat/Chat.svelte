@@ -132,11 +132,7 @@
 	}
 	@media (min-aspect-ratio: 1/1) {
 		main {
-			background-color: #F1F1F1;
 			height: 100vh;
-		}
-		.user:hover {
-			background-color: #dedcdc;
 		}
 	}
 </style>

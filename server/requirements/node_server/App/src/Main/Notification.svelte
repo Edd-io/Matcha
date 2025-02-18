@@ -33,7 +33,7 @@
         border-radius: 1rem;
         width: 70%;
         height: 23%;
-        z-index: 3;
+        z-index: 21;
     }
 
     #msg-notif {
@@ -77,5 +77,6 @@
         width: 100%;
         height: 100%;
         background-color: rgba(0, 0, 0, 0.7);
+        z-index: 20;
     }
 </style>

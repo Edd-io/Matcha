@@ -119,12 +119,18 @@
 			})
 		}
 	}
+
+	let like = false;
+	let dislike = false;
+	let test;
 </script>
 
 <main>
-
+	
 	<!-- <NotificationPage /> -->
-
+	
+	<!-- <Notification /> -->
+	
 	<div class="main">
 
 		{#key counter}
@@ -132,7 +138,7 @@
 				<ScrollProfile bind:users={user} bind:showComponent={showComponent}/>
 			{/if}
 
-			<div class="photo">
+			<div class="photo" class:active={like} class:active2={dislike}>
 				{#if !finished}
 					<div class='zone-pass'>
 						<div class="centered">
@@ -161,10 +167,10 @@
 						</div>
 					</div>
 					<div class=buttons>
-						<button id="dislike" on:click={reactToUser(false)}>
+						<button id="dislike" on:click={() => { reactToUser(false); dislike = true }}>
 							<img src={dislikeLogo} alt="dislikeLogo"/>
 						</button>
-						<button id="like" on:click={reactToUser(true)}>
+						<button id="like" on:click={() => { reactToUser(true); like = true }}>
 							<img src={likeLogo} alt="likeLogo"/>
 						</button>
 					</div>
@@ -182,11 +188,32 @@
 
 	@keyframes slideIn {
 		from {
-			transform: translateY(0);
+			transform: translateX(0);
+			opacity: 1;
 		}
 		to {
-			transform: translateY(200px);
+			transform: rotate(25deg) translateX(500px);
+			opacity: 0;
 		}
+	}
+
+	@keyframes slideOut {
+		from {
+			transform: translateX(0);
+			opacity: 1;
+		}
+		to {
+			transform: rotate(-25deg) translateX(-500px);
+			opacity: 0;
+		}
+	}
+
+	.active2 {
+		animation: slideOut 0.3s ease forwards;
+	}
+
+	.active {
+		animation: slideIn 0.3s ease forwards;
 	}
 
 	main{
@@ -198,6 +225,7 @@
 		justify-content: center;
 		align-items: center;
 		height: 100%;
+		overflow: hidden;
 	}
 
 	.zone-pass {

@@ -4,6 +4,17 @@
 	box-sizing: border-box;
 	font-family: 'Red Hat Display', sans-serif;
 }
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+::-webkit-scrollbar-thumb {
+	background: #111;
+	border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+	background: white;
+}
 body {
 	font-size: 26px;
 	height: 100vh;
