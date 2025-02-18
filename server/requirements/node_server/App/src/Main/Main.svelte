@@ -23,9 +23,9 @@
 		globalThis.userInfoSwipeZone = writable(null);
 
 	globalThis.userInfoSwipeZone.subscribe(value => {
-		if (!value)
-			finished = true;
-		else
+		// if (!value)
+		// 	finished = true;
+		// else
 			user = value;
 	});
 
@@ -77,18 +77,18 @@
 			})
 		}).then(res => res.json())
 		.then(data => {
-			if (data.finished)
-			{
-				console.log('Finished');
-				finished = true;
-				globalThis.userInfoSwipeZone.set(null);	
-			}
-			else
-			{
+			// if (data.finished)
+			// {
+			// 	console.log('Finished');
+			// 	finished = true;
+			// 	globalThis.userInfoSwipeZone.set(null);	
+			// }
+			// else
+			// {
 				globalThis.userInfoSwipeZone.set(data);
 				counter++;
 				iPhoto = 0;
-			}
+			// }
 		})
 	}
 	if (!globalThis.pageLoaded)

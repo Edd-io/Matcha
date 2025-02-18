@@ -1,37 +1,56 @@
 <script lang='ts'>
+	import { writable } from 'svelte/store';
 	import { onMount } from 'svelte';
 	import threeDotsIcon from '../assets/3-dots.svg';
 	import sendIcon from '../assets/send.svg';
     import { cubicOut } from 'svelte/easing';
     import { get } from 'svelte/store';
+    import { on } from 'svelte/events';
 
 	export let user;
 	export let chatOpened;
 
-	let listMessages = [
-		{content: 'Salut ça va ?', sendBySelf: false},
-		// {content: 'Oui et toi ?', sendBySelf: true},
-		// {content: 'Je vais bien merci', sendBySelf: false},
-		// {content: 'Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?', sendBySelf: false},
-		// {content: 'Je suis en train de coder', sendBySelf: true},
-		// {content: 'Ah cool', sendBySelf: false},
-		// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
-		// {content: 'Je suis en train de coder', sendBySelf: true},
-		// {content: 'Ah cool', sendBySelf: false},
-		// {content: 'On se répète un peu là non ?', sendBySelf: true},
-		// {content: 'Oui c’est vrai', sendBySelf: false},
-		// {content: 'Salut ça va ?', sendBySelf: false},
-		// {content: 'Oui et toi ?', sendBySelf: true},
-		// {content: 'Je vais bien merci', sendBySelf: false},
-		// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
-		// {content: 'Je suis en train de coder', sendBySelf: true},
-		// {content: 'Ah cool', sendBySelf: false},
-		// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
-		// {content: 'Je suis en train de coder', sendBySelf: true},
-		// {content: 'Ah cool', sendBySelf: false},
-		// {content: 'On se répète un peu là non ?', sendBySelf: true},
-		// {content: 'Oui c’est vrai', sendBySelf: false},
-	]
+	// let listMessages = [
+	// 	{content: 'Salut ça va ?', sendBySelf: false},
+	// 	// {content: 'Oui et toi ?', sendBySelf: true},
+	// 	// {content: 'Je vais bien merci', sendBySelf: false},
+	// 	// {content: 'Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?Tu fais quoi de beau ?', sendBySelf: false},
+	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
+	// 	// {content: 'Ah cool', sendBySelf: false},
+	// 	// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
+	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
+	// 	// {content: 'Ah cool', sendBySelf: false},
+	// 	// {content: 'On se répète un peu là non ?', sendBySelf: true},
+	// 	// {content: 'Oui c’est vrai', sendBySelf: false},
+	// 	// {content: 'Salut ça va ?', sendBySelf: false},
+	// 	// {content: 'Oui et toi ?', sendBySelf: true},
+	// 	// {content: 'Je vais bien merci', sendBySelf: false},
+	// 	// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
+	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
+	// 	// {content: 'Ah cool', sendBySelf: false},
+	// 	// {content: 'Tu fais quoi de beau ?', sendBySelf: false},
+	// 	// {content: 'Je suis en train de coder', sendBySelf: true},
+	// 	// {content: 'Ah cool', sendBySelf: false},
+	// 	// {content: 'On se répète un peu là non ?', sendBySelf: true},
+	// 	// {content: 'Oui c’est vrai', sendBySelf: false},
+	// ]
+
+	let listMessages = [];
+	const writableListMessages = writable(listMessages);
+
+	writableListMessages.subscribe(value => {
+		listMessages = value;
+		const listMessagesDiv = document.querySelector('.list-messages');
+		if (listMessagesDiv)
+		{
+			setTimeout(() => {
+				listMessagesDiv.scrollTo({
+					top: listMessagesDiv.scrollHeight,
+					behavior: 'smooth'
+				});
+			}, 50);
+		}
+	});
 
 	onMount(() => {
 		const listMessagesDiv = document.querySelector('.list-messages');
@@ -75,24 +94,34 @@
 
 	function sendMessage(event: any)
 	{
+		const inputMessage = document.querySelector('.input-message');
+		const message = (inputMessage as HTMLInputElement).value;
+	
 		if (event.key === 'Enter')
 		{
-			const inputMessage = document.querySelector('.input-message');
-			const message = (inputMessage as HTMLInputElement).value;
 			if (message.trim() !== '')
 			{
+				if (message.length > 1000)
+				{
+					alert('Message trop long. Veille à ce qu\'il fasse moins de 1000 caractères.');
+					return;
+				}
 				globalThis.ws.send(JSON.stringify({
 					type: 'message',
 					content: message,
 					to: user.id
 				}));
-				listMessages.push({content: message, sendBySelf: true});
+				writableListMessages.update(value => {
+					value.push({content: message, sendBySelf: true});
+					return (value);
+				});
 				(inputMessage as HTMLInputElement).value = '';
-				const listMessagesDiv = document.querySelector('.list-messages');
-				setTimeout(() => {
-					listMessagesDiv.scrollTop = listMessagesDiv.scrollHeight;
-				}, 10);
 			}
+		}
+		else
+		{
+			if (message.length > 1000)
+				event.preventDefault();
 		}
 	}
 </script>
@@ -111,18 +140,16 @@
 		<img src={threeDotsIcon} alt="Options" />
 	</div>
 	<div class="list-messages">
-		{#key listMessages}
-			{#each listMessages as message}
-				<div class="message {message.sendBySelf ? 'self' : 'other'}">
-					<p>{message.content}</p>
-				</div>
-			{/each}
-		{/key}
+		{#each listMessages as message}
+			<div class="message {message.sendBySelf ? 'self' : 'other'}">
+				<p>{message.content}</p>
+			</div>
+		{/each}
 	</div>
 	<div class=input-message-container>
-		<input type="text" placeholder="Écris un message..." class="input-message" on:keypress={(e) => sendMessage(e)} />
+		<input type="text" placeholder="Écris un message..." class="input-message" on:keypress={(e) => sendMessage(e)}/>
 		
-		<button class="send-button no-button-style">
+		<button class="send-button no-button-style" on:click={(e) => sendMessage({key: 'Enter'})}>
 			<img src={sendIcon} alt="Send" />
 		</button>
 	</div>
@@ -200,6 +227,9 @@
 		align-self: flex-start;
 		background-color: #f7f7f7;
 		border-radius: 2rem 2rem 2rem 0;
+	}
+	.list-messages .message p {
+		word-break: break-word;
 	}
 	.input-message-container {
 		width: 90%;

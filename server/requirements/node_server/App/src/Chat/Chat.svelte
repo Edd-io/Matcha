@@ -2,7 +2,7 @@
 	import InChat from './InChat.svelte'
 
 	let userList = [
-		// {name: 'Jean', pfp: "https://images.pexels.com/photos/837358/pexels-photo-837358.jpeg?cs=srgb&dl=pexels-olly-837358.jpg&fm=jpg", lastMessage: 'Salut ça va ?', seen: false, sendBySelf: false, id: 1},
+		{name: 'Jean', pfp: "https://images.pexels.com/photos/837358/pexels-photo-837358.jpeg?cs=srgb&dl=pexels-olly-837358.jpg&fm=jpg", lastMessage: 'Salut ça va ?', seen: false, sendBySelf: false, id: 1},
 		// {name: 'Marie', pfp: "https://images.pexels.com/photos/445109/pexels-photo-445109.jpeg?cs=srgb&dl=pexels-trinitykubassek-445109.jpg&fm=jpg", lastMessage: 'Dispo ce soir pour parler ?', seen: true, sendBySelf: true, id: 2},
 		// {name: 'Pierre', pfp: "https://images.pexels.com/photos/699604/pexels-photo-699604.jpeg?cs=srgb&dl=pexels-johnmark-smith-699604.jpg&fm=jpg", lastMessage: 'T’es toujours partant pour demain ?', seen: false, sendBySelf: false, id: 3},
 		// {name: 'Lucie', pfp: "https://images.pexels.com/photos/3723701/pexels-photo-3723701.jpeg?cs=srgb&dl=pexels-rodnae-productions-3723701.jpg&fm=jpg", lastMessage: 'On se retrouve à 18h ?', seen: true, sendBySelf: true, id: 4},
@@ -48,7 +48,7 @@
 				<div style="padding-inline: 1rem;">
 					<h3>{user.name}</h3>
 					<p style="{!user.seen ? 'font-weight: 700; color: #111' : ''}">
-						{user.sendBySystem ? "" : user.sendBySelf ? "Toi" : user.name}{user.lastMessage.length > 30 ? user.lastMessage.slice(0, 30) + '...' : user.lastMessage}
+						{user.sendBySystem ? "" : user.sendBySelf ? "Toi : " : user.name + " : "} {user.lastMessage.length > 30 ? user.lastMessage.slice(0, 30) + '...' : user.lastMessage}
 					</p>
 				</div>
 			</button>
