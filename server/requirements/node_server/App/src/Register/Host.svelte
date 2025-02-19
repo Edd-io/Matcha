@@ -18,23 +18,25 @@
 		<p>L’amour infusé de simplicité et d’authenticité.</p>
 	</div>
 	<div class="bottom">
-		<div class="buttons">
-			<button on:click={redirect} class="create">
-				<p>Créer <br />un compte</p>
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-					<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-				</svg>
-			</button>
-			<button>
-				<img src={GoogleLogo} alt="Google logo"/>
-			</button>
-			<button>
-				<img src={AppleLogo} alt="Apple logo"/>
+		<div class="bot">
+			<div class="buttons">
+				<button on:click={redirect} class="create">
+					<p>Créer <br />un compte</p>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+						<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+					</svg>
+				</button>
+				<button>
+					<img src={GoogleLogo} alt="Google logo"/>
+				</button>
+				<button>
+					<img src={AppleLogo} alt="Apple logo"/>
+				</button>
+			</div>
+			<button class="login-button" on:click={() => navigate('/login')}>
+				<p>J’ai déjà un compte</p>
 			</button>
 		</div>
-		<button class="login-button" on:click={() => navigate('/login')}>
-			<p>J’ai déjà un compte</p>
-		</button>
 	</div>
 </main>
 
@@ -82,12 +84,20 @@
 		justify-content: center;
 	}
 
+	.bot {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		position: absolute;
+		bottom: 5rem;
+	}
+
 	.buttons {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		text-decoration: none;
-		margin-top: 300px;
 	}
 
 	.buttons .create {

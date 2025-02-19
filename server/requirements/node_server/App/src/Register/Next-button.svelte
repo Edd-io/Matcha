@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from "svelte";
+
 	export let page;
 
 	function emit()
@@ -7,6 +9,19 @@
 	
 		window.dispatchEvent(customEvent);
 	}
+
+	onMount(() => {
+		const handleKeyDown = (event) => {
+			if (event.key === 'Enter')
+				emit();
+		};
+
+		document.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+		};
+	});
 </script>
 
 <main>
