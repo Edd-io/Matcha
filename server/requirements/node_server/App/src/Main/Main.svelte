@@ -49,7 +49,11 @@
 	}
 
 	onMount(() => {
+		const divPhoto = document.getElementById('divPhoto');
+
 		window.addEventListener("scroll", handleScroll);
+
+
 		return () => window.removeEventListener("scroll", handleScroll);
 	});
 
@@ -85,6 +89,8 @@
 			// }
 			// else
 			// {
+				dislike = false;
+				like = false;
 				globalThis.userInfoSwipeZone.set(data);
 				counter++;
 				iPhoto = 0;
@@ -98,30 +104,29 @@
 	}
 	counter++;
 
-	function reactToUser(like)
-	{
-		return function()
-		{
-			fetch('/react_to_user', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					liked: like,
-				})
-			}).then(res => res.json())
-			.then(data => {
-				if (data.success)
-					getSwipeUser();
-				else
-					console.log('Error');
-			})
-		}
-	}
-
+		
 	let like = false;
 	let dislike = false;
+
+	function reactToUser(like)
+	{
+		fetch('/react_to_user', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				liked: like,
+			})
+		}).then(res => res.json())
+		.then(data => {
+			if (data.success)
+				getSwipeUser();
+			else
+				console.log('Error');
+		})
+	}
+
 </script>
 
 <main>
@@ -133,54 +138,60 @@
 	<div class="main">
 
 		{#key counter}
-			{#each [0, 1] as number}
-				{#if showComponent}
-					<ScrollProfile bind:users={user} bind:showComponent={showComponent}/>
-				{/if}
+			{#if showComponent}
+				<ScrollProfile bind:users={user} bind:showComponent={showComponent}/>
+			{/if}
 
-				<div class="photo {number === 0 ? (like ? 'active2' : (dislike ? 'active' : '')) : ''}" style="position: {number === 0 ? 'relative; z-index: 90' : 'absolute'}">
-					{#if !finished}
-						<div class='zone-pass'>
-							<div class="centered">
-								<img src={user?.images ? user?.images[iPhoto] : null} alt="" style="height: 100%; width: 100%; object-fit: cover; border-radius: 2rem;"/>
-							</div>
+			<div class="photo" class:active={like} class:active2={dislike} class:showProfile={!like && !dislike}>
+				{#if !finished}
+					<div class='zone-pass'>
+						<div class="centered">
+							<img src={user?.images ? user?.images[iPhoto] : null} alt="" style="height: 100%; width: 100%; object-fit: cover; border-radius: 2rem;"/>
 						</div>
-						<div class="centered" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
-							<div class="nb-photo">
-								{#each Array(user?.nbPhotos) as _, index}
-									<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
-								{/each}
-							</div>
+					</div>
+					<div class="centered" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
+						<div class="nb-photo">
+							{#each Array(user?.nbPhotos) as _, index}
+								<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
+							{/each}
 						</div>
-						<div class="user-info">
-							<div class="info">
-								<p id="main-info">{user?.name} • {user?.age}</p>
-								<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
-									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-										<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-									</svg>
-								</button>
-							</div>
-							<div class=low-info>
-								<img src={positionLogo} alt="positionLogo"/>
-								<p id="scd-info">{user?.city}, {user?.country}</p>
-							</div>
-						</div>
-						<div class=buttons>
-							<button id="dislike" on:click={() => { reactToUser(false); dislike = true }}>
-								<img src={dislikeLogo} alt="dislikeLogo"/>
-							</button>
-							<button id="like" on:click={() => { reactToUser(true); like = true }}>
-								<img src={likeLogo} alt="likeLogo"/>
+					</div>
+					<div class="user-info">
+						<div class="info">
+							<p id="main-info">{user?.name} • {user?.age}</p>
+							<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
+								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+									<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+								</svg>
 							</button>
 						</div>
-					{:else}
-						<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
-							<p>Aucun profil trouvé avec vos critères</p>
+						<div class=low-info>
+							<img src={positionLogo} alt="positionLogo"/>
+							<p id="scd-info">{user?.city}, {user?.country}</p>
 						</div>
-					{/if}
-				</div>
-			{/each}
+					</div>
+					<div class=buttons>
+						<button id="dislike" on:click={() => {
+							like = dislike = false;
+							dislike = true;
+							reactToUser(false);
+						}}>
+							<img src={dislikeLogo} alt="dislikeLogo"/>
+						</button>
+						<button id="like" on:click={() => {
+							like = dislike = false;
+							like = true;
+							reactToUser(true);
+						}}>
+							<img src={likeLogo} alt="likeLogo"/>
+						</button>
+					</div>
+				{:else}
+					<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+						<p>Aucun profil trouvé avec vos critères</p>
+					</div>
+				{/if}
+			</div>
 		{/key}
 	</div>
 </main>
@@ -188,24 +199,33 @@
 <style>
 
 	@keyframes slideIn {
-		from {
+		0% {
 			transform: translateX(0);
 			opacity: 1;
 		}
-		to {
+		100% {
 			transform: rotate(25deg) translateX(500px);
 			opacity: 0;
 		}
 	}
 
 	@keyframes slideOut {
-		from {
+		0% {
 			transform: translateX(0);
 			opacity: 1;
 		}
-		to {
+		100% {
 			transform: rotate(-25deg) translateX(-500px);
 			opacity: 0;
+		}
+	}
+
+	@keyframes showProfileAnime {
+		0% {
+			opacity: 0;
+		}
+		100% {
+			opacity: 1;
 		}
 	}
 
@@ -215,6 +235,11 @@
 
 	.active {
 		animation: slideIn 0.3s ease forwards;
+	}
+
+	.showProfile {
+		animation: showProfileAnime 0.3s ease forwards;
+		opacity: 1;
 	}
 
 	main{
@@ -247,6 +272,7 @@
 		flex-direction: column;
 		justify-content: end;
 		position: relative;
+		transition: all 0.3s;
 	}
 
 	.centered {

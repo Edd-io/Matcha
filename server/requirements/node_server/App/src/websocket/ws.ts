@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ws.ts                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:03:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/18 11:09:08 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/20 21:58:32 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,22 @@ class Ws
 
 		this.socket.onmessage = function(event: any)
 		{
+			let customEvent: any = null;
+			let data: any = null;
+
 			console.log("Message received: " + event.data);
+			try {
+				data = JSON.parse(event.data);
+			}
+			catch (e) {
+				return;
+			}
+			if (data.type === "message")
+				customEvent = new CustomEvent("newMessage", {detail: {content: data.content, from: data.from}});
+
+			if (customEvent)
+				document.dispatchEvent(customEvent);
+
 		};
 
 		this.socket.onclose = function()

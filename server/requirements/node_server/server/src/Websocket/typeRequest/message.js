@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.js                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:51:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/18 19:15:14 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/20 21:49:52 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ function wsMessage(wsUsers, message, from, to, db)
 	}
 	db.sendMessage(from, to, message);
 	if (wsUsers[to])
-		wsUsers[to].send({type: 'message', content: message, from: from, to: to});
+		wsUsers[to].send({type: 'message', content: message, from: from});
 }
 
 function checkJson(message, from, to)

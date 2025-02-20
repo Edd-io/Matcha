@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/18 18:31:26 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/20 21:47:07 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ class Websocket
 
 		try {
 			json = JSON.parse(message);
-			console.log(typeof json);
 			if (json.type == 'message')
 				wsMessage(users, json.content, this.id, json.to, this.db);
 			else
