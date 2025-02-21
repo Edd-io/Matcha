@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/18 19:13:17 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/21 07:51:19 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -538,14 +538,20 @@ class Database
 		conn.end();
 		for (let i = 0; i < row.length; i++)
 		{
-			const other_id = row[i].from_id == user_id ? row[i].to_id : row[i].from_id;
-			const otherInfo = await getOtherInfo(other_id);
+			const	other_id = row[i].from_id == user_id ? row[i].to_id : row[i].from_id;
+			const	otherInfo = await getOtherInfo(other_id);
+			let		seen = true;
+
+			if (row[i].system)
+				seen = false;
+			else if (row[i].from_id != user_id)
+				seen = row[i].seen;
 			chatList.push({
 				name: otherInfo.name,
 				pfp: otherInfo.pfp,
 				lastMessage: row[i].message,
 				date: row[i].date,
-				seen: row[i].from_id == user_id ? true : row[i].seen,
+				seen,
 				sendBySelf: row[i].from_id == user_id,
 				id: other_id,
 				sendBySystem: row[i].system
@@ -565,10 +571,8 @@ class Database
 		for (let i = 0; i < row.length; i++)
 		{
 			chat.push({
-				from_id: row[i].from_id,
-				to_id: row[i].to_id,
-				message: row[i].message,
-				date: row[i].date
+				content: row[i].message,
+				sendBySelf: row[i].from_id == from_id,
 			});
 		}
 		return (chat);
@@ -579,10 +583,24 @@ class Database
 		const conn = await this.pool.getConnection();
 
 		await conn.query('INSERT INTO users_messages (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
-		await conn.query('INSERT INTO users_last_message (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
+
+		const row = await conn.query('SELECT * FROM users_last_message WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', [from_id, to_id, to_id, from_id]);
+		if (row.length == 0)
+			await conn.query('INSERT INTO users_last_message (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
+		else
+			await conn.query('UPDATE users_last_message SET message = ?, date = CURRENT_TIMESTAMP, system = false WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', [message, from_id, to_id, to_id, from_id]);
 		conn.release();
 		conn.end();
 	}
+
+	async messageSeen(id, to)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('UPDATE users_last_message SET seen = true WHERE from_id = ? AND to_id = ?', [to, id]);
+		conn.release();
+		conn.end();
+	}		
 		
 }
 

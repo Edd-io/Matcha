@@ -26,10 +26,28 @@
 	});
 
 	onMount(() => {
+		function newMessage(event: any)
+		{
+			if (event.detail.from !== user.id)
+				return;
+			const message = event.detail.content;
+			writableListMessages.update(value => {
+				value.push({content: message, sendBySelf: false});
+				return (value);
+			});
+			globalThis.ws.send(JSON.stringify({
+				type: 'message_seen',
+				to: user.id
+			}));
+		}
+
+		document.addEventListener('newMessage', newMessage);
 		const listMessagesDiv = document.querySelector('.list-messages');
 		setTimeout(() => {
 			listMessagesDiv.scrollTop = listMessagesDiv.scrollHeight;
 		}, 100);
+
+		return () => document.removeEventListener('newMessage', newMessage);
 	})
 
 	function slideHorizontal(node) {
@@ -58,9 +76,12 @@
 		})
 		.then(res => res.json())
 		.then(data => {
-			listMessages = data;
+			globalThis.ws.send(JSON.stringify({
+				type: 'message_seen',
+				to: user.id
+			}));
+			writableListMessages.set(data);
 		});
-		return listMessages;
 	}
 
 	getChat();

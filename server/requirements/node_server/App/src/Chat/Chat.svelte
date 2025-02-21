@@ -1,4 +1,6 @@
 <script lang='ts'>
+	import { onMount } from 'svelte';
+
 	import InChat from './InChat.svelte'
 
 	let userList = [];
@@ -6,43 +8,69 @@
 	let	chatOpened = false;
 	let selectedUser = null;
 
-	function getChatList()
+	function getChatList(chatOpened: boolean)
 	{
+		if (chatOpened)
+			return ;
+		console.log('fetching chat list');
 		fetch('/get_chat_list')
 		.then(res => res.json())
 		.then(data => {
 			userList = data;
 		});
-		return userList;
 	}
 
-	getChatList();
+	$: getChatList(chatOpened);
+
+	onMount(() => {
+		function newMessage(event: any)
+		{
+			for (let i = 0; i < userList.length; i++)
+			{
+				if (userList[i].id === event.detail.from)
+				{
+					userList[i].lastMessage = event.detail.content;
+					userList[i].seen = false;
+					userList[i].sendBySelf = false;
+					userList[i].sendBySystem = false;
+					
+					break;
+				}
+			}
+		}
+
+		document.addEventListener('newMessage', newMessage);
+		return () => document.removeEventListener('newMessage', newMessage);
+	});
 
 	globalThis.path.set('/chat');
+	let counter = 0;
 </script>
 
 <main>
 	<input id="search-input" placeholder="Rechercher..." />
 	<div class="list-user">
-		{#each userList as user}
-			<button class="user no-button-style" on:click={() => {
-				selectedUser = user;
-				chatOpened = true;
-			}}>
-			<div class="pfp-container">
-				{#if !user.seen}
-					<div class="notif"></div>
-				{/if}
-				<img src={user.pfp} alt="Pfp de {user.name}" />
-			</div>
-				<div style="padding-inline: 1rem;">
-					<h3>{user.name}</h3>
-					<p style="{!user.seen ? 'font-weight: 700; color: #111' : ''}">
-						{user.sendBySystem ? "" : user.sendBySelf ? "Toi : " : user.name + " : "} {user.lastMessage.length > 30 ? user.lastMessage.slice(0, 30) + '...' : user.lastMessage}
-					</p>
+		{#key counter}
+			{#each userList as user}
+				<button class="user no-button-style" on:click={() => {
+					selectedUser = user;
+					chatOpened = true;
+				}}>
+				<div class="pfp-container">
+					{#if !user.seen}
+						<div class="notif"></div>
+					{/if}
+					<img src={user.pfp} alt="Pfp de {user.name}" />
 				</div>
-			</button>
-		{/each}
+					<div style="padding-inline: 1rem;">
+						<h3>{user.name}</h3>
+						<p style="{!user.seen ? 'font-weight: 700; color: #111' : ''}">
+							{user.sendBySystem ? "" : user.sendBySelf ? "Toi : " : user.name + " : "} {user.lastMessage.length > 30 ? user.lastMessage.slice(0, 30) + '...' : user.lastMessage}
+						</p>
+					</div>
+				</button>
+			{/each}
+		{/key}
 	</div>
 	{#if chatOpened}
 		<InChat user={selectedUser} bind:chatOpened={chatOpened}/>
