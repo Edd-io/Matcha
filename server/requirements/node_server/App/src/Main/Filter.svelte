@@ -28,14 +28,14 @@
 	
 <main>
 		<div class="top-notif">
-				<button class="back-button" aria-label='Retour' on:click={() => back()}>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-								<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-							</svg>
-				</button>
-				<p class="small-text" id="notif-txt">Filtrage</p>
+			<button class="back-button" aria-label='Retour' on:click={() => back()}>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+							<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+			</button>
+			<p class="small-text" id="notif-txt">Filtrage</p>
 		</div>
-		<p class="text">Tranche d'age [{min_age} - {max_age}]</p>
+		<p class="text">Tranche d'age [{min_age} - {max_age == 100 ? '100+' : max_age}]</p>
 		<DoubleRangeSlider bind:min_age={min_age} bind:max_age={max_age} />
 		<p class="text">Distance [{range == 100 ? '100+' : range}] km</p>
 		<SimpleRangeSlider bind:range={range}/>
@@ -56,6 +56,8 @@
         top: 0;
         left: 0;
         z-index: 4;
+		max-width: 40rem;
+		margin: auto;
     }
 
 	.text{

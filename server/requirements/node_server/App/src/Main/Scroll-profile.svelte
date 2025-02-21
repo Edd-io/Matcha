@@ -16,9 +16,31 @@
             showComponent = !showComponent;
         }, 500);
     }
+
+    let showSignalPopup = false;
+    let showBlockPopup = false;
 </script>
 
 <main>
+    {#if showSignalPopup}
+        <div class="overlay" on:click={() => showSignalPopup = false}></div>
+        <div class="delete-account">
+            <h2>Signaler</h2>
+            <p>Vous êtes sur le point de signaler {users.name}, êtes-vous sûr de vouloir le faire ?</p>
+            <button class="btn" style="background-color: #c7c7c7; color: #111;">Signaler</button>
+            <button class="btn" style="background-color: #111;" on:click={() => showSignalPopup = false}>Annuler</button>
+        </div>
+    {/if}
+
+    {#if showBlockPopup}
+        <div class="overlay" on:click={() => showBlockPopup = false}></div>
+        <div class="delete-account">
+            <h2>Bloquer</h2>
+            <p>Vous êtes sur le point de bloquer {users.name}, cette action est irréversible. Êtes-vous sûr de vouloir le faire ?</p>
+            <button class="btn" style="background-color: #C64141; color: white;">Bloquer</button>
+            <button class="btn" style="background-color: #111;" on:click={() => showBlockPopup = false}>Annuler</button>
+        </div>
+    {/if}
     <div class={hideComponent ? "info-profil show" : "info-profil hide"}>
         <button class="close-scroll" on:click={toggleScrollInfo} aria-label="Close">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
@@ -60,8 +82,8 @@
         </div>
         <div class="div-btn">
             <button class="scroll-btn">Lorem</button>
-            <button class="scroll-btn">Bloquer</button>
-            <button class="scroll-btn" id="signal-btn">Signaler</button>
+            <button class="scroll-btn" on:click={() => showSignalPopup = true}>Signaler</button>
+            <button class="scroll-btn" id="block-btn" on:click={() => showBlockPopup = true}>Bloquer</button>
         </div>
     </div>
 </main>
@@ -93,6 +115,52 @@ main {
 p {
     color: #111111;
     font-size: 1.3rem;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    border: none;
+    z-index: 10;
+}
+
+.btn {
+    color: white;
+    padding: 10px 20px;
+    border-radius: 2rem;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+}
+
+.delete-account {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    top: 30%;
+    transform: translateX(8%);
+    margin-top: 20px;
+    width: 80%;
+    padding: 20px;
+    gap: 20px;
+    border-radius: 2rem;
+    z-index: 11;
+}
+
+.delete-account h2 {
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+}
+
+.delete-account p {
+    font-size: 1rem;
 }
 
 .info-profil.show {
@@ -225,7 +293,7 @@ p {
     margin-inline: 20px;
 }
 
-#signal-btn{
+#block-btn{
     background-color: #C64141;
 }
 

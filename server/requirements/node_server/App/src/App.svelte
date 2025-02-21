@@ -99,7 +99,7 @@
 	const pageWithoutBorder = ["/register", "/"];
 </script>
 
-<main style={pageWithoutBorder.includes(path) && !isConnected ? "" : "max-width: 80rem;"}>
+<main style={pageWithoutBorder.includes(path) && !isConnected ? "" : "max-width: 40rem;"}>
 	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
 		<TopBar />
 	{/if}

@@ -1,5 +1,6 @@
 <script lang='ts'>
-	import Choose_interests from '../Register/Choose_interests.svelte';
+	import NotSave from '../Main/not-save.svelte';
+import Choose_interests from '../Register/Choose_interests.svelte';
 
 	globalThis.path.set('/self_info');
 
@@ -42,6 +43,7 @@
 			</div>
 		</div>
 	</div>
+	<NotSave />
 </main>
 
 <style>

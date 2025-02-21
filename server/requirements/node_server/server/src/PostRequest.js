@@ -3,17 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PostRequest.js                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-<<<<<<< HEAD
 /*   By: madegryc <madegryc@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/19 15:30:00 by madegryc         ###   ########.fr       */
-=======
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 07:48:08 by edbernar         ###   ########.fr       */
->>>>>>> d5bc0cf7a0e7570e32569d8ea4efba8ffa5ec41b
+/*   Updated: 2025/02/21 14:38:02 by madegryc         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

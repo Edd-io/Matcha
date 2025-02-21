@@ -2,6 +2,7 @@
 	import matchaLogo from '../assets/Matcha.svg';
 	import AppleLogo from '../assets/apple-logo.svg';
 	import GoogleLogo from '../assets/google-logo.svg';
+	import Logo42 from '../assets/42_Logo.svg';
 	import { navigate } from 'svelte-routing';
 
 	function redirect()
@@ -27,11 +28,11 @@
 					</svg>
 				</button>
 				<button>
-					<img src={GoogleLogo} alt="Google logo"/>
+					<img src={Logo42} alt="42 logo"/>
 				</button>
-				<button>
+				<!-- <button>
 					<img src={AppleLogo} alt="Apple logo"/>
-				</button>
+				</button> -->
 			</div>
 			<button class="login-button" on:click={() => navigate('/login')}>
 				<p>J’ai déjà un compte</p>
@@ -139,6 +140,11 @@
 		justify-content: center;
 		align-items: center;
 		cursor: pointer;
+	}
+
+	.buttons button img {
+		width: 40px;
+		height: 40px;
 	}
 
 	.login-button {

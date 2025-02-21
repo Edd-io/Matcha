@@ -13,7 +13,23 @@
         </button>
         <p class="small-text" id="notif-txt">Notification(s)</p>
     </div>
-    <NotifComp />
+    <div class="notifications">
+        <NotifComp />
+        <NotifComp />
+        <!-- <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp />
+        <NotifComp /> -->
+    </div>
 </main>
 
 <style>
@@ -25,6 +41,17 @@
         top: 0;
         left: 0;
         z-index: 4;
+        max-width: 40rem;
+        margin: auto;
+    }
+
+    .notifications {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0 20px;
+        height: 100%;
+        overflow-y: scroll;
     }
 
     .top-notif {
