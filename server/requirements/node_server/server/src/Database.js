@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/20 22:15:46 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/21 07:51:19 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -592,6 +592,15 @@ class Database
 		conn.release();
 		conn.end();
 	}
+
+	async messageSeen(id, to)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('UPDATE users_last_message SET seen = true WHERE from_id = ? AND to_id = ?', [to, id]);
+		conn.release();
+		conn.end();
+	}		
 		
 }
 

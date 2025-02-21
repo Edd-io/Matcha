@@ -35,6 +35,10 @@
 				value.push({content: message, sendBySelf: false});
 				return (value);
 			});
+			globalThis.ws.send(JSON.stringify({
+				type: 'message_seen',
+				to: user.id
+			}));
 		}
 
 		document.addEventListener('newMessage', newMessage);
@@ -72,6 +76,10 @@
 		})
 		.then(res => res.json())
 		.then(data => {
+			globalThis.ws.send(JSON.stringify({
+				type: 'message_seen',
+				to: user.id
+			}));
 			writableListMessages.set(data);
 		});
 	}

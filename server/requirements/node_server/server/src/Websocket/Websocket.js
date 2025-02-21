@@ -6,12 +6,13 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/20 21:47:07 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/21 07:59:04 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const Debug = require('../Debug');
 const wsMessage = require('./typeRequest/message');
+const wsMessageSeen = require('./typeRequest/messageSeen');
 const users = [];
 
 class Websocket
@@ -48,6 +49,8 @@ class Websocket
 			json = JSON.parse(message);
 			if (json.type == 'message')
 				wsMessage(users, json.content, this.id, json.to, this.db);
+			else if (json.type == 'message_seen')
+				wsMessageSeen(this.id, json.to, this.db);
 			else
 			{
 				Debug.errorWebsocket("Invalid type", json.type);
