@@ -11,19 +11,27 @@
 		let range: number;
 
 		let interests: number[] = [];
-		let choose_interests_visible = false;
 		globalThis.path.set('/filter');
 
 		function back()
 		{
-			navigate(globalThis.last_path);
 			globalThis.filterData = {
 				min_age: min_age,
 				max_age: max_age,
 				range: range,
 				interests: interests
 			};
+			globalThis.pageLoaded = false;
+			navigate(globalThis.last_path);
 		};
+		min_age = globalThis.filterData.min_age;
+		max_age = globalThis.filterData.max_age;
+		range = globalThis.filterData.range;
+		interests = globalThis.filterData.interests;
+		$: localStorage.setItem('min_age', String(min_age));
+		$: localStorage.setItem('max_age', String(max_age));
+		$: localStorage.setItem('range', String(range));
+		$: localStorage.setItem('interests', JSON.stringify(interests));
 </script>
 	
 <main>

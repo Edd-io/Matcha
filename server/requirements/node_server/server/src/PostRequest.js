@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   PostRequest.js                                     :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: madegryc <madegryc@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 14:38:02 by madegryc         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 var fs = require('fs');
 const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
@@ -396,6 +384,15 @@ class PostRequest
 		if (typeof req.body.id !== 'number')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		db.getChat(req.session.info.id, req.body.id).then((ret) => {res.send(ret)});
+	}
+
+	////// NOTIFICATIONS //////
+	static get_notifications(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		db.getNotifications(req.session.info.id).then((ret) => {res.send(ret)});
 	}
 }
 

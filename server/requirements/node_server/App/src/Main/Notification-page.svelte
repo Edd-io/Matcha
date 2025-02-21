@@ -1,7 +1,46 @@
 <script>
     import { navigate } from "svelte-routing";
+    import { onMount } from 'svelte';
     import NotifComp from "./Notif-comp.svelte";
 	globalThis.path.set('/notification');
+
+    let notifs = [];
+
+    function getNotifications()
+    {
+        fetch('get_notifications')
+        .then(response => response.json())
+        .then(data => {
+            notifs = data;
+        });
+    }
+
+    onMount(() => {
+        let timeout = null;
+
+        function newNotif(event)
+        {
+            notifs = [{...event.detail.content, seen: false}, ...notifs];
+            timeout = setTimeout(() => {
+                globalThis.ws.send(JSON.stringify({type: 'seen_notifs'}));
+                timeout = null;
+            }, 1000);
+        }
+
+        getNotifications();
+        timeout = setTimeout(() => {
+            globalThis.ws.send(JSON.stringify({type: 'seen_notifs'}));
+            timeout = null;
+        }, 1000);
+        document.addEventListener('newNotification', newNotif);
+        return (() => {
+            if (timeout)
+                clearTimeout(timeout);
+            document.removeEventListener('newNotification', newNotif);
+        });
+    });
+
+
 </script>
 
 <main>
@@ -13,23 +52,9 @@
         </button>
         <p class="small-text" id="notif-txt">Notification(s)</p>
     </div>
-    <div class="notifications">
-        <NotifComp />
-        <NotifComp />
-        <!-- <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp />
-        <NotifComp /> -->
-    </div>
+    {#each notifs as notif}
+        <NotifComp image={notif.image} message={notif.message} seen={notif.seen} />
+    {/each}
 </main>
 
 <style>

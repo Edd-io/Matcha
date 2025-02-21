@@ -12,7 +12,7 @@
         <div class="pfp-notif"></div>
         <!-- Plus tard ajouter des if else pour mettre le bon message de notification. -->
         <p class="text" id="msg-notif"><strong>{test}</strong> apprécie votre profil ! <br> Peut-être nouvelle connexion authentique ?</p>
-        <button class="valid-button" on:click={closeNotif}>
+        <button class="valid-button" on:click={closeNotif} aria-label='Valider'>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="currentColor" d="m9.55 18l-5.7-5.7l1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4z"/></svg>
         </button>
     </div>
