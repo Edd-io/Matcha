@@ -12,8 +12,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:02:40 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 07:48:08 by edbernar         ###   ########.fr       */
->>>>>>> d5bc0cf7a0e7570e32569d8ea4efba8ffa5ec41b
+/*   Updated: 2025/02/21 08:21:41 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -403,6 +402,15 @@ class PostRequest
 		if (typeof req.body.id !== 'number')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		db.getChat(req.session.info.id, req.body.id).then((ret) => {res.send(ret)});
+	}
+
+	////// NOTIFICATIONS //////
+	static get_notifications(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		db.getNotifications(req.session.info.id).then((ret) => {res.send(ret)});
 	}
 }
 

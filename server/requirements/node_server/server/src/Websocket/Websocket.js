@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 07:59:04 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/21 13:15:13 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ class Websocket
 				wsMessage(users, json.content, this.id, json.to, this.db);
 			else if (json.type == 'message_seen')
 				wsMessageSeen(this.id, json.to, this.db);
+			else if (json.type == 'seen_notifs')
+				this.db.seenNotifs(this.id);
 			else
 			{
 				Debug.errorWebsocket("Invalid type", json.type);
@@ -70,6 +72,18 @@ class Websocket
 		if (typeof message !== 'object')
 			throw new Error("Message is not an object");
 		this.ws.send(JSON.stringify(message));
+	}
+
+	static sendNotification(id, message, image)
+	{
+		if (users[id])
+			users[id].send({type: 'notification', content: {message: message, image: image}});
+	}
+
+	static sendMatch(id, name, image)
+	{
+		if (users[id])
+			users[id].send({type: 'match', content: {name: name, image: image}});
 	}
 }
 

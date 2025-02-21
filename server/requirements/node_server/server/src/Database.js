@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 07:51:19 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/21 14:19:17 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ const credientials = require('../credentials.json');
 const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
 const haversine = require('./utils/haversine');
+const Websocket = require('./Websocket/Websocket');
 
 class Database
 {
@@ -127,6 +128,14 @@ class Database
 				seen BOOLEAN DEFAULT FALSE,
 				FOREIGN KEY(from_id) REFERENCES accounts(id) ON DELETE CASCADE,
 				FOREIGN KEY(to_id) REFERENCES accounts(id) ON DELETE CASCADE
+			)`);
+			conn.query(`CREATE TABLE IF NOT EXISTS users_notifications (
+				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				user_id INT,
+				message TEXT,
+				image VARCHAR(80),
+				seen BOOLEAN DEFAULT FALSE,
+				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
 			conn.release();
 			conn.end();
@@ -379,7 +388,7 @@ class Database
 				tags = filter.interests;
 			for (let i = 0; i < tags.length; i++)
 			{
-				if (otherInfo.tags.includes(tags[i]))
+				if (otherInfo.tags.includes(String(tags[i])))
 					scoreTags++;
 			}
 
@@ -429,7 +438,7 @@ class Database
 			}
 			if (index == this.buffer_neverSeenUser.length)
 			{
-				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers})
+				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers, lastFilter: filter});
 				for (let i = 0; i <= nbUsers; i++)
 				{
 					if (i != user_id)
@@ -453,11 +462,13 @@ class Database
 			}
 			for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
 			{
-				if (this.buffer_neverSeenUser[index].neverSeen[i].score == -1)
+				if (this.buffer_neverSeenUser[index].neverSeen[i].score == -1 || filter != this.buffer_neverSeenUser[index].lastFilter)
 					this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
 			}
+			this.buffer_neverSeenUser[index].lastFilter = filter;
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
-			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0)
+			console.log(this.buffer_neverSeenUser[index].neverSeen);
+			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0 || this.buffer_neverSeenUser[index].neverSeen[0].score == -2 || this.buffer_neverSeenUser[index].neverSeen[0].score == -1)
 				resolve({finished: true});
 			else
 				resolve(this.getUserInfo(this.buffer_neverSeenUser[index].neverSeen[0].id));
@@ -490,13 +501,24 @@ class Database
 			await conn.query('INSERT INTO users_likes (user_id, user_liked_id) VALUES (?, ?)', [user_id, other_id]);
 			if (await this.#hasMatch(user_id, other_id))
 			{
-				// send notification on websocket
+				Websocket.sendNotification(user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
+				Websocket.sendNotification(other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
+				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png"]);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png"]);
 				await conn.query('INSERT INTO users_last_message (from_id, to_id, message, system) VALUES (?, ?, ?, ?)', [user_id, other_id, "Commence la conversation !", true]);
+			}
+			else
+			{
+				const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
+				Websocket.sendNotification(other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png");
+				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png"]);
 			}
 		}
 		else
 		{
-			console.log("User disliked");
+			const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
+			Websocket.sendNotification(other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png");
+			await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png"]);
 			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
 		}
 
@@ -512,6 +534,16 @@ class Database
 
 		conn.release();
 		conn.end();
+		if (row.length != 0)
+		{
+			const name_user_one = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
+			const name_user_two = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [other_id]);
+			const pfp_user_one = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
+			const pfp_user_two = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [other_id]);
+
+			Websocket.sendMatch(user_id, name_user_two[0].first_name, pfp_user_two[0].local_url);
+			Websocket.sendMatch(other_id, name_user_one[0].first_name, pfp_user_one[0].local_url);
+		}
 		return (row.length != 0);
 	}
 
@@ -600,7 +632,44 @@ class Database
 		await conn.query('UPDATE users_last_message SET seen = true WHERE from_id = ? AND to_id = ?', [to, id]);
 		conn.release();
 		conn.end();
-	}		
+	}
+	
+	async newNotification(user_id, message, image)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [user_id, message, image]);
+		conn.release();
+		conn.end();
+	}
+
+	async getNotifications(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_notifications WHERE user_id = ?', [user_id]);
+		const notifications = [];
+
+		conn.release();
+		conn.end();
+		for (let i = row.length - 1; i >= 0; i--)
+		{
+			notifications.push({
+				message: row[i].message,
+				image: row[i].image,
+				seen: row[i].seen
+			});
+		}
+		return (notifications);
+	}
+
+	async seenNotifs(user_id)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('UPDATE users_notifications SET seen = true WHERE user_id = ?', [user_id]);
+		conn.release();
+		conn.end();
+	}
 		
 }
 

@@ -52,9 +52,9 @@
 		const divPhoto = document.getElementById('divPhoto');
 
 		window.addEventListener("scroll", handleScroll);
-
-
-		return () => window.removeEventListener("scroll", handleScroll);
+		return (() => {
+			window.removeEventListener("scroll", handleScroll)
+		});
 	});
 
 	let showComponent = false;
@@ -97,7 +97,7 @@
 			// }
 		})
 	}
-	if (!globalThis.pageLoaded)
+	$: if (!globalThis.pageLoaded)
 	{
 		globalThis.pageLoaded = true;
 		getSwipeUser();

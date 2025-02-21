@@ -11,29 +11,37 @@
 		let range: number;
 
 		let interests: number[] = [];
-		let choose_interests_visible = false;
 		globalThis.path.set('/filter');
 
 		function back()
 		{
-			navigate(globalThis.last_path);
 			globalThis.filterData = {
 				min_age: min_age,
 				max_age: max_age,
 				range: range,
 				interests: interests
 			};
+			globalThis.pageLoaded = false;
+			navigate(globalThis.last_path);
 		};
+		min_age = globalThis.filterData.min_age;
+		max_age = globalThis.filterData.max_age;
+		range = globalThis.filterData.range;
+		interests = globalThis.filterData.interests;
+		$: localStorage.setItem('min_age', String(min_age));
+		$: localStorage.setItem('max_age', String(max_age));
+		$: localStorage.setItem('range', String(range));
+		$: localStorage.setItem('interests', JSON.stringify(interests));
 </script>
 	
 <main>
 		<div class="top-notif">
-				<button class="back-button" aria-label='Retour' on:click={() => back()}>
-						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-								<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-							</svg>
-				</button>
-				<p class="small-text" id="notif-txt">Filtrage</p>
+			<button class="back-button" aria-label='Retour' on:click={() => back()}>
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+							<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+						</svg>
+			</button>
+			<p class="small-text" id="notif-txt">Filtrage</p>
 		</div>
 		<p class="text">Tranche d'age [{min_age} - {max_age}]</p>
 		<DoubleRangeSlider bind:min_age={min_age} bind:max_age={max_age} />
