@@ -1,8 +1,11 @@
 <script>
+    import { onMount } from "svelte";
+    export let min_age = 18;
+    export let max_age = 100;
     let sliderWidth = 0;
     let buttonWidth = 0;
     let position1 = 0;
-    let position2 = 100;
+    let position2 = 0;
     let isDragging = false;
     let activeButton = null;
 
@@ -10,14 +13,13 @@
     let button1;
     let button2;
 
-    export let min_age = 18;
-    export let max_age = 100;
 
-    import { onMount } from "svelte";
 
     onMount(() => {
         sliderWidth = slider.offsetWidth;
         buttonWidth = button1.offsetWidth;
+        position1 = scaleValue(min_age, 18, 100, 0, sliderWidth - buttonWidth);
+        position2 = scaleValue(max_age, 18, 100, 0, sliderWidth - buttonWidth);
     });
 
     function startDrag(event, button) {

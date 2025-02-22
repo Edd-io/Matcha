@@ -62,7 +62,6 @@
         width: 100vw;
         background-color: white;
         top: 0;
-        left: 0;
         z-index: 4;
 		max-width: 40rem;
 		margin: auto;

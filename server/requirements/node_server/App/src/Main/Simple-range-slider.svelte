@@ -13,6 +13,7 @@
 
     onMount(() => {
         sliderWidth = slider.offsetWidth;
+        position = scaleValue(range, 1, 100, 0, sliderWidth - buttonWidth);
         buttonWidth = button.offsetWidth;
     });
 
