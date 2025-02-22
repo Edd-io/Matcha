@@ -9,6 +9,17 @@
     let showDeletePopup = false;
     let showDisconnectPopup = false;
     globalThis.path.set('settings');
+
+
+    function disconnect()
+    {
+        fetch('/logout')
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '/';
+            }
+        });
+    }
 </script>
 
 <main>
@@ -27,7 +38,7 @@
         <div class="delete-account">
             <h2>Déconnecter</h2>
             <p>Vous êtes sur le point de vous déconnecter. Voulez-vous continuer ?</p>
-            <button class="btn" style="background-color: #c7c7c7; color: #111;">Déconnecter</button>
+            <button class="btn" style="background-color: #c7c7c7; color: #111;" on:click={() => {disconnect()}}>Déconnecter</button>
             <button class="btn" style="background-color: #111;" on:click={() => showDisconnectPopup = false}>Annuler</button>
         </div>
     {/if}
