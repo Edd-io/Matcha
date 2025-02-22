@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/22 14:27:38 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/22 14:54:27 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -642,7 +642,10 @@ class Database
 		if (row.length == 0)
 			await conn.query('INSERT INTO users_last_message (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
 		else
-			await conn.query('UPDATE users_last_message SET message = ?, date = CURRENT_TIMESTAMP, system = false WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', [message, from_id, to_id, to_id, from_id]);
+		{
+			await conn.query('DELETE FROM users_last_message WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', [from_id, to_id, to_id, from_id]);
+			await conn.query('INSERT INTO users_last_message (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
+		}
 		conn.release();
 		conn.end();
 	}

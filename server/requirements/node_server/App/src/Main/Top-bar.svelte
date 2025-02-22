@@ -11,8 +11,14 @@
 		fetch('get_notifications')
 		.then(response => response.json())
 		.then(data => {
-			if (data.length > 0)
-				notification = true;
+			for (let i = 0; i < data.length; i++)
+			{
+				if (data[i].seen == 0)
+				{
+					notification = true;
+					break;
+				}
+			}
 		})
 	}
 

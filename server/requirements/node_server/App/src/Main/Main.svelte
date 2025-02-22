@@ -38,13 +38,6 @@
 	globalThis.userInfoSwipeZone.subscribe(value => {
 		user = value;
 	});
-	// $: if (!globalThis.pageLoaded)
-	// {
-	// 	globalThis.pageLoaded = true;
-	// 		getSwipeUser();
-	// }
-	// counter++;
-
 
 	function handleScroll() 
 	{
