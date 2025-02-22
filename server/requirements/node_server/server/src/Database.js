@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/22 14:12:26 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/22 14:27:38 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -468,7 +468,7 @@ class Database
 				}
 				while (this.buffer_neverSeenUser[index].lastNb < nbUsers)
 				{
-					this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: -1});
+					this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: await getScore(this.buffer_neverSeenUser[index].lastNb)});
 					this.buffer_neverSeenUser[index].lastNb++;
 				}
 			}

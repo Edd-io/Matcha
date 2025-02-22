@@ -17,17 +17,40 @@
 	let iPhoto = 0;
 	let counter = 0;
 	let finished = false;
+	let translateY = 0;
+	let showComponent = false;
 	let user = null;
+	let like = false;
+	let dislike = false;
+
+	onMount(() => {
+		getSwipeUser();
+		window.addEventListener("scroll", handleScroll);
+		return (() => {
+			window.removeEventListener("scroll", handleScroll)
+		});
+	});
+
 
 	if (!globalThis.userInfoSwipeZone)
 		globalThis.userInfoSwipeZone = writable(null);
-
+	globalThis.path.set('/');
 	globalThis.userInfoSwipeZone.subscribe(value => {
-		// if (!value)
-		// 	finished = true;
-		// else
-			user = value;
+		user = value;
 	});
+	// $: if (!globalThis.pageLoaded)
+	// {
+	// 	globalThis.pageLoaded = true;
+	// 		getSwipeUser();
+	// }
+	// counter++;
+
+
+	function handleScroll() 
+	{
+		const currentScroll = window.scrollY;
+		translateY = -Math.min(currentScroll, 200);
+	}
 
 	function skipPhoto(event)
 	{
@@ -40,35 +63,13 @@
 			iPhoto++;
 	}
 
-	let translateY = 0;
-
-	function handleScroll() 
-	{
-		const currentScroll = window.scrollY;
-		translateY = -Math.min(currentScroll, 200);
-	}
-
-	onMount(() => {
-		const divPhoto = document.getElementById('divPhoto');
-
-		window.addEventListener("scroll", handleScroll);
-		return (() => {
-			window.removeEventListener("scroll", handleScroll)
-		});
-	});
-
-	let showComponent = false;
-
 	function toggleScrollInfo() 
 	{
 		showComponent = !showComponent;
 	}
 
-	globalThis.path.set('/');
-
 	function getSwipeUser()
 	{
-		console.log('Sending request');
 		fetch('/get_swipe_user', {
 			method: 'POST',
 			headers: {
@@ -81,35 +82,30 @@
 			})
 		}).then(res => res.json())
 		.then(data => {
-			// if (data.finished)
-			// {
-			// 	console.log('Finished');
-			// 	finished = true;
-			// 	globalThis.userInfoSwipeZone.set(null);	
-			// }
-			// else
-			// {
+			if (data.finished)
+			{
+				console.log('finished');
+				finished = true;
+				globalThis.userInfoSwipeZone.set(null);
+				like = false;
+				dislike = false;
+				counter++;
+			}
+			else
+			{
 				dislike = false;
 				like = false;
 				globalThis.userInfoSwipeZone.set(data);
 				counter++;
 				iPhoto = 0;
-			// }
+			}
 		})
 	}
-	$: if (!globalThis.pageLoaded)
-	{
-		globalThis.pageLoaded = true;
-		getSwipeUser();
-	}
-	counter++;
-
-		
-	let like = false;
-	let dislike = false;
 
 	function reactToUser(like)
 	{
+		if (finished || user == null)
+			return;
 		fetch('/react_to_user', {
 			method: 'POST',
 			headers: {
@@ -122,11 +118,8 @@
 		.then(data => {
 			if (data.success)
 				getSwipeUser();
-			else
-				console.log('Error');
 		})
 	}
-
 </script>
 
 <main>
@@ -143,7 +136,7 @@
 			{/if}
 
 			<div class="photo" class:active={like} class:active2={dislike} class:showProfile={!like && !dislike}>
-				{#if !finished}
+				{#if !finished || user}
 					<div class='zone-pass'>
 						<div class="centered">
 							<img src={user?.images ? user?.images[iPhoto] : null} alt="" style="height: 100%; width: 100%; object-fit: cover; border-radius: 2rem;"/>
