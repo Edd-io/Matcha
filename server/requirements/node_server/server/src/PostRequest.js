@@ -355,7 +355,6 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.distance || !req.body.range_age || !req.body.interests)
 			return (res.send(JSON.stringify({error: missing})));
-		console.log("Request by user", req.session.info.id);
 		db.getNeverSeenUser(req.session.info.id, req.body).then((ret) => {res.send(ret)});
 	}
 

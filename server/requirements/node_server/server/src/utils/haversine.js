@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/11 07:04:04 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/11 07:39:17 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/22 13:08:23 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@ function haversine(pos1, pos2)
 	pos1[1] = radius(pos1[1]);
 	pos2[0] = radius(pos2[0]);
 	pos2[1] = radius(pos2[1]);
-
-	console.log(pos1[0], pos1[1], pos2[0], pos2[1]);
 
 	const distance =  2 * earth_radius * Math.asin(
 		Math.sqrt(

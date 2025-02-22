@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/22 12:34:55 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/22 14:12:26 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -425,6 +425,23 @@ class Database
 			});
 		}
 
+		const isSameFilter = (filter1, filter2) => {
+			if (filter1.distance == undefined || filter2.distance == undefined)
+				return (false);
+			if (filter1.range_age[0] != filter2.range_age[0] || filter1.range_age[1] != filter2.range_age[1])
+				return (false);
+			if (filter1.distance != filter2.distance)
+				return (false);
+			if (filter1.interests.length != filter2.interests.length)
+				return (false);
+			for (let i = 0; i < filter1.interests.length; i++)
+			{
+				if (!filter2.interests.includes(filter1.interests[i]))
+					return (false);
+			}
+			return (true);
+		}
+
 		return (new Promise(async (resolve) => {
 			const	nbUsers = await this.#getNbUsers();
 			const	seen = await this.#getListSeenUsers(user_id);
@@ -438,18 +455,13 @@ class Database
 			}
 			if (index == this.buffer_neverSeenUser.length)
 			{
-				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers, lastFilter: filter});
-				for (let i = 0; i <= nbUsers; i++)
-				{
-					if (i != user_id)
-						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: seen.includes(i) ? -2 : -1});
-					else
-						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
-				}
+				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers, lastFilter: {}});
+				for (let i = 1; i <= nbUsers; i++)
+					this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
 			}
 			else
 			{
-				for (let i = 0; i <= nbUsers; i++)
+				for (let i = 0; i <= this.buffer_neverSeenUser[index].neverSeen; i++)
 				{
 					if (seen.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
 						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
@@ -460,14 +472,19 @@ class Database
 					this.buffer_neverSeenUser[index].lastNb++;
 				}
 			}
-			for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
+			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter))
 			{
-				if (this.buffer_neverSeenUser[index].neverSeen[i].score == -1 || filter != this.buffer_neverSeenUser[index].lastFilter)
-					this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
+				for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
+				{
+					if (this.buffer_neverSeenUser[index].neverSeen[i].id == user_id)
+						continue;
+					if (!seen.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
+						this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
+				}
 			}
 			this.buffer_neverSeenUser[index].lastFilter = filter;
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
-			console.log(this.buffer_neverSeenUser[index].neverSeen);
+			console.log(this.buffer_neverSeenUser[index]);
 			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0 || this.buffer_neverSeenUser[index].neverSeen[0].score == -2 || this.buffer_neverSeenUser[index].neverSeen[0].score == -1)
 				resolve({finished: true});
 			else
@@ -488,10 +505,15 @@ class Database
 		}
 		if (index == this.buffer_neverSeenUser.length)
 			return ({error: "User never initialized"});
+		if (this.buffer_neverSeenUser[index].neverSeen.length == 0)
+			return ({error: "No more user to see"});
 		if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0)
 			return ({error: "No more user to see"});
 		other_id = this.buffer_neverSeenUser[index].neverSeen[0].id;
+		console.log("React on user id", other_id);
+		console.log("Data :", this.buffer_neverSeenUser[index].neverSeen[0]);
 		this.buffer_neverSeenUser[index].neverSeen[0].score = -2;
+		console.log("Data :", this.buffer_neverSeenUser[index].neverSeen[0]);
 		this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 
 		const conn = await this.pool.getConnection();
