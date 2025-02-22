@@ -20,6 +20,16 @@
             }
         });
     }
+
+    function deleteAccount()
+    {
+        fetch('/delete_account')
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '/';
+            }
+        });
+    }
 </script>
 
 <main>
@@ -28,7 +38,7 @@
         <div class="delete-account">
             <h2>Supprimer le compte</h2>
             <p>Vous êtes sur le point de supprimer votre compte. Cette action est irréversible.</p>
-            <button class="btn" style="background-color: #c64141;">Supprimer</button>
+            <button class="btn" style="background-color: #c64141;" on:click={() => {deleteAccount()}}>Supprimer</button>
             <button class="btn" style="background-color: #111;" on:click={() => showDeletePopup = false}>Annuler</button>
         </div>
     {/if}

@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 14:19:17 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:34:55 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -670,7 +670,15 @@ class Database
 		conn.release();
 		conn.end();
 	}
-		
+	
+	async deleteUser(user_id)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('DELETE FROM accounts WHERE id = ?', [user_id]);
+		conn.release();
+		conn.end();
+	}
 }
 
 module.exports = Database;

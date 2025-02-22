@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/22 12:00:18 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/22 12:34:23 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ function init(db)
 	app.post('/report_user', (req, res) => PostRequest.report_user(req, res, db));
 	app.post('/change_location', (req, res) => PostRequest.change_location(req, res, db));
 	app.get('/logout', PostRequest.logout);
+	app.get('/delete_account', (req, res) => PostRequest.delete_account(req, res, db));
 	app.post('/get_swipe_user', (req, res) => PostRequest.get_swipe_user(req, res, db));
 	app.post('/react_to_user', (req, res) => PostRequest.react_to_user(req, res, db));
 	app.get('/get_chat_list', (req, res) => PostRequest.get_chat_list(req, res, db));

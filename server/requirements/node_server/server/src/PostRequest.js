@@ -291,6 +291,16 @@ class PostRequest
 		res.send(JSON.stringify({success: "Disconnected"}));
 	}
 
+	static delete_account(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		db.deleteUser(req.session.info.id);
+		req.session.info = {logged: false, id: -1};
+		res.send(JSON.stringify({success: "Account deleted"}));
+	}
+
 	// Request to block a user
 	// {block_id: int}
 	// need to be tested
