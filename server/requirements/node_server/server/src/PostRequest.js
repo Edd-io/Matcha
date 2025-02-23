@@ -403,6 +403,53 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		db.getNotifications(req.session.info.id).then((ret) => {res.send(ret)});
 	}
+
+	////// SETTINGS //////
+	static change_info(req, res, db)
+	{
+		const	authorizedCharsNickname = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_";
+		const	authorizedCharsNames = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ- ";
+
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.body.first_name || !req.body.last_name || !req.body.nickname || !req.body.date_of_birth)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.first_name != 'string' || typeof req.body.last_name != 'string'
+			|| typeof req.body.nickname != 'string' || typeof req.body.date_of_birth != 'string'
+			|| typeof req.body.password != 'string')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		if (req.body.date_of_birth.length !== 10 || req.body.date_of_birth[4] !== '-' || req.body.date_of_birth[7] !== '-' ||
+			isNaN(parseInt(req.body.date_of_birth.substr(0, 4))) || isNaN(parseInt(req.body.date_of_birth.substr(5, 2))) ||
+			isNaN(parseInt(req.body.date_of_birth.substr(8, 2)))
+		)
+			return (res.send(JSON.stringify({error: "Invalid date of birth"})));
+		if (req.body.first_name.length < 2 || req.body.first_name.length > 50)
+			return (res.send(JSON.stringify({error: "First name must be between 2 and 50 characters"})));
+		if (req.body.last_name.length < 2 || req.body.last_name.length > 50)
+			return (res.send(JSON.stringify({error: "Last name must be between 2 and 50 characters"})));
+		if (req.body.first_name.split('').some((c) => !authorizedCharsNames.includes(c)))
+			return (res.send(JSON.stringify({error: "First name contains unauthorized characters"})));
+		if (req.body.last_name.split('').some((c) => !authorizedCharsNames.includes(c)))
+			return (res.send(JSON.stringify({error: "Last name contains unauthorized characters"})));
+		if (req.body.password.length > 0 && (req.body.password.length < 8 || req.body.password.length > 50))
+			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters"})));
+		if (req.body.nickname.length < 2 || req.body.nickname.length > 50)
+			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
+		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
+			return (res.send(JSON.stringify({error: "Nickname contains unauthorized characters"})));
+		db.changeInfo(req.session.info.id, req.body);
+		res.send(JSON.stringify({success: "Info changed"}));
+	}
+
+	static get_info(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		db.getInfo(req.session.info.id).then((data) => res.send(data));
+		
+	}
 }
 
 module.exports = PostRequest;

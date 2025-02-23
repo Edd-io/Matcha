@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/22 12:34:23 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/23 14:09:11 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,9 @@ function init(db)
 	app.get('/get_chat_list', (req, res) => PostRequest.get_chat_list(req, res, db));
 	app.post('/get_chat', (req, res) => PostRequest.get_chat(req, res, db));
 	app.get('/get_notifications', (req, res) => PostRequest.get_notifications(req, res, db));
+	app.post('/change_info', (req, res) => PostRequest.change_info(req, res, db));
+	app.get('/get_info', (req, res) => PostRequest.get_info(req, res, db));
+
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
 	});

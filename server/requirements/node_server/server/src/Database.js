@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/22 14:54:27 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/23 15:39:55 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -703,6 +703,48 @@ class Database
 		await conn.query('DELETE FROM accounts WHERE id = ?', [user_id]);
 		conn.release();
 		conn.end();
+	}
+
+	async changeInfo(user_id, info)
+	{
+		const conn = await this.pool.getConnection();
+		const rowAccounts = await conn.query('SELECT email FROM accounts WHERE id = ?', [user_id]);
+		
+		await conn.query(
+			'UPDATE users_info SET first_name = ?, last_name = ?, nickname = ?, date_of_birth = ? WHERE user_id = ?',
+			[info.first_name, info.last_name, info.nickname, info.date_of_birth, user_id]
+		);
+		conn.release();
+		conn.end();
+		if (info.password.length != 0)
+		{
+			bcrypt.hash(rowAccounts[0].email + info.password, 10, (err, hash) => {
+				if (err)
+					throw Error("Error to hash password")
+				this.pool.getConnection().then((conn) => {
+					conn.query('UPDATE accounts SET password = ? WHERE id = ?', [hash, user_id]);
+				}).finally(() => {conn.release(); conn.end()});
+			});
+		}
+	}
+
+	async getInfo(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
+		const date = new Date(row[0].date_of_birth);
+		const year = date.toLocaleString("default", { year: "numeric" });
+		const month = date.toLocaleString("default", { month: "2-digit" });
+		const day = date.toLocaleString("default", { day: "2-digit" });
+
+		conn.release();
+		conn.end();
+		return ({
+			first_name: row[0].first_name,
+			last_name: row[0].last_name,
+			nickname: row[0].nickname,
+			date_of_birth: year + "-" + month + "-" + day,
+		})
 	}
 }
 

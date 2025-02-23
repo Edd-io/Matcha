@@ -85,7 +85,7 @@
 							'Content-Type': 'application/json'
 						},
 						body: JSON.stringify({lat: latitude, lon: longitude})
-					}).then(res => res.json())
+					})
 				},
 				(err) => {
 					console.warn("Error getLocation: ", err.message);
