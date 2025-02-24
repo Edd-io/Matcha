@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/24 08:34:30 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/24 16:43:04 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -384,7 +384,6 @@ class Database
 
 			if (!selfInfo)
 				selfInfo = await getOtherInfo(user_id);
-
 			if (otherInfo.age < filter.range_age[0] || otherInfo.age > filter.range_age[1])
 				return (0);
 			
@@ -411,10 +410,10 @@ class Database
 				distance = haversine([selfInfo.location.latitude, selfInfo.location.longitude], [otherInfo.location.latitude, otherInfo.location.longitude]);
 				if (distance < filter.distance)
 					scoreDistance = 5 - ((distance * 100 / filter.distance) / 100);
+				else
+					return (0);
 			}
 			if (filter.interests.length > 0 && scoreTags != filter.interests.length)
-				return (0);
-			if (filter.distance < 100 && scoreDistance == 0)
 				return (0);
 			return (scoreTags + scoreDistance);
 		}
@@ -432,7 +431,7 @@ class Database
 			return ({
 				location: rowInfo[0] && rowInfo[0].location ? JSON.parse(rowInfo[0].location) : null,
 				tags,
-				age: rowInfo[0] && rowInfo[0] ? new Date().getFullYear() - new Date(rowInfo[0].age).getFullYear() : null,
+				age: new Date().getFullYear() - new Date(rowInfo[0].date_of_birth).getFullYear(),
 				sexe: rowInfo[0] && rowInfo[0].sexe ? rowInfo[0].sexe : null,
 				orientation: rowInfo[0] && rowInfo[0].orientation ? rowInfo[0].orientation : null
 			});
