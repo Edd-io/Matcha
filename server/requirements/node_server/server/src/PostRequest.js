@@ -450,6 +450,14 @@ class PostRequest
 		db.getInfo(req.session.info.id).then((data) => res.send(data));
 		
 	}
+
+	static get_all_locations(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		db.getAllLocations(req.session.info.id).then((data) => res.send(data));
+	}
 }
 
 module.exports = PostRequest;

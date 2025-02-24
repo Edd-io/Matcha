@@ -1,21 +1,15 @@
-<script>
-    import BottomBar from "../Main/Bottom-bar.svelte";
-    import TopBar from "../Main/Top-bar.svelte";
-    import positionLogo from "../assets/position.svg";
-
+<script lang="ts">
     import 'leaflet/dist/leaflet.css';
     import { onMount } from 'svelte';
 
     import * as L from 'leaflet';
 
-    let name = "John Doe";
-    let age = "43";
-    let distance = "14,4km";
 
-    let map;
-    const css_marker_info = `
+    let map: any;
+    let self_data: any;
+    const css_marker_info = (name, age, distance, img) => `
         <div style="display: flex; flex-direction: row; align-items: center; margin: 0; color: #111111">
-            <img src="https://images.pexels.com/photos/897817/pexels-photo-897817.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="position"
+            <img src="${img}" alt="position"
                 style='width: 5rem; height: 5rem; border-radius: 50%; margin: 0.9rem; object-fit: cover; margin-inline: auto;'
             />
             <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-left: 1rem;">
@@ -34,15 +28,66 @@
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-
-        L.marker([48.8566, 2.3522]).addTo(map) 
-            .bindPopup(css_marker_info)
-            .openPopup();
-
-        // L.marker([28.8566, 72.3522]).addTo(map) 
-        //     .bindPopup(css_marker_info.replace("{name}", 'Kevin').replace("{age}", '18').replace("{distance}", '1214,4km'))
-        //     .openPopup();
+        fetch('/get_all_locations')
+        .then(res => res.json())
+        .then(data => {
+            self_data = data.find(e => e.self);
+            for (let i = 0; i < data.length; i++) {
+                if (data[i].self)
+                {
+                    L.marker([data[i].location.latitude, data[i].location.longitude], {
+                        icon: L.divIcon({
+                            className: '',
+                            html: `<img src="${data[i].pfp}" alt="position" style='width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; transform: translateX(-2.1rem); margin-top: 0.5rem;'/>`
+                        })
+                    }).addTo(map)
+                        .bindPopup(css_marker_info(data[i].name, data[i].age, 'Vous êtes ici', data[i].pfp))
+                        .openPopup();
+                    continue;
+                }
+                createMarker(
+                    data[i].location.latitude,
+                    data[i].location.longitude,
+                    data[i].name,
+                    data[i].age,
+                    data[i].pfp
+                );
+            }
+        });
     });
+
+    function createMarker(lat, long, name, age, pfp)
+    {
+        L.marker([lat, long], {
+            icon: L.divIcon({
+                className: '',
+                html: `<img src="${pfp}" alt="position" style='width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; transform: translateX(-2.1rem); margin-top: 0.5rem;'/>`
+            })
+        }).addTo(map) 
+            .bindPopup(css_marker_info(name, age, haversine([self_data.location.latitude, self_data.location.longitude], [lat, long]) + 'km', pfp))
+            .openPopup();
+    }
+
+    function haversine(pos1, pos2)
+    {
+        const earth_radius = 6378000;
+        const radius = (n) => n  * (Math.PI / 180);
+
+        pos1[0] = radius(pos1[0]);
+        pos1[1] = radius(pos1[1]);
+        pos2[0] = radius(pos2[0]);
+        pos2[1] = radius(pos2[1]);
+
+        const distance =  2 * earth_radius * Math.asin(
+            Math.sqrt(
+                Math.pow(Math.sin((pos2[0] - pos1[0]) / 2), 2)
+                + ((Math.cos(pos1[0]) * Math.cos(pos2[0]))
+                * Math.pow(Math.sin((pos2[1] - pos1[1]) / 2), 2))
+            )
+        )
+        return ((distance / 1000).toFixed(2))
+    }
+
     globalThis.bottomBarCategory.set(-1);
     globalThis.path.set('/map');
 </script>

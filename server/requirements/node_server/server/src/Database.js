@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/24 16:43:04 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/24 17:34:21 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -757,6 +757,39 @@ class Database
 			nickname: row[0].nickname,
 			date_of_birth: year + "-" + month + "-" + day,
 		})
+	}
+
+	async getAllLocations(self_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT first_name, last_name, date_of_birth, user_id, location FROM users_info');
+		const row2 = await conn.query(`SELECT t1.user_id, t1.local_url
+			FROM users_images t1
+			INNER JOIN (
+				SELECT user_id, MIN(id) AS min_id
+				FROM users_images
+				GROUP BY user_id
+			) t2 ON t1.id = t2.min_id;`);
+		const usersList = [];
+
+		conn.release();
+		conn.end();
+		for (let i = 0; i < row.length; i++)
+		{
+			if (row[i].location)
+			{
+				usersList.push({
+					id: row[i].user_id,
+					name: row[i].first_name + " " + row[i].last_name,
+					age: new Date().getFullYear() - new Date(row[i].date_of_birth).getFullYear(),
+					location: JSON.parse(row[i].location),
+					pfp: row2.find((element) => element.user_id == row[i].user_id).local_url,
+				});
+				if (row[i].user_id == self_id)
+					usersList[usersList.length - 1].self = true;
+			}
+		}
+		return (usersList);
 	}
 }
 
