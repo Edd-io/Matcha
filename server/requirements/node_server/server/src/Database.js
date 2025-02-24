@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/23 15:39:55 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/24 08:34:30 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -317,6 +317,18 @@ class Database
 			return (data);
 		}
 
+		const fameRatingCalc = async (user_id) => {
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM users_likes WHERE user_liked_id = ?', [user_id]);
+			const row2 = await conn.query('SELECT * FROM users_dislikes WHERE user_disliked_id = ?', [user_id]);
+			const nbInteractions = row.length + row2.length;
+
+			conn.release();
+			conn.end();
+			console.log("Fame rating for user", user_id, "is", nbInteractions * row2.length / 100);
+			return (nbInteractions * row2.length / 100);
+		}
+
 		const conn = await this.pool.getConnection();
 		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
 		const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [user_id]);
@@ -352,7 +364,8 @@ class Database
 			orientation,
 			bio: row[0].bio,
 			tags,
-			images
+			images,
+			fameRatingCalc: await fameRatingCalc(user_id)
 		});
 	}
 
