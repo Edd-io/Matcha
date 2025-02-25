@@ -330,7 +330,7 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.report_id)
 			return (res.send(JSON.stringify({error: missing})));
-		db.reportedUser(req.session.info.id, req.body.block_id).then((data) => {
+		db.reportedUser(req.session.info.id, req.body.report_id).then((data) => {
 			if (data.alreadyReported)
 				return (res.send(JSON.stringify({error: "User already reported"})));
 			else if (!data.exist)

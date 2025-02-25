@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/24 17:34:21 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/25 08:17:25 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -355,6 +355,7 @@ class Database
 		conn.release();
 		conn.end();
 		return ({
+			id: user_id,
 			nbPhotos: images.length,
 			name: row[0].first_name,
 			age: new Date().getFullYear() - new Date(row[0].date_of_birth).getFullYear(),
@@ -365,7 +366,7 @@ class Database
 			bio: row[0].bio,
 			tags,
 			images,
-			fameRatingCalc: await fameRatingCalc(user_id)
+			fameRatingCalc: await fameRatingCalc(user_id),
 		});
 	}
 
