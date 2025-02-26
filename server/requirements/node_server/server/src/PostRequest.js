@@ -4,6 +4,7 @@ const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
 const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
 const base64ToFile = require('./utils/base64ToFile');
+const usersWs = require('./Websocket/Websocket').users;
 
 const	missing = "Missing parameters";
 let		userCreatingAccount = [];
@@ -340,7 +341,8 @@ class PostRequest
 				if (nb_report >= 5)
 				{
 					db.banUser(req.body.report_id);
-					// Do a function to kick user from server with websocket
+					if (usersWs[req.body.report_id])
+						usersWs[req.body.report_id].bannedUser();
 				}
 			});
 		});

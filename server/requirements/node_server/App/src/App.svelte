@@ -10,6 +10,7 @@
 	import LoadingScreen from './LoadingScreen/LoadingScreen.svelte';
 	import SelfInfo from './SelfInfo/SelfInfo.svelte';
 	import Chat from './Chat/Chat.svelte';
+	import Ban from "./Ban/Ban.svelte";
     import TopBar from "./Main/Top-bar.svelte";
     import BottomBar from "./Main/Bottom-bar.svelte";
 	import NotificationPage from "./Main/Notification-page.svelte";
@@ -20,7 +21,7 @@
 	globalThis.last_path = path;
 
 	let ws = null;
-
+	let banned = false;
 
 	window.addEventListener('popstate', () => {
 		globalThis.last_path = path;
@@ -37,6 +38,13 @@
 			globalThis.ws = ws;
 			getLocation();
 		}
+	});
+
+	globalThis.banned = writable(false)
+	globalThis.banned.subscribe(value => {
+		banned = value;
+		if (banned)
+			isConnected =false;
 	});
 
 	globalThis.path = writable(path);
@@ -100,29 +108,35 @@
 </script>
 
 <main style={pageWithoutBorder.includes(path) && !isConnected ? "" : "max-width: 40rem;"}>
-	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
-		<TopBar />
-	{/if}
-	<div class="content">
+	{#if !banned}
+		{#if (path !== "/login" && path !== "/register" && isConnected === true)}
+			<TopBar />
+		{/if}
+		<div class="content">
+			<Router>
+				{#if isConnected}
+					<Route path="/" component={Main} />
+				{:else}
+					<Route path="/" component={Host} />
+				{/if}
+				<Route path="*" component={LoadingScreen} />
+				<Route path="/register" component={Register}/>
+				<Route path="/filter" component={Filter}/>
+				<Route path="/login" component={Login}/>
+				<Route path="/map" component={Map}/>
+				<Route path="/profile" component={SelfInfo} />
+				<Route path="/chat" component={Chat} />
+				<Route path="/notification" component={NotificationPage} />
+				<Route path="/settings" component={Settings} />
+			</Router>
+		</div>
+		{#if (path !== "/login" && path !== "/register" && isConnected === true)}
+			<BottomBar />
+		{/if}
+	{:else}
 		<Router>
-			{#if isConnected}
-				<Route path="/" component={Main} />
-			{:else}
-				<Route path="/" component={Host} />
-			{/if}
-			<Route path="*" component={LoadingScreen} />
-			<Route path="/register" component={Register}/>
-			<Route path="/filter" component={Filter}/>
-			<Route path="/login" component={Login}/>
-			<Route path="/map" component={Map}/>
-			<Route path="/profile" component={SelfInfo} />
-			<Route path="/chat" component={Chat} />
-			<Route path="/notification" component={NotificationPage} />
-			<Route path="/settings" component={Settings} />
+			<Route path="*" component={Ban} />
 		</Router>
-	</div>
-	{#if (path !== "/login" && path !== "/register" && isConnected === true)}
-		<BottomBar />
 	{/if}
 </main>
 

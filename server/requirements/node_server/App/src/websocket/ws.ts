@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ws.ts                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:03:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 08:45:52 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/26 08:34:21 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ class Ws
 				customEvent = new CustomEvent("newMessage", {detail: {content: data.content, from: data.from}});
 			else if (data.type === "notification")
 				customEvent = new CustomEvent("newNotification", {detail: {content: data.content}});
-
+			else if (data.type === "ban")
+				globalThis.banned.set(true);
 			if (customEvent)
 				document.dispatchEvent(customEvent);
 

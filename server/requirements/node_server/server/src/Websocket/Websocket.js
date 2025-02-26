@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/21 13:15:13 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/26 08:46:00 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,12 @@ class Websocket
 		if (users[id])
 			users[id].send({type: 'match', content: {name: name, image: image}});
 	}
+
+	bannedUser()
+	{
+		this.ws.send(JSON.stringify({type: 'ban'}));
+		this.ws.close();
+	}
 }
 
-module.exports = Websocket;
+module.exports = {Websocket, users};
