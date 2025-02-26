@@ -5,6 +5,7 @@ const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verification
 const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
 const base64ToFile = require('./utils/base64ToFile');
 const usersWs = require('./Websocket/Websocket').users;
+const userBlocked = require('./utils/userBlocked');
 
 const	missing = "Missing parameters";
 let		userCreatingAccount = [];
@@ -269,6 +270,7 @@ class PostRequest
 		res.send(JSON.stringify({success: "Account created"}));
 	}
 
+	// need to be secured
 	static change_location(req, res, db)
 	{
 		Debug.log(req);
@@ -304,7 +306,6 @@ class PostRequest
 
 	// Request to block a user
 	// {block_id: int}
-	// need to be tested
 	static block_user(req, res, db)
 	{
 		Debug.log(req);
@@ -323,7 +324,6 @@ class PostRequest
 
 	// Request to report a user
 	// {report_id: int}
-	// need to be tested
 	static report_user(req, res, db)
 	{
 		Debug.log(req);
@@ -331,21 +331,26 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.report_id)
 			return (res.send(JSON.stringify({error: missing})));
-		db.reportedUser(req.session.info.id, req.body.report_id).then((data) => {
-			if (data.alreadyReported)
-				return (res.send(JSON.stringify({error: "User already reported"})));
-			else if (!data.exist)
-				return (res.send(JSON.stringify({error: "User not exist"})));
-			res.send(JSON.stringify({success: "User blocked"}));
-			db.getNbReport(req.body.report_id).then((nb_report) => {
-				if (nb_report >= 5)
-				{
-					db.banUser(req.body.report_id);
-					if (usersWs[req.body.report_id])
-						usersWs[req.body.report_id].bannedUser();
-				}
+		userBlocked(req, res, db, req.body.report_id).then((blocked) => {
+			if (blocked)
+				return (res.send(JSON.stringify({error: "User blocked"})));
+			db.reportedUser(req.session.info.id, req.body.report_id).then((data) => {
+				if (data.alreadyReported)
+					return (res.send(JSON.stringify({error: "User already reported"})));
+				else if (!data.exist)
+					return (res.send(JSON.stringify({error: "User not exist"})));
+				res.send(JSON.stringify({success: "User blocked"}));
+				db.getNbReport(req.body.report_id).then((nb_report) => {
+					if (nb_report >= 5)
+					{
+						db.banUser(req.body.report_id);
+						if (usersWs[req.body.report_id])
+							usersWs[req.body.report_id].bannedUser();
+					}
+				});
 			});
 		});
+		
 	}
 
 	////// SWIPE ZONE //////
@@ -357,6 +362,10 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.distance || !req.body.range_age || !req.body.interests)
 			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.distance !== 'number' || !Array.isArray(req.body.range_age)
+			|| typeof req.body.range_age[0] !== 'number' || typeof req.body.range_age[0] !== 'number'
+			|| !Array.isArray(req.body.interests))
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		db.getNeverSeenUser(req.session.info.id, req.body).then((ret) => {res.send(ret)});
 	}
 

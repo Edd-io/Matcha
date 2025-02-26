@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/25 08:17:25 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/26 16:08:36 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,52 +191,57 @@ class Database
 		});
 	}
 
-	blockUser(self_id, block_id)
+	async blockUser(self_id, block_id)
 	{
-		return (new Promise((resolve) => {
-			this.pool.getConnection().then((conn) => {
-				conn.query('SELECT * FROM users_blocked WHERE user_id = ? AND user_blocked_id = ?', [self_id, block_id]).then((row) => {
-					if (row.length != 0)
-						resolve({alreadyBlocked: true});
-					else
-					{
-						conn.query('SELECT id FROM accounts WHERE id = ?', [block_id]).then((row) => {
-							if (row.length == 0)
-								resolve({alreadyBlocked: false, exist: false});
-							else
-							{
-								conn.query('INSERT INTO users_blocked (user_id, user_blocked_id) VALUES (?, ?)', [self_id, block_id]);
-								resolve({alreadyBlocked: false, exist: true});
-							}
-						});
-					}
-				}).finally(() => {conn.release(); conn.end()});
-			});
-		}));
+		const conn = await this.pool.getConnection();
+
+		const row = await conn.query('SELECT * FROM users_blocked WHERE user_id = ? AND user_blocked_id = ?', [self_id, block_id]);
+		if (row.length != 0)
+			return ({alreadyBlocked: true});
+		else
+		{
+			const row2 = await conn.query('SELECT id FROM accounts WHERE id = ?', [block_id]);
+			if (row2.length == 0)
+			{
+				conn.release();
+				conn.end();
+				return ({alreadyBlocked: false, exist: false});
+			}
+			else
+			{
+				conn.release();
+				conn.end();
+				await conn.query('INSERT INTO users_blocked (user_id, user_blocked_id) VALUES (?, ?)', [self_id, block_id]);
+				return ({alreadyBlocked: false, exist: true});
+			}
+		}
 	}
 
-	reportedUser(self_id, reported_id)
+	async reportedUser(self_id, reported_id)
 	{
-		return (new Promise((resolve) => {
-			this.pool.getConnection().then((conn) => {
-				conn.query('SELECT * FROM users_reported WHERE user_id = ? AND user_reported_id = ?', [self_id, reported_id]).then((row) => {
-					if (row.length != 0)
-						resolve({alreadyReported: true});
-					else
-					{
-						conn.query('SELECT id FROM accounts WHERE id = ?', [reported_id]).then((row) => {
-							if (row.length == 0)
-								resolve({alreadyReported: false, exist: false});
-							else
-							{
-								conn.query('INSERT INTO users_reported (user_id, user_reported_id) VALUES (?, ?)', [self_id, reported_id]);
-								resolve({alreadyReported: false, exist: true});
-							}
-						});
-					}
-				}).finally(() => {conn.release(); conn.end()});
-			});
-		}));
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_reported WHERE user_id = ? AND user_reported_id = ?', [self_id, reported_id]);
+
+		if (row.length != 0)
+			return ({alreadyReported: true});
+		else
+		{
+			const row2 = await conn.query('SELECT id FROM accounts WHERE id = ?', [reported_id]);
+
+			if (row2.length == 0)
+			{
+				conn.release();
+				conn.end();
+				return ({alreadyReported: false, exist: false});
+			}
+			else
+			{
+				conn.query('INSERT INTO users_reported (user_id, user_reported_id) VALUES (?, ?)', [self_id, reported_id]);
+				conn.release();
+				conn.end();
+				return ({alreadyReported: false, exist: true});
+			}
+		}
 	}
 
 	getNbReport(reported_id)
@@ -443,7 +448,7 @@ class Database
 				return (false);
 			if (filter1.range_age[0] != filter2.range_age[0] || filter1.range_age[1] != filter2.range_age[1])
 				return (false);
-			if (filter1.distance != filter2.distance)
+			if (filter1.distance != filter2.distance && filter1.distance != 32089 && filter2.distance != 100)
 				return (false);
 			if (filter1.interests.length != filter2.interests.length)
 				return (false);
@@ -455,7 +460,25 @@ class Database
 			return (true);
 		}
 
+		const blockedUser = async (user_id) => {
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM users_blocked WHERE user_id = ? OR user_blocked_id = ?', [user_id, user_id]);
+			const blockedUser = [];
+
+			for (let i = 0; i < row.length; i++)
+			{
+				if (row[i].user_id == user_id)
+					blockedUser.push(row[i].user_blocked_id);
+				else
+					blockedUser.push(row[i].user_id);
+			}
+			conn.release();
+			conn.end();
+			return (blockedUser);
+		}
+
 		return (new Promise(async (resolve) => {
+			const	blockedUsersList = await blockedUser(user_id);
 			const	nbUsers = await this.#getNbUsers();
 			const	seen = await this.#getListSeenUsers(user_id);
 			let		index = 0;
@@ -468,9 +491,14 @@ class Database
 			}
 			if (index == this.buffer_neverSeenUser.length)
 			{
-				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers, lastFilter: {}});
+				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers, lastFilter: {}, blockedUsersList: blockedUsersList});
 				for (let i = 1; i <= nbUsers; i++)
-					this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
+				{
+					if (i == user_id || seen.includes(i) || blockedUsersList.includes(i))
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
+					else
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -1});
+				}
 			}
 			else
 			{
@@ -478,24 +506,35 @@ class Database
 				{
 					if (seen.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
 						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
+					else if (blockedUsersList.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
+					else
+						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id)});
 				}
 				while (this.buffer_neverSeenUser[index].lastNb < nbUsers)
 				{
-					this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: await getScore(this.buffer_neverSeenUser[index].lastNb)});
+					if (blockedUsersList.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
+						this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: -2});
+					else
+						this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: await getScore(this.buffer_neverSeenUser[index].lastNb)});
 					this.buffer_neverSeenUser[index].lastNb++;
 				}
 			}
-			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter))
+			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length)
 			{
 				for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
 				{
-					if (this.buffer_neverSeenUser[index].neverSeen[i].id == user_id)
-						continue;
-					if (!seen.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
-						this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
+					if (this.buffer_neverSeenUser[index].neverSeen[i].score != -2)
+					{
+						if (blockedUsersList.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
+							this.buffer_neverSeenUser[index].neverSeen[i].score = -2;
+						else
+							this.buffer_neverSeenUser[index].neverSeen[i].score = await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id);
+					}
 				}
 			}
 			this.buffer_neverSeenUser[index].lastFilter = filter;
+			this.buffer_neverSeenUser[index].blockedUsersList = blockedUsersList;
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 			console.log(this.buffer_neverSeenUser[index]);
 			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0 || this.buffer_neverSeenUser[index].neverSeen[0].score == -2 || this.buffer_neverSeenUser[index].neverSeen[0].score == -1)
@@ -520,13 +559,10 @@ class Database
 			return ({error: "User never initialized"});
 		if (this.buffer_neverSeenUser[index].neverSeen.length == 0)
 			return ({error: "No more user to see"});
-		if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0)
+		if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0 || this.buffer_neverSeenUser[index].neverSeen[0].score == -2)
 			return ({error: "No more user to see"});
 		other_id = this.buffer_neverSeenUser[index].neverSeen[0].id;
-		console.log("React on user id", other_id);
-		console.log("Data :", this.buffer_neverSeenUser[index].neverSeen[0]);
 		this.buffer_neverSeenUser[index].neverSeen[0].score = -2;
-		console.log("Data :", this.buffer_neverSeenUser[index].neverSeen[0]);
 		this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 
 		const conn = await this.pool.getConnection();
@@ -771,12 +807,15 @@ class Database
 				FROM users_images
 				GROUP BY user_id
 			) t2 ON t1.id = t2.min_id;`);
+		const row3 = await conn.query('SELECT * FROM users_blocked WHERE user_id = ? OR user_blocked_id = ?', [self_id, self_id]);
 		const usersList = [];
 
 		conn.release();
 		conn.end();
 		for (let i = 0; i < row.length; i++)
 		{
+			if (row3.find((element) => element.user_id == row[i].user_id || element.user_blocked_id == row[i].user_id))
+				continue;
 			if (row[i].location)
 			{
 				usersList.push({

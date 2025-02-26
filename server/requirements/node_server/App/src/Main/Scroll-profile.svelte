@@ -6,6 +6,7 @@
 
 	export let users: any;
 	export let showComponent = false;
+	export let getSwipeUser: Function;
 
 	let hideComponent = true;
 	let showSignalPopup = false;
@@ -43,11 +44,15 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({report_id: users.id}),
+			body: JSON.stringify({block_id: users.id}),
 		}).then(res => res.json())
 		.then(data => {
 			if (data.success)
+			{
+				showComponent = false;
+				getSwipeUser();
 				alert("Utilisateur/Utilisatrice bloqué(e) avec succès");
+			}
 			else 
 				alert("Erreur lors du blocage de l'utilisateur");
 		})
