@@ -77,7 +77,6 @@
 		.then(data => {
 			if (data.finished)
 			{
-				console.log('finished');
 				finished = true;
 				globalThis.userInfoSwipeZone.set(null);
 				like = false;
@@ -125,7 +124,7 @@
 
 		{#key counter}
 			{#if showComponent}
-				<ScrollProfile bind:users={user} bind:showComponent={showComponent}/>
+				<ScrollProfile bind:users={user} bind:showComponent={showComponent} getSwipeUser={getSwipeUser} />
 			{/if}
 
 			<div class="photo" class:active={like} class:active2={dislike} class:showProfile={!like && !dislike}>
