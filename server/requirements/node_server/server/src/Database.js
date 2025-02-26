@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/26 16:53:39 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/26 17:18:32 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -529,7 +529,7 @@ class Database
 				}
 				while (this.buffer_neverSeenUser[index].lastNb < nbUsers)
 				{
-					if (blockedUsersList.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
+					if (blockedUsersList.includes(this.buffer_neverSeenUser[index].neverSeen[lastNb].id))
 						this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: -2});
 					else
 						this.buffer_neverSeenUser[index].neverSeen.push({id: this.buffer_neverSeenUser[index].lastNb, score: await getScore(this.buffer_neverSeenUser[index].lastNb)});

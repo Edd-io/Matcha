@@ -1,7 +1,6 @@
 <script lang='ts'>
 	import '@fortawesome/fontawesome-free/css/all.css';
     import { cubicOut } from 'svelte/easing';
-    import { on } from 'svelte/events';
 
 	export let selected_interests: number[];
 	export let disabled: boolean = false;
