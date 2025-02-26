@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/26 16:08:36 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/26 16:53:39 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,9 +209,15 @@ class Database
 			}
 			else
 			{
+				await conn.query('INSERT INTO users_blocked (user_id, user_blocked_id) VALUES (?, ?)', [self_id, block_id]);
+				await conn.query('DELETE FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [self_id, block_id]);
+				await conn.query('DELETE FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [block_id, self_id]);
+				await conn.query('DELETE FROM users_dislikes WHERE user_id = ? AND user_disliked_id = ?', [self_id, block_id]);
+				await conn.query('DELETE FROM users_dislikes WHERE user_id = ? AND user_disliked_id = ?', [block_id, self_id]);
+				await conn.query('DELETE FROM users_messages WHERE from_id = ? AND to_id = ? OR from_id = ? AND to_id = ?', [self_id, block_id, block_id, self_id]);
+				await conn.query('DELETE FROM users_last_message WHERE from_id = ? AND to_id = ? OR from_id = ? AND to_id = ?', [self_id, block_id, block_id, self_id]);
 				conn.release();
 				conn.end();
-				await conn.query('INSERT INTO users_blocked (user_id, user_blocked_id) VALUES (?, ?)', [self_id, block_id]);
 				return ({alreadyBlocked: false, exist: true});
 			}
 		}
@@ -411,7 +417,7 @@ class Database
 			}
 
 			// calcul score for distance
-			if (selfInfo.location && otherInfo.location)
+			if (selfInfo.location !== null && otherInfo.location !== null)
 			{
 				distance = haversine([selfInfo.location.latitude, selfInfo.location.longitude], [otherInfo.location.latitude, otherInfo.location.longitude]);
 				if (distance < filter.distance)
@@ -477,10 +483,20 @@ class Database
 			return (blockedUser);
 		}
 
+		const getLocation = async (user_id) => {
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT location FROM users_info WHERE user_id = ?', [user_id]);
+
+			conn.release();
+			conn.end();
+			return (row[0].location);
+		}
+
 		return (new Promise(async (resolve) => {
 			const	blockedUsersList = await blockedUser(user_id);
 			const	nbUsers = await this.#getNbUsers();
 			const	seen = await this.#getListSeenUsers(user_id);
+			const	lastLocation = await getLocation(user_id);
 			let		index = 0;
 
 			while (index < this.buffer_neverSeenUser.length)
@@ -491,7 +507,7 @@ class Database
 			}
 			if (index == this.buffer_neverSeenUser.length)
 			{
-				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers, lastFilter: {}, blockedUsersList: blockedUsersList});
+				this.buffer_neverSeenUser.push({id: user_id, neverSeen: [], lastNb: nbUsers, lastFilter: {}, blockedUsersList: blockedUsersList, lastLocation: lastLocation});
 				for (let i = 1; i <= nbUsers; i++)
 				{
 					if (i == user_id || seen.includes(i) || blockedUsersList.includes(i))
@@ -520,7 +536,7 @@ class Database
 					this.buffer_neverSeenUser[index].lastNb++;
 				}
 			}
-			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length)
+			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length || lastLocation != this.buffer_neverSeenUser[index].lastLocation)
 			{
 				for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
 				{
@@ -535,6 +551,7 @@ class Database
 			}
 			this.buffer_neverSeenUser[index].lastFilter = filter;
 			this.buffer_neverSeenUser[index].blockedUsersList = blockedUsersList;
+			this.buffer_neverSeenUser[index].lastLocation = lastLocation;
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 			console.log(this.buffer_neverSeenUser[index]);
 			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0 || this.buffer_neverSeenUser[index].neverSeen[0].score == -2 || this.buffer_neverSeenUser[index].neverSeen[0].score == -1)
