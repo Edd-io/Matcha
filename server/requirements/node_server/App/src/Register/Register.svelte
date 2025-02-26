@@ -12,6 +12,7 @@
 
 	import { fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { navigate } from 'svelte-routing';
 
 	export let connected: boolean;
 
@@ -47,6 +48,11 @@
 	<LogoRegister />
 	
 	{#if currentPage === 1}
+		<button class="back" aria-label='Retour' on:click={() => navigate('/')}>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+				<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+			</svg>
+		</button>
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
 			<EmailRegister bind:page={currentPage} bind:token={token}/>
 		</div>
@@ -112,5 +118,20 @@
 
 	#next-button:hover {
 		cursor: pointer;
+	}
+
+	.back {
+		position: absolute;
+		top: 20px;
+		left: 20px;
+		border: none;
+		cursor: pointer;
+		background: none;
+		rotate: 180deg;
+	}
+
+	.back svg {
+		height: 2.5rem;
+		width: 2.5rem;
 	}
 </style>
