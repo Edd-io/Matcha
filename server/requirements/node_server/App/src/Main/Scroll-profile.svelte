@@ -35,6 +35,23 @@
 				alert("Erreur lors du report de l'utilisateur");
 		})
 	}
+
+	function blockUser()
+	{
+		fetch('/block_user', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({report_id: users.id}),
+		}).then(res => res.json())
+		.then(data => {
+			if (data.success)
+				alert("Utilisateur/Utilisatrice bloqué(e) avec succès");
+			else 
+				alert("Erreur lors du blocage de l'utilisateur");
+		})
+	}
 </script>
 
 <main>
@@ -53,7 +70,7 @@
 		<div class="delete-account">
 			<h2>Bloquer</h2>
 			<p>Vous êtes sur le point de bloquer {users.name}, cette action est irréversible. Êtes-vous sûr de vouloir le faire ?</p>
-			<button class="btn" style="background-color: #C64141; color: white;">Bloquer</button>
+			<button class="btn" style="background-color: #C64141; color: white;" on:click={() => {blockUser(); showBlockPopup = false}}>Bloquer</button>
 			<button class="btn" style="background-color: #111;" on:click={() => showBlockPopup = false}>Annuler</button>
 		</div>
 	{/if}

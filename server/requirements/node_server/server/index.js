@@ -6,14 +6,14 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/24 17:25:12 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/26 13:37:41 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const express = require('express');
 const http = require('http');
 const PostRequest = require('./src/PostRequest');
-const Websocket = require('./src/Websocket/Websocket');
+const Websocket = require('./src/Websocket/Websocket').Websocket;
 const Debug = require('./src/Debug');
 const ws = require('ws');
 const session = require('express-session');
