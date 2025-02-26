@@ -47,6 +47,11 @@
 </script>
 
 <main>
+	<button class="back" aria-label='Retour' on:click={() => navigate('/')}>
+		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+			<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+		</svg>
+	</button>
 	<LogoRegister />
 	<div class="main">
 		<p class="text" id="txt">Connecte toi pour fgdfgdfg</p>
@@ -72,6 +77,8 @@
 		text-align: center;
 		height: 100vh;
 		background-color: white;
+		max-width: 40rem;
+		margin: 0 auto;
 	}
 
 	.main {
@@ -83,6 +90,21 @@
 
 	#txt {
 		margin-top: 100px;
+	}
+
+	.back {
+		position: absolute;
+		top: 20px;
+		left: 20px;
+		border: none;
+		cursor: pointer;
+		background: none;
+		rotate: 180deg;
+	}
+
+	.back svg {
+		height: 2.5rem;
+		width: 2.5rem;
 	}
 
 	.login {

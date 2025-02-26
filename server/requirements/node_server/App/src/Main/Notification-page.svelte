@@ -52,9 +52,11 @@
         </button>
         <p class="small-text" id="notif-txt">Notification(s)</p>
     </div>
-    {#each notifs as notif}
-        <NotifComp image={notif.image} message={notif.message} seen={notif.seen} />
-    {/each}
+    <div class="notifications">
+        {#each notifs as notif}
+            <NotifComp image={notif.image} message={notif.message} seen={notif.seen} />
+        {/each}
+    </div>
 </main>
 
 <style>
@@ -71,10 +73,7 @@
     }
 
     .notifications {
-        display: flex;
-        flex-direction: column;
         gap: 1rem;
-        padding: 0 20px;
         height: 100%;
         overflow-y: scroll;
     }
