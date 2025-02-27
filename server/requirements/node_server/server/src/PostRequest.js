@@ -194,7 +194,7 @@ class PostRequest
 		let	index;
 
 		Debug.log(req, res);
-		if (req.session.info || req.session.info.logged)
+		if (req.session.info && req.session.info.logged)
 		{
 			if (!req.body.base64)
 				return (res.send(JSON.stringify({error: missing})));
@@ -486,6 +486,15 @@ class PostRequest
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		db.getAllLocations(req.session.info.id).then((data) => res.send(data));
+	}
+
+	////// PROFILE //////
+	static get_self_info(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		db.getSelfInfo(req.session.info.id).then((data) => res.send(data));
 	}
 }
 
