@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/26 17:18:32 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/27 13:56:40 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,6 +189,23 @@ class Database
 				}).finally(() => {conn.release(); conn.end()});
 			});
 		});
+	}
+
+	async addPicture(user_id, picture)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_images WHERE user_id = ?', [user_id]);
+
+		if (row.length >= 6)
+		{
+			conn.release();
+			conn.end();
+			return ({error: "Too many pictures"});
+		}
+		await conn.query('INSERT INTO users_images (local_url, user_id) VALUES (?, ?)', [picture, user_id]);
+		conn.release();
+		conn.end();
+		return ({success: true});
 	}
 
 	async blockUser(self_id, block_id)

@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/26 13:45:26 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/27 13:42:42 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ function init(db)
 	app.post('/confirm_register', PostRequest.confirm_register);
 	app.post('/first_step_register', PostRequest.first_step_register);
 	app.post('/second_step_register', PostRequest.second_step_register);
-	app.post('/add_picture_register', PostRequest.add_picture_register);
+	app.post('/add_picture_register', (req, res) => PostRequest.add_picture_register(req, res, db));
 	app.post('/delete_picture_register', PostRequest.delete_picture_register);
 	app.post('/finish_register', (req, res) => PostRequest.finish_register(req, res, db));
 	app.post('/report_user', (req, res) => PostRequest.report_user(req, res, db));

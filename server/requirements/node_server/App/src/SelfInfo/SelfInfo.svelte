@@ -1,31 +1,78 @@
 <script lang='ts'>
 	import NotSave from '../Main/not-save.svelte';
-import Choose_interests from '../Register/Choose_interests.svelte';
+	import Choose_interests from '../Register/Choose_interests.svelte';
+	import crossLogo from "../assets/cross.svg";
 
 	globalThis.path.set('/self_info');
 
-	const lstPhotos: string[] = [
-		"https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg?cs=srgb&dl=pexels-olly-774909.jpg&fm=jpg",
-		"https://images.pexels.com/photos/712513/pexels-photo-712513.jpeg?cs=srgb&dl=pexels-olly-712513.jpg&fm=jpg",
-		"https://images.pexels.com/photos/1212984/pexels-photo-1212984.jpeg?cs=srgb&dl=pexels-danxavier-1212984.jpg&fm=jpg",
-	];
-	const aboutMeContent = "Salut, je suis un étudiant en informatique passionné par le développement web. J'aime aussi la musique et les jeux vidéos.";
+	const lstPhotos: string[] = [];
+	const aboutMeContent = "";
+	let count = 0;
+	let err: boolean = false;
 	let interests: number[] = [];
 	globalThis.path.set('/profile');
+
+	function choose_picture()
+	{
+		err = false;
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = 'image/*';
+		input.onchange = (e) =>
+		{
+			const file = (e.target as HTMLInputElement).files[0];
+			const reader = new FileReader();
+			reader.onload = (e) =>
+			{
+				try {
+					fetch('/add_picture_register', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							base64: e.target.result,
+						})
+					}).then(res => res.json())
+					.then(data => {
+						console.log(data);
+						if (data.success)
+							lstPhotos.push(data.imgName);
+						else
+							err = true;
+						count++;
+					})
+					.catch(err => {
+						err = true;
+					});
+				}
+				catch {
+					err = true;
+				}
+			};
+			reader.readAsDataURL(file);
+		};
+		input.click();
+	}
 </script>
 
 <main>
 	<h2>PHOTOS</h2>
 	<div class="part">
-		{#each {length: 6} as _, i}
-			<button class="no-style-button button-image" aria-label='Photo {i + 1}'>
-				{#if lstPhotos[i]}
-					<img src={lstPhotos[i]} alt="Pfp 1" />
-				{:else}
-					<p style="color: #A0A0A0; font-size: 2rem">+</p>
-				{/if}
-			</button>
-		{/each}
+		{#key count}
+			{#each {length: 6} as _, i}
+				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={choose_picture}>
+					{#if lstPhotos[i]}
+						<img src={lstPhotos[i]} alt="Pfp 1" />
+						<div class="test" role="button" aria-label='Remove photo' tabindex="0">
+							<img src={crossLogo} alt="Remove"/>
+						</div>
+					{:else}
+						<p style="color: #A0A0A0; font-size: 2rem">+</p>
+					{/if}
+				</button>
+			{/each}
+		{/key}
 	</div>
 
 	<div class="inputs">
@@ -92,23 +139,60 @@ import Choose_interests from '../Register/Choose_interests.svelte';
 		font-size: 0.9rem;
 		resize: none;
 	}
-	@media (min-aspect-ratio: 1/1) {
-		.button-image {
-			width: 15%;
-			max-width: none;
-			height: 15rem;
-		}
-		.inputs {
-			display: flex;
-			flex-direction: row;
-		}
-		.input-container {
-			width: calc(50% - 1rem);
-			margin-inline: 0.5rem;
-		}
-		.input-container h2 {
-			text-align: center;
-		}
 
+
+	.test{
+		position: absolute;
+		top: 10px;
+		right: 10px;
+		height: 15px;
+		width: 15px;
+		border-radius: 50%;
+		border: none;
+		background-color: #111111;
+		color: white;
+		align-items: center;
+		justify-content: center;
+	}
+
+    #txt {
+        margin-top: 45px;
+    }
+
+    .part {
+		display: flex;
+		flex-wrap: wrap;
+		width: 90%;
+        margin-top: 40px;
+		margin-inline: auto;
+	}
+
+    .no-style-button {
+		background: none;
+		border: none;
+		cursor: pointer;
+		position: relative;
+	}
+
+    .button-image {
+		flex-basis: 30%;
+		height: 9rem;
+		margin-inline: auto;
+		border-radius: 1rem;
+		overflow: hidden;
+		background-color: #D9D9D9;
+		margin-bottom: 1rem;
+		transition: transform 0.2s;
+		position: relative;
+	}
+
+	.button-image:hover {
+		transform: scale(1.05);
+	}
+
+	.button-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
 	}
 </style>

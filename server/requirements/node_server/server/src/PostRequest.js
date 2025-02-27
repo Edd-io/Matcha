@@ -189,25 +189,43 @@ class PostRequest
 
 	// Request to add picture to register
 	// {base64: string, token: string}
-	static add_picture_register(req, res)
+	static add_picture_register(req, res, db)
 	{
 		let	index;
 
 		Debug.log(req, res);
-		if (!req.body.token || !req.body.base64)
-			return (res.send(JSON.stringify({error: missing})));
-		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
-		if (index == -1)
-			return (res.send(JSON.stringify({error: "Invalid token"})));
-		if (!userCreatingAccount[index]?.pictures)
-			userCreatingAccount[index].pictures = [];
-		try {
+		if (req.session.info || req.session.info.logged)
+		{
+			if (!req.body.base64)
+				return (res.send(JSON.stringify({error: missing})));
 			const img = base64ToFile(req.body.base64);
-			userCreatingAccount[index].pictures.push(img.split('/')[img.split('/').length - 1]);
-			res.send(JSON.stringify({success: "Image added", imgName: img.split('/')[img.split('/').length - 1]}));
+			const filename = img.split('/')[img.split('/').length - 1];
+
+			db.addPicture(req.session.info.id, filename).then((ret) => {
+				if (ret.error)
+					return (res.send({error: ret.error}));
+				res.send(JSON.stringify({success: "Image added", imgName: filename}));
+			});
 		}
-		catch (e) {
-			res.send(JSON.stringify({error: e.message}));
+		else
+		{
+			if (!req.body.token || !req.body.base64)
+				return (res.send(JSON.stringify({error: missing})));
+			index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
+			if (index == -1)
+				return (res.send(JSON.stringify({error: "Invalid token"})));
+			if (!userCreatingAccount[index]?.pictures)
+				userCreatingAccount[index].pictures = [];
+			try {
+				const img = base64ToFile(req.body.base64);
+				const filename = img.split('/')[img.split('/').length - 1];
+
+				userCreatingAccount[index].pictures.push(filename);
+				res.send(JSON.stringify({success: "Image added", imgName: filename}));
+			}
+			catch (e) {
+				res.send(JSON.stringify({error: e.message}));
+			}
 		}
 	}
 
