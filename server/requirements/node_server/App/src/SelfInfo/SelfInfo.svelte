@@ -2,15 +2,20 @@
 	import NotSave from '../Main/not-save.svelte';
 	import Choose_interests from '../Register/Choose_interests.svelte';
 	import crossLogo from "../assets/cross.svg";
+	import { onMount } from 'svelte';
 
 	globalThis.path.set('/self_info');
 
 	const lstPhotos: string[] = [];
-	const aboutMeContent = "";
+	let aboutMeContent = "";
 	let count = 0;
 	let err: boolean = false;
 	let interests: number[] = [];
 	globalThis.path.set('/profile');
+	
+	onMount(() => {
+		getSelfInfo();
+	});
 
 	function choose_picture()
 	{
@@ -35,7 +40,6 @@
 						})
 					}).then(res => res.json())
 					.then(data => {
-						console.log(data);
 						if (data.success)
 							lstPhotos.push(data.imgName);
 						else
@@ -53,6 +57,26 @@
 			reader.readAsDataURL(file);
 		};
 		input.click();
+	}
+
+	function getSelfInfo()
+	{
+		fetch('/get_self_info', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		}).then(res => res.json())
+		.then(data => {
+			aboutMeContent = data.bio;
+			data.tags.forEach((element: number) => {
+				interests.push(element);
+			});
+			data.pfp.forEach((element: string) => {
+				lstPhotos.push(element);
+			});
+			count++;
+		})
 	}
 </script>
 
@@ -86,7 +110,9 @@
 		<div class="input-container">
 			<h2>PASSIONS</h2>
 			<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 100%;">
-				<Choose_interests bind:selected_interests={interests}/>
+				{#key count}
+					<Choose_interests bind:selected_interests={interests}/>
+				{/key}
 			</div>
 		</div>
 	</div>

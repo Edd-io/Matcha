@@ -16,10 +16,10 @@ function base64ToFile(base64String)
 	if (!matches || matches.length !== 3)
 		throw new Error('Chaîne Base64 invalide');
 
-	const dirPath = path.join(__dirname, '..', '..', 'user_static_data', 'pfp');
+	const dirPath = path.join(__dirname, '..', '..', 'user_static_data');
 	if (!fs.existsSync(dirPath))
 		fs.mkdirSync(dirPath, { recursive: true });
-	file_name = path.join(__dirname, '..', '..', 'user_static_data', 'pfp', file_name);
+	file_name = path.join(__dirname, '..', '..', 'user_static_data', file_name);
 	file_name += '.' + matches[1].split('/')[1];
 	const mimeType = matches[1];
 	if (!availableMimeTypes.includes(mimeType))

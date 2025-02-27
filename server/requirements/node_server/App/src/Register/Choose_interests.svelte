@@ -276,7 +276,7 @@
 		<div class="passions">
 			{#each selected_interests as id}
 				<button class="no-style-button button-passion" aria-label='Supprimer cette passion' on:click={() => deleteInterest(id)}>
-					<p>{list_interests.find(interest => interest.id === Number(id)).interest}</p>
+					<p>{list_interests.find((interest) => interest.id == id).interest}</p>
 				</button>
 			{/each}
 			{#if disabled == false}

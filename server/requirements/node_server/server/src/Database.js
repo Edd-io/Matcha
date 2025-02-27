@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/27 15:29:40 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/27 20:07:57 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -465,7 +465,7 @@ class Database
 			});
 		}
 
-		const isSameFilter = (filter1, filter2) => {
+		const isSameFilter = (filter1, filter2, lastLocation, newLocation) => {
 			if (filter1.distance == undefined || filter2.distance == undefined)
 				return (false);
 			if (filter1.range_age[0] != filter2.range_age[0] || filter1.range_age[1] != filter2.range_age[1])
@@ -479,6 +479,8 @@ class Database
 				if (!filter2.interests.includes(filter1.interests[i]))
 					return (false);
 			}
+			if ((!lastLocation && !newLocation) || lastLocation.latitude != newLocation.latitude || lastLocation.longitude != newLocation.longitude)
+				return (false);
 			return (true);
 		}
 
@@ -552,7 +554,7 @@ class Database
 					this.buffer_neverSeenUser[index].lastNb++;
 				}
 			}
-			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length || lastLocation != this.buffer_neverSeenUser[index].lastLocation)
+			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter, lastLocation, this.buffer_neverSeenUser[index].lastLocation) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length)
 			{
 				for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
 				{
@@ -672,7 +674,7 @@ class Database
 
 		conn.release();
 		conn.end();
-		for (let i = 0; i < row.length; i++)
+		for (let i = row.length - 1; i >= 0; i--)
 		{
 			const	other_id = row[i].from_id == user_id ? row[i].to_id : row[i].from_id;
 			const	otherInfo = await getOtherInfo(other_id);
@@ -863,6 +865,22 @@ class Database
 			}
 		}
 		return (usersList);
+	}
+
+	async getSelfInfo(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT bio FROM users_info WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [user_id]);
+		const row3 = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
+
+		conn.release();
+		conn.end();
+		return ({
+			bio: row[0].bio,
+			tags: row2.map((element) => Number(element.tag)),
+			pfp: row3.map((element) => element.local_url),
+		});
 	}
 }
 

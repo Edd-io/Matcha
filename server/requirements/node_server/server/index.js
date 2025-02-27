@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   index.js                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/27 13:42:42 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/27 15:36:43 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ function init(db)
 	app.post('/change_info', (req, res) => PostRequest.change_info(req, res, db));
 	app.get('/get_info', (req, res) => PostRequest.get_info(req, res, db));
 	app.get('/get_all_locations', (req, res) => PostRequest.get_all_locations(req, res, db));
+	app.get('/get_self_info', (req, res) => PostRequest.get_self_info(req, res, db));
 
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
