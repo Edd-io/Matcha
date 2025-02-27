@@ -24,10 +24,16 @@
 	let dislike = false;
 
 	onMount(() => {
+		const handleLocationUpdated = () => {
+			if (user)
+				getSwipeUser();
+		}
 		getSwipeUser();
 		window.addEventListener("scroll", handleScroll);
+		document.addEventListener('locationUpdated', handleLocationUpdated);
 		return (() => {
 			window.removeEventListener("scroll", handleScroll)
+			document.removeEventListener('locationUpdated', handleLocationUpdated);
 		});
 	});
 

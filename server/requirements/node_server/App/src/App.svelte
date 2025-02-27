@@ -94,6 +94,16 @@
 						},
 						body: JSON.stringify({lat: latitude, lon: longitude})
 					})
+					.then(res => res.json())
+					.then(data => {
+						if (data.success)
+						{
+							const event = new CustomEvent('locationUpdated', {detail: {}});
+							document.dispatchEvent(event);
+						}
+						else
+							console.warn("Location not updated");
+					});
 				},
 				(err) => {
 					console.warn("Error getLocation: ", err.message);
