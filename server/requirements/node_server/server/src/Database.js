@@ -3,18 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/27 13:56:40 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/02/27 15:29:40 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const credientials = require('../credentials.json');
 const bcrypt = require('bcrypt');
-const Debug = require('./Debug');
 const haversine = require('./utils/haversine');
-const Websocket = require('./Websocket/Websocket');
+const Websocket = require('./Websocket/Websocket').Websocket;
 
 class Database
 {
