@@ -119,7 +119,6 @@
 			<ChooseInterests selected_interests={users.tags} disabled={true}/>
 		</div>
 		<div class="div-btn">
-			<button class="scroll-btn">Lorem</button>
 			<button class="scroll-btn" on:click={() => showSignalPopup = true}>Signaler</button>
 			<button class="scroll-btn" id="block-btn" on:click={() => showBlockPopup = true}>Bloquer</button>
 		</div>
