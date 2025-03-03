@@ -103,6 +103,29 @@
 			err = true;
 		});
 	}
+
+	function updateProfile()
+	{
+		fetch('/update_profile', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				bio: aboutMeContent,
+				tags: interests,
+			})
+		}).then(res => res.json())
+		.then(data => {
+			if (data.success)
+				globalThis.router.push('/profile');
+			else
+				err = true;
+		})
+		.catch(err => {
+			err = true;
+		});
+	}
 </script>
 
 <main>

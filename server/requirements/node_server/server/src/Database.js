@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/03 08:15:53 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/03 08:32:39 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -902,6 +902,19 @@ class Database
 			tags: row2.map((element) => Number(element.tag)),
 			pfp: row3.map((element) => element.local_url),
 		});
+	}
+
+	async updateProfile(user_id, bio, tags)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('UPDATE users_info SET bio = ? WHERE user_id = ?', [bio, user_id]);
+		await conn.query('DELETE FROM users_tags WHERE user_id = ?', [user_id]);
+		for (let i = 0; i < tags.length; i++)
+			await conn.query('INSERT INTO users_tags (tag, user_id) VALUES (?, ?)', [tags[i], user_id]);
+		conn.release();
+		conn.end();
+		return ({success: true});
 	}
 
 }
