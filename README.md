@@ -26,7 +26,7 @@ The focus is on authenticity, with a smooth interface and strict profile managem
 
 - **Frontend**: Svelte  
 - **Backend**: JavaScript with Express  
-- **Database**: PostgreSQL / MySQL  
+- **Database**: MariaDB
 - **Websockets**: For real-time messaging and notifications  
 
 ---
