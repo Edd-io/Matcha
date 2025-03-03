@@ -1,45 +1,55 @@
-# 🍃 Matcha - Online Dating Platform  
+# 🍃 Matcha - Site de rencontres en ligne  
+
+![Image](https://github.com/user-attachments/assets/8a58cdcc-85b0-4f8e-9493-a51b7257ea47)
 
 ## 📖 Description  
 
-**Matcha** is a web-based dating application developed as part of the 42 curriculum. Its goal is to allow users to create profiles, discover other members based on their preferences, and interact through a matchmaking system and real-time chat.  
+**Matcha** est une application web de rencontre, développée dans le cadre du programme de 42. Son objectif est de permettre aux utilisateurs de créer un profil, de découvrir d'autres membres en fonction de leurs préférences et d'interagir via un système de matchmaking et de chat en temps réel.  
 
-The focus is on authenticity, with a smooth interface and strict profile management to ensure safe and meaningful interactions.  
+L'accent est mis sur l'authenticité, avec une interface fluide et une gestion stricte des profils pour garantir des interactions sûres et pertinentes.  
 
-🚧 The project is currently in development, with new features and improvements planned!  
-
----
-
-## 🚀 Key Features  
-
-• **Secure signup and login**
-• **Profile management** (add photos, description, preferences, location)  
-• **Smart matching system** based on orientation and shared interests  
-• **Real-time chat** to communicate with matches  
-• **Geolocation system** to display nearby profiles  
-• **Anti-fake profile protection** (verification, blocking, reporting)  
-• **Real-time notifications**  
+🚧 Le projet est en cours de développement : de nouvelles fonctionnalités et améliorations sont prévues !
 
 ---
 
-## 🛠️ Technologies Used  
+## 📝 Maquette
 
-- **Frontend**: Svelte  
-- **Backend**: JavaScript with Express  
-- **Database**: MariaDB
-- **Websockets**: For real-time messaging and notifications  
+Avant de commencer ce projet nous avons confectionné une maquette sur Figma pour avoir la direction artistique et visualiser ce qu'on allait faire pour le front.
 
----
-
-## 🏗️ Installation & Usage  
-
-🚧 • WIP •  
+[https://www.figma.com/design/R5VH4HC2D547mgIlPKNRgx/Matcha?node-id=0-1&t=bE5DKkhQm0HGIImA-1]
 
 ---
 
-## 🛡️ Security & Data Protection  
+## 🚀 Fonctionnalités principales  
 
-The platform includes several measures to ensure a safe space:  
+• **Inscription et connexion sécurisées** (avec OAuth, 2FA, ou autres solutions)  
+• **Gestion de profil** (ajout de photos, description, préférences, localisation)  
+• **Système de matching** basé sur l'orientation et les intérêts communs  
+• **Messagerie instantanée** pour discuter avec ses matchs  
+• **Système de géolocalisation** pour afficher des profils proches  
+• **Protection contre les faux profils** (vérification, blocage, signalement)  
+• **Système de notifications** en temps réel  
 
-🔒 **Strict authentication management** (password hashing, 2FA)  
-🚫 **Reporting and blocking system** to prevent inappropriate behavior  
+---
+
+## 🛠️ Technologies utilisées  
+
+- **Frontend** : Svelte  
+- **Backend** : JavaScript avec Express
+- **Base de données** : MariaDB
+- **Websockets** : Pour la messagerie et les notifications en temps réel  
+
+---
+
+## 🏗️ Installation et utilisation  
+
+🚧 • WIP •
+
+---
+
+## 🛡️ Sécurité et protection des données  
+
+La plateforme intègre plusieurs mesures pour garantir un espace sécurisé :  
+
+🔒 **Gestion stricte de l'authentification** (hashage des mots de passe, 2FA)  
+🚫 **Système de signalement et de blocage** pour les comportements inappropriés
