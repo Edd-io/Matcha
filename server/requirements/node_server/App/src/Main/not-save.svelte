@@ -1,11 +1,16 @@
 <script>
+    export let writableButtonSaveClick = null;
 
+    function onClickSave() {
+        writableButtonSaveClick.set(true);
+        writableButtonSaveClick.set(false);
+    }
 </script>
 
 <main>
     <div class="not-saved">
-        <p class="text">Attention,<br>il restes des modifications non enrengistré !</p>
-        <button class="button">Enregistrer</button>
+        <p class="text">Attention,<br>il reste des modifications non enregistrées !</p>
+        <button class="button" on:click={onClickSave}>Enregistrer</button>
     </div>
 </main>
 
@@ -36,7 +41,7 @@
         padding-inline: 1rem;
         background-color: #111111;
         animation: fadeInUp 0.7s;
-        /* max-width: ; */
+        max-width: 40rem;
     }
 
     .not-saved p{

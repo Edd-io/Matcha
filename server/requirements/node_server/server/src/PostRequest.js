@@ -523,7 +523,7 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.bio || !req.body.tags)
+		if (req.body.bio == undefined || !req.body.tags)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.bio !== 'string' || !Array.isArray(req.body.tags))
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));

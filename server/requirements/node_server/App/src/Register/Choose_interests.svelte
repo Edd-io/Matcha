@@ -4,6 +4,7 @@
 
 	export let selected_interests: number[];
 	export let disabled: boolean = false;
+	export let writableInterests: any = null;
 
 	let list_interests = [
 		{ "id": 1, "interest": "Programmation" },
@@ -220,6 +221,8 @@
 			count++;
 		}
 		list_interests = [...list_interests];
+		if (writableInterests)
+			writableInterests.set(selected_interests);
 	}
 
 	function deleteInterest(id: number)
@@ -227,6 +230,8 @@
 		if (disabled)
 			return;
 		selected_interests = selected_interests.filter((interest) => interest !== id);
+		if (writableInterests)
+			writableInterests.set(selected_interests);
 	}
 
 

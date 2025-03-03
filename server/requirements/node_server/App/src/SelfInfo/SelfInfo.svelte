@@ -1,4 +1,5 @@
 <script lang='ts'>
+    import { writable } from 'svelte/store';
 	import NotSave from '../Main/not-save.svelte';
 	import Choose_interests from '../Register/Choose_interests.svelte';
 	import crossLogo from "../assets/cross.svg";
@@ -9,17 +10,31 @@
 	const lstPhotos: string[] = [];
 	let aboutMeContent = "";
 	let count = 0;
-	let err: boolean = false;
+	let err: String = "";
 	let interests: number[] = [];
+	let writableInterests: any = null;
+	let writableButtonSaveClick: any = null;
+	let hasChanged: boolean[] = [false, false];
+
+	let lastInterests: number[] = [];
 	globalThis.path.set('/profile');
 	
 	onMount(() => {
+		writableInterests = writable(interests);
+		writableInterests.subscribe((value: number[]) => {
+			interests = value;
+		});
+		writableButtonSaveClick = writable(false);
+		writableButtonSaveClick.subscribe((value: boolean) => {
+			if (value)
+				updateProfile();
+		});
 		getSelfInfo();
 	});
 
 	function choose_picture()
 	{
-		err = false;
+		err = '';
 		const input = document.createElement('input');
 		input.type = 'file';
 		input.accept = 'image/*';
@@ -43,15 +58,15 @@
 						if (data.success)
 							lstPhotos.push(data.imgName);
 						else
-							err = true;
+							err = data.error;
 						count++;
 					})
 					.catch(err => {
-						err = true;
+						err = err;
 					});
 				}
-				catch {
-					err = true;
+				catch (e) {
+					err = e;
 				}
 			};
 			reader.readAsDataURL(file);
@@ -71,6 +86,7 @@
 			aboutMeContent = data.bio;
 			data.tags.forEach((element: number) => {
 				interests.push(element);
+				lastInterests.push(element);
 			});
 			data.pfp.forEach((element: string) => {
 				lstPhotos.push(element);
@@ -97,38 +113,73 @@
 			if (data.success)
 				lstPhotos[i] = "";
 			else
-				err = true;
+				err = data.error;
 		})
 		.catch(err => {
-			err = true;
+			err = err;
 		});
 	}
 
 	function updateProfile()
 	{
+		err = '';
 		fetch('/update_profile', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				bio: aboutMeContent,
+				bio: (document.querySelector('.input-text') as HTMLTextAreaElement).value,
 				tags: interests,
 			})
 		}).then(res => res.json())
 		.then(data => {
-			if (data.success)
-				globalThis.router.push('/profile');
-			else
-				err = true;
+			if (data.error)
+				err = data.error;
+			else {
+				hasChanged = [false, false];
+				lastInterests = interests;
+			}
 		})
 		.catch(err => {
-			err = true;
+			err = err;
 		});
+	}
+
+	function onChangeBio(event: any)
+	{
+		err = '';
+		let aboutMeContentTmp = event.target.value;
+		if (aboutMeContentTmp.length > 500)
+			event.target.value = aboutMeContentTmp.slice(0, 500);
+		if (aboutMeContentTmp.length < 1)
+			aboutMeContentTmp = "";
+		if (aboutMeContentTmp !== aboutMeContent)
+			hasChanged[0] = true;
+		else
+			hasChanged[0] = false;
+	}
+
+	$: {
+		for (let i = 0; i < interests.length; i++)
+		{
+			if (interests[i] !== lastInterests[i])
+			{
+				hasChanged[1] = true;
+				break;
+			}
+			if (i === interests.length - 1)
+				hasChanged[1] = false;
+		}
+		if (interests.length !== lastInterests.length)
+			hasChanged[1] = true;
 	}
 </script>
 
 <main>
+	{#if err.length > 0}
+		<p style="color: red; text-align: center; margin-bottom: 1rem;">{err}</p>
+	{/if}
 	<h2>PHOTOS</h2>
 	<div class="part">
 		{#key count}
@@ -152,7 +203,7 @@
 		<div class="input-container">
 			<h2>A PROPOS DE MOI</h2>
 			<div class="part" style="margin-bottom: 1rem">
-				<textarea placeholder="Écris un message..." class="input-text input">{aboutMeContent}</textarea>
+				<textarea placeholder="Écris un message..." class="input-text input" on:input={onChangeBio}>{aboutMeContent}</textarea>
 			</div>
 		</div>
 	
@@ -160,12 +211,16 @@
 			<h2>PASSIONS</h2>
 			<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 100%;">
 				{#key count}
-					<Choose_interests bind:selected_interests={interests}/>
+					<Choose_interests bind:selected_interests={interests} writableInterests={writableInterests}/>
 				{/key}
 			</div>
 		</div>
 	</div>
-	<NotSave />
+	{#key count}
+		{#if hasChanged[0] || hasChanged[1]}
+			<NotSave writableButtonSaveClick={writableButtonSaveClick}/>
+		{/if}
+	{/key}
 </main>
 
 <style>
