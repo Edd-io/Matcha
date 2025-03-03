@@ -1,6 +1,5 @@
 <script lang="ts">
 		import { navigate } from "svelte-routing";
-		import ChooseInterests from "../Register/Choose_interests.svelte";
 		import DoubleRangeSlider from "./Double-range-slider.svelte";
 		import SimpleRangeSlider from "./Simple-range-slider.svelte";
 		import Choose_interests from "../Register/Choose_interests.svelte";

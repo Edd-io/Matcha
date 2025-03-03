@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   index.js                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/27 15:36:43 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/03 08:16:03 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ function init(db)
 	app.post('/first_step_register', PostRequest.first_step_register);
 	app.post('/second_step_register', PostRequest.second_step_register);
 	app.post('/add_picture_register', (req, res) => PostRequest.add_picture_register(req, res, db));
-	app.post('/delete_picture_register', PostRequest.delete_picture_register);
+	app.post('/delete_picture_register', (req, res) => PostRequest.delete_picture_register(req, res, db));
 	app.post('/finish_register', (req, res) => PostRequest.finish_register(req, res, db));
 	app.post('/report_user', (req, res) => PostRequest.report_user(req, res, db));
 	app.post('/block_user', (req, res) => PostRequest.block_user(req, res, db));

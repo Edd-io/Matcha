@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/27 20:07:57 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/03 08:15:53 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -202,6 +202,23 @@ class Database
 			return ({error: "Too many pictures"});
 		}
 		await conn.query('INSERT INTO users_images (local_url, user_id) VALUES (?, ?)', [picture, user_id]);
+		conn.release();
+		conn.end();
+		return ({success: true});
+	}
+
+	async deletePicture(user_id, picture)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_images WHERE user_id = ? AND local_url = ?', [user_id, picture]);
+
+		if (row.length == 0)
+		{
+			conn.release();
+			conn.end();
+			return ({error: "Picture not found"});
+		}
+		await conn.query('DELETE FROM users_images WHERE user_id = ? AND local_url = ?', [user_id, picture]);
 		conn.release();
 		conn.end();
 		return ({success: true});
@@ -470,7 +487,8 @@ class Database
 				return (false);
 			if (filter1.range_age[0] != filter2.range_age[0] || filter1.range_age[1] != filter2.range_age[1])
 				return (false);
-			if (filter1.distance != filter2.distance && filter1.distance != 32089 && filter2.distance != 100)
+			console.log(filter1.distance, filter2.distance);
+			if (filter1.distance != filter2.distance)
 				return (false);
 			if (filter1.interests.length != filter2.interests.length)
 				return (false);
@@ -556,6 +574,7 @@ class Database
 			}
 			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter, lastLocation, this.buffer_neverSeenUser[index].lastLocation) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length)
 			{
+				console.log("Filter changed");
 				for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
 				{
 					if (this.buffer_neverSeenUser[index].neverSeen[i].score != -2)
@@ -567,6 +586,8 @@ class Database
 					}
 				}
 			}
+			else
+				console.log("Filter not changed");
 			this.buffer_neverSeenUser[index].lastFilter = filter;
 			this.buffer_neverSeenUser[index].blockedUsersList = blockedUsersList;
 			this.buffer_neverSeenUser[index].lastLocation = lastLocation;
@@ -882,6 +903,7 @@ class Database
 			pfp: row3.map((element) => element.local_url),
 		});
 	}
+
 }
 
 module.exports = Database;

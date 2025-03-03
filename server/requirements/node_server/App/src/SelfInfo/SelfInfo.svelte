@@ -78,6 +78,31 @@
 			count++;
 		})
 	}
+
+	function removePhoto(i: number, event: any)
+	{
+		event.stopPropagation();
+		if (lstPhotos[i] === "")
+			return;
+		fetch('/delete_picture_register', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				imgName: lstPhotos[i],
+			})
+		}).then(res => res.json())
+		.then(data => {
+			if (data.success)
+				lstPhotos[i] = "";
+			else
+				err = true;
+		})
+		.catch(err => {
+			err = true;
+		});
+	}
 </script>
 
 <main>
@@ -88,7 +113,8 @@
 				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={choose_picture}>
 					{#if lstPhotos[i]}
 						<img src={lstPhotos[i]} alt="Pfp 1" />
-						<div class="test" role="button" aria-label='Remove photo' tabindex="0">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<div class="test" aria-label='Remove photo' role="button" tabindex="0" on:click={(e) => removePhoto(i, e)}>
 							<img src={crossLogo} alt="Remove"/>
 						</div>
 					{:else}
@@ -179,6 +205,7 @@
 		color: white;
 		align-items: center;
 		justify-content: center;
+		z-index: 5;
 	}
 
     #txt {

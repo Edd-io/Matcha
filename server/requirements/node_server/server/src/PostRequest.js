@@ -231,28 +231,49 @@ class PostRequest
 
 	// Request to delete picture to register
 	// {imgName: string, token: string}
-	static delete_picture_register(req, res)
+	static delete_picture_register(req, res, db)
 	{
 		let	index;
 	
 		Debug.log(req, res);
-		if (!req.body.token || !req.body.imgName)
-			return (res.send(JSON.stringify({error: missing})));
-		
-		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
-		if (index == -1)
-			return (res.send(JSON.stringify({error: "Invalid token"})));
-
-		for (let i = 0; i < userCreatingAccount[index].pictures.length; i++)
-		{
-			if (userCreatingAccount[index].pictures[i] == req.body.imgName)
+		try {
+			if (req.session.info && req.session.info.logged)
 			{
-				fs.unlinkSync('/app/user_static_data/pfp/' + req.body.imgName);
-				res.send(JSON.stringify({success: "Image deleted"}));
-				return ;
+				if (!req.body.imgName)
+					return (res.send(JSON.stringify({error: missing})));
+				if (typeof req.body.imgName !== 'string')
+					return (res.send(JSON.stringify({error: "Invalid parameters"})));
+				db.deletePicture(req.session.info.id, req.body.imgName).then((ret) => {
+					if (ret.error)
+						return (res.send({error: ret.error}));
+					fs.unlinkSync('/app/user_static_data/' + req.body.imgName);
+					res.send(JSON.stringify({success: "Image deleted"}));
+				});
 			}
-			if (i + 1 == userCreatingAccount[index].pictures.length)
-				return (res.send(JSON.stringify({error: "No image with this name"})));
+			else
+			{
+				if (!req.body.token || !req.body.imgName)
+					return (res.send(JSON.stringify({error: missing})));
+				
+				index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
+				if (index == -1)
+					return (res.send(JSON.stringify({error: "Invalid token"})));
+		
+				for (let i = 0; i < userCreatingAccount[index].pictures.length; i++)
+				{
+					if (userCreatingAccount[index].pictures[i] == req.body.imgName)
+					{
+						fs.unlinkSync('/app/user_static_data/' + req.body.imgName);
+						res.send(JSON.stringify({success: "Image deleted"}));
+						return ;
+					}
+					if (i + 1 == userCreatingAccount[index].pictures.length)
+						return (res.send(JSON.stringify({error: "No image with this name"})));
+				}
+			}
+		}
+		catch (e) {
+			res.send({error: e.message});
 		}
 	}
 
