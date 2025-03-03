@@ -517,6 +517,26 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		db.getSelfInfo(req.session.info.id).then((data) => res.send(data));
 	}
+
+	static update_profile(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.body.bio || !req.body.tags)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.bio !== 'string' || !Array.isArray(req.body.tags))
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		if (req.body.bio.length < 10 || req.body.bio.length > 500)
+			return (res.send(JSON.stringify({error: "Bio must be between 10 and 500 characters"})));
+		if (req.body.tags.length < 1 || req.body.tags.length > 5)
+			return (res.send(JSON.stringify({error: "Tags must be between 1 and 5"})));
+		req.body.tags.forEach((tag) => {
+			if (typeof tag !== 'number')
+				return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		});
+		db.updateProfile(req.session.info.id, req.body.bio, req.body.tags).then((data) => res.send(data));
+	}
 }
 
 module.exports = PostRequest;
