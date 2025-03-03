@@ -1,54 +1,45 @@
-# 🍃 Matcha - Site de rencontres en ligne  
+# 🍃 Matcha - Online Dating Platform  
 
 ## 📖 Description  
 
-**Matcha** est une application web de rencontre, développée dans le cadre du programme de 42. Son objectif est de permettre aux utilisateurs de créer un profil, de découvrir d'autres membres en fonction de leurs préférences et d'interagir via un système de matchmaking et de chat en temps réel.  
+**Matcha** is a web-based dating application developed as part of the 42 curriculum. Its goal is to allow users to create profiles, discover other members based on their preferences, and interact through a matchmaking system and real-time chat.  
 
-L'accent est mis sur l'authenticité, avec une interface fluide et une gestion stricte des profils pour garantir des interactions sûres et pertinentes.  
+The focus is on authenticity, with a smooth interface and strict profile management to ensure safe and meaningful interactions.  
 
-🚧 Le projet est en cours de développement : de nouvelles fonctionnalités et améliorations sont prévues !
-
----
-
-## 🚀 Fonctionnalités principales  
-
-• **Inscription et connexion sécurisées** (avec OAuth, 2FA, ou autres solutions)  
-• **Gestion de profil** (ajout de photos, description, préférences, localisation)  
-• **Système de matching** basé sur l'orientation et les intérêts communs  
-• **Messagerie instantanée** pour discuter avec ses matchs  
-• **Système de géolocalisation** pour afficher des profils proches  
-• **Protection contre les faux profils** (vérification, blocage, signalement)  
-• **Système de notifications** en temps réel  
+🚧 The project is currently in development, with new features and improvements planned!  
 
 ---
 
-## 🛠️ Technologies utilisées  
+## 🚀 Key Features  
 
-- **Frontend** : Svelte  
-- **Backend** : JavaScript avec Express
-- **Base de données** : PostgreSQL / MySQL  
-- **Authentification** : JWT, OAuth2, ou autre solution sécurisée  
-- **Websockets** : Pour la messagerie et les notifications en temps réel  
-
----
-
-## 🏗️ Installation et utilisation  
-
-🚧 • WIP •
+• **Secure signup and login**
+• **Profile management** (add photos, description, preferences, location)  
+• **Smart matching system** based on orientation and shared interests  
+• **Real-time chat** to communicate with matches  
+• **Geolocation system** to display nearby profiles  
+• **Anti-fake profile protection** (verification, blocking, reporting)  
+• **Real-time notifications**  
 
 ---
 
-## 🛡️ Sécurité et protection des données  
+## 🛠️ Technologies Used  
 
-La plateforme intègre plusieurs mesures pour garantir un espace sécurisé :  
+- **Frontend**: Svelte  
+- **Backend**: JavaScript with Express  
+- **Database**: PostgreSQL / MySQL  
+- **Websockets**: For real-time messaging and notifications  
 
-🔒 **Gestion stricte de l'authentification** (hashage des mots de passe, 2FA)  
-🚫 **Système de signalement et de blocage** pour les comportements inappropriés  
+---
+
+## 🏗️ Installation & Usage  
+
+🚧 • WIP •  
 
 ---
 
-## 📜 Licence  
+## 🛡️ Security & Data Protection  
 
-Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de détails.
+The platform includes several measures to ensure a safe space:  
 
----
+🔒 **Strict authentication management** (password hashing, 2FA)  
+🚫 **Reporting and blocking system** to prevent inappropriate behavior  
