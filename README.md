@@ -22,7 +22,7 @@ Avant de commencer ce projet nous avons confectionné une maquette sur Figma pou
 
 ## 🚀 Fonctionnalités principales  
 
-• **Inscription et connexion sécurisées** (avec OAuth, 2FA, ou autres solutions)  
+• **Inscription et connexion sécurisées**
 • **Gestion de profil** (ajout de photos, description, préférences, localisation)  
 • **Système de matching** basé sur l'orientation et les intérêts communs  
 • **Messagerie instantanée** pour discuter avec ses matchs  
