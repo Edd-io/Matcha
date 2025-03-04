@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/04 16:51:31 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/04 22:31:36 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1031,6 +1031,42 @@ class Database
 		catch (e) {
 			return ({error: 'Error to link 42 account'});
 		}
+	}
+
+	async createPassword(mail)
+	{
+		const  generateStrongPassword = () => {
+			const length = 10;
+			const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,-./:;<=>?@[]^_`{|}~";
+			let password = "";
+			
+			password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 26));
+			password += "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random() * 26));
+			password += "0123456789".charAt(Math.floor(Math.random() * 10));
+			password += "!#$%&()*+,-./:;<=>?@[]^_`{|}~".charAt(Math.floor(Math.random() * 32));
+			for (let i = 4; i < length; i++) {
+				password += charset.charAt(Math.floor(Math.random() * charset.length));
+			}
+			password = password.split('').sort(() => 0.5 - Math.random()).join('');
+			return (password);
+		}
+
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM accounts WHERE email = ?', [mail]);
+		const password = generateStrongPassword();
+
+		try {
+			const hash = await bcrypt.hash(mail + password, 10);
+			await conn.query('UPDATE accounts SET password = ? WHERE email = ?', [hash, mail]);
+			conn.release();
+			conn.end();
+			return ({success: true, password});
+		}
+		catch (e) {
+			return ({error: 'Error to hash password'});
+		}
+
+		  
 	}
 }
 

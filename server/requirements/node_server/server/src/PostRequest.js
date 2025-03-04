@@ -2,11 +2,13 @@ var fs = require('fs');
 const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
+const {sendResetPasswordMail, checkIfTokenIsValid} = require('./utils/resetPasswordMail');
 const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
 const base64ToFile = require('./utils/base64ToFile');
 const usersWs = require('./Websocket/Websocket').users;
 const userBlocked = require('./utils/userBlocked');
 const isPasswordStrong = require('./utils/isPasswordStrong');
+const sendMailResetPassword = require('./utils/resetPasswordMail');
 
 const	missing = "Missing parameters";
 let		userCreatingAccount = [];
@@ -57,6 +59,44 @@ class PostRequest
 			else
 				return (res.send(JSON.stringify({error: "Invalid mail or password"})));
 		});
+	}
+
+	static reset_password(req, res, db)
+	{
+		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
+		if (!req.body.email)
+			return (res.send(JSON.stringify({error: missing})));
+		if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)))
+			return (res.send(JSON.stringify({error: "Invalid email format"})));
+		db.checkIfMailExist(req.body.email).then((exist) => {
+			if (!exist)
+				return ;
+			sendResetPasswordMail(req.body.email);
+		});
+		res.send(JSON.stringify({success: true}));
+	}
+
+	static reset_password_mail(req, res, db)
+	{
+		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
+		if (!req.query.token)
+			return (res.send(JSON.stringify({error: missing})));
+		const resToken = checkIfTokenIsValid(req.query.token);
+		if (resToken.valid)
+		{
+			db.createPassword(resToken.mail).then((data) => {
+				if (data.error)
+					return (res.send(JSON.stringify({error: 'Error creating password'})));
+				const password = data.password;
+				res.send(JSON.stringify({success: "Password changed", password}));
+			});
+		}
+		else
+			res.send(JSON.stringify({error: "Token invalid"}));
 	}
 
 	// Request to register

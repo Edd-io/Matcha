@@ -40,6 +40,7 @@ services:
           HOST: ${HOST}
           PORT: ${PORT}
           UID_42: ${UID_42}
+          WEBSITE_URL: ${WEBSITE_URL}
           SECRET_42: ${SECRET_42}
           URL_42_AUTH: ${URL_42_AUTH}
           URL_LOGIN_42: ${URL_LOGIN_42}

@@ -25,6 +25,7 @@ ARG MAIL_PASS=;
 ARG MAIL_FROM=;
 ARG HOST=;
 ARG PORT=;
+ARG WEBSITE_URL=;
 ARG UID_42=;
 ARG SECRET_42=;
 ARG URL_42_AUTH=;
@@ -41,6 +42,7 @@ ENV MAIL_PASS=${MAIL_PASS}
 ENV MAIL_FROM=${MAIL_FROM}
 ENV HOST=${HOST}
 ENV PORT=${PORT}
+ENV WEBSITE_URL=${WEBSITE_URL}
 ENV UID_42=${UID_42}
 ENV SECRET_42=${SECRET_42}
 ENV URL_42_AUTH=${URL_42_AUTH}
@@ -48,7 +50,7 @@ ENV URL_LOGIN_42=${URL_LOGIN_42}
 ENV URL_LINK_42=${URL_LINK_42}
 ENV URL_42_LINK=${URL_42_LINK}
 
-RUN echo '{"host": "localhost", "user": "'$MYSQL_USER'", "password": "'$MYSQL_PASSWORD'", "database": "'$MYSQL_DATABASE'", "mail_id": "'$MAIL_ID'", "mail_pass": "'$MAIL_PASS'", "mail_from": "'$MAIL_FROM'", "mail_host": "'$HOST'", "port": "'$PORT'", "uid_42": "'$UID_42'", "secret_42": "'$SECRET_42'", "url_42_auth": "'$URL_42_AUTH'", "url_42_link": "'$URL_42_LINK'"}' > /app/credentials.json
+RUN echo '{"host": "localhost", "user": "'$MYSQL_USER'", "password": "'$MYSQL_PASSWORD'", "database": "'$MYSQL_DATABASE'", "mail_id": "'$MAIL_ID'", "mail_pass": "'$MAIL_PASS'", "mail_from": "'$MAIL_FROM'", "mail_host": "'$HOST'", "port": "'$PORT'", "uid_42": "'$UID_42'", "secret_42": "'$SECRET_42'", "url_42_auth": "'$URL_42_AUTH'", "url_42_link": "'$URL_42_LINK'", "website_url": "'$WEBSITE_URL'"}' > /app/credentials.json
 
 WORKDIR /app
 

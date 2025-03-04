@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/17 15:13:19 by edbernar          #+#    #+#             */
-/*   Updated: 2024/12/17 21:54:46 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/04 22:20:25 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,7 @@ function checkCode()
 	const	now = Date.now();
 	let		i;
 
+	i = listMailToConfirm.length - 1;
 	while (i >= 0)
 	{
 		if (now > listMailToConfirm[i].date)
