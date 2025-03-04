@@ -1,13 +1,35 @@
 <script lang="ts">
 	import matchaLogo from '../assets/Matcha.svg';
-	import AppleLogo from '../assets/apple-logo.svg';
-	import GoogleLogo from '../assets/google-logo.svg';
 	import Logo42 from '../assets/42_Logo.svg';
 	import { navigate } from 'svelte-routing';
 
 	function redirect()
 	{
 		navigate('/register');
+	}
+
+	function redirect42() {
+		const parametres = "width=800,height=600,resizable=yes,scrollbars=yes,status=yes";
+		let popupWindow = window.open(url_login_42, "Connexion42", parametres);
+
+		popupWindow.addEventListener("load", () => {
+			try {
+				const pageContent = popupWindow.document.body.textContent;
+				const jsonData = JSON.parse(pageContent);
+				
+				if (jsonData.error) {
+					popupWindow.close();
+					setTimeout(() => {
+						alert(jsonData.error);
+					}, 100);
+				} else {
+					popupWindow.close();
+					location.reload();
+				}
+			} catch (error) {
+				console.error("Erreur lors de la récupération du JSON:", error);
+			}
+		});
 	}
 	globalThis.path.set('/');
 </script>
@@ -27,12 +49,9 @@
 						<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
 					</svg>
 				</button>
-				<button>
+				<button on:click={redirect42}>
 					<img src={Logo42} alt="42 logo"/>
 				</button>
-				<!-- <button>
-					<img src={AppleLogo} alt="Apple logo"/>
-				</button> -->
 			</div>
 			<button class="login-button" on:click={() => navigate('/login')}>
 				<p>J’ai déjà un compte</p>

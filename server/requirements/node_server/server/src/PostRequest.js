@@ -313,7 +313,7 @@ class PostRequest
 	static change_location(req, res, db)
 	{
 		Debug.log(req);
-		if (!req.session.info || !req.session.info.logged)
+		
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (req.body.lat == undefined || req.body.lon == undefined)
 			return (res.send(JSON.stringify({error: missing})));
@@ -540,6 +540,32 @@ class PostRequest
 				return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		});
 		db.updateProfile(req.session.info.id, req.body.bio, req.body.tags).then((data) => res.send(data));
+	}
+
+	////// AUTH42 //////
+	static auth42(req, res, db)
+	{
+		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
+		if (!req.query.code)
+			return (res.send(JSON.stringify({error: missing})));
+		db.auth42(req.query.code).then((data) => {
+			if (data.error)
+				return (res.send(data));
+			req.session.info = {logged: true, id: data.id};
+			res.send(JSON.stringify({success: "Connected", 'info': 'Ce mode de connexion n\'est pas encore disponible en navigation privée'}));
+		});
+	}
+
+	static link42(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.query.code)
+			return (res.send(JSON.stringify({error: missing})));
+		db.link42(req.session.info.id, req.query.code).then((data) => res.send(data));
 	}
 }
 

@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/04 11:07:36 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/04 16:51:31 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Database
 				id INTEGER PRIMARY KEY AUTO_INCREMENT,
 				email VARCHAR(320),
 				password TEXT,
+				id_42 INT DEFAULT NULL,
 				banned BOOLEAN DEFAULT FALSE
 			)`);
 			conn.query(`CREATE TABLE IF NOT EXISTS users_info (
@@ -957,6 +958,80 @@ class Database
 		return ({success: true});
 	}
 
+	async auth42(code)
+	{
+		try {
+			const body = 'grant_type=authorization_code&client_id=' + credientials.uid_42 + '&client_secret=' + credientials.secret_42 + '&code=' + code + '&redirect_uri=' + encodeURIComponent(credientials.url_42_auth);
+			const response = await fetch('https://api.intra.42.fr/oauth/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: body
+			});
+			const data = await response.json();
+
+			if (data.error)
+				return ({error: "Error to get token"});
+			const response2 = await fetch('https://api.intra.42.fr/v2/me', {
+				headers: {
+					'Authorization': `Bearer ${data.access_token}`
+				}
+			});
+			const data2 = await response2.json();
+			if (data2.error || !data2.id)
+				return ({error: "Error to get user info"});
+			
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM accounts WHERE id_42 = ?', [data2.id]);
+
+			if (row.length == 0)
+				return ({error: "No account found"});
+			return ({success: true, id: row[0].id});
+		}
+		catch (e) {
+			return ({error: e});
+		}
+	}
+
+	async link42(user_id, code)
+	{
+		try {
+			const body = 'grant_type=authorization_code&client_id=' + credientials.uid_42 + '&client_secret=' + credientials.secret_42 + '&code=' + code + '&redirect_uri=' + encodeURIComponent(credientials.url_42_link);
+			const response = await fetch('https://api.intra.42.fr/oauth/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: body
+			});
+			const data = await response.json();
+
+			if (data.error)
+				return ({error: "Error to get token"});
+			const response2 = await fetch('https://api.intra.42.fr/v2/me', {
+				headers: {
+					'Authorization': `Bearer ${data.access_token}`
+				}
+			});
+			const data2 = await response2.json();
+			if (data2.error || !data2.id)
+				return ({error: "Error to get user info"});
+			
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM accounts WHERE id_42 = ?', [data2.id]);
+		
+			if (row.length != 0)
+				return ({error: "42 account already linked"});
+			await conn.query('UPDATE accounts SET id_42 = ? WHERE id = ?', [data2.id, user_id]);
+			conn.release();
+			conn.end();
+			return ({success: true});
+		}
+		catch (e) {
+			return ({error: 'Error to link 42 account'});
+		}
+	}
 }
 
 module.exports = Database;

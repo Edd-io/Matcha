@@ -25,6 +25,12 @@ ARG MAIL_PASS=;
 ARG MAIL_FROM=;
 ARG HOST=;
 ARG PORT=;
+ARG UID_42=;
+ARG SECRET_42=;
+ARG URL_42_AUTH=;
+ARG URL_LOGIN_42=;
+ARG URL_LINK_42=;
+ARG URL_42_LINK=;
 
 ENV MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
 ENV MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -35,8 +41,14 @@ ENV MAIL_PASS=${MAIL_PASS}
 ENV MAIL_FROM=${MAIL_FROM}
 ENV HOST=${HOST}
 ENV PORT=${PORT}
+ENV UID_42=${UID_42}
+ENV SECRET_42=${SECRET_42}
+ENV URL_42_AUTH=${URL_42_AUTH}
+ENV URL_LOGIN_42=${URL_LOGIN_42}
+ENV URL_LINK_42=${URL_LINK_42}
+ENV URL_42_LINK=${URL_42_LINK}
 
-RUN echo '{"host": "localhost", "user": "'$MYSQL_USER'", "password": "'$MYSQL_PASSWORD'", "database": "'$MYSQL_DATABASE'", "mail_id": "'$MAIL_ID'", "mail_pass": "'$MAIL_PASS'", "mail_from": "'$MAIL_FROM'", "mail_host": "'$HOST'", "port": "'$PORT'"}' > /app/credentials.json
+RUN echo '{"host": "localhost", "user": "'$MYSQL_USER'", "password": "'$MYSQL_PASSWORD'", "database": "'$MYSQL_DATABASE'", "mail_id": "'$MAIL_ID'", "mail_pass": "'$MAIL_PASS'", "mail_from": "'$MAIL_FROM'", "mail_host": "'$HOST'", "port": "'$PORT'", "uid_42": "'$UID_42'", "secret_42": "'$SECRET_42'", "url_42_auth": "'$URL_42_AUTH'", "url_42_link": "'$URL_42_LINK'"}' > /app/credentials.json
 
 WORKDIR /app
 
@@ -47,6 +59,14 @@ RUN mkdir -p /app/website/
 COPY ./img_test /app/user_static_data/
 
 COPY ../App/dist /app/website
+
+RUN echo "var url_login_42 = \"$URL_LOGIN_42\"; var url_link_42 = \"$URL_LINK_42\";\n\n" >> /app/website/tmp.js
+
+WORKDIR /app/website/assets
+
+RUN cat index.js >> ../tmp.js && rm index.js && mv ../tmp.js index.js
+
+WORKDIR /app
 
 RUN npm install
 

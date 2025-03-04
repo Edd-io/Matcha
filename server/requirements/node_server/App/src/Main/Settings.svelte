@@ -10,6 +10,8 @@
 	let dateOfBirth: string = "";
 	let error: string = "";
 	let location: any = {lon: 0, lat: 0};
+	let eye_pass: boolean = false;
+
 	globalThis.path.set('settings');
 
 	onMount(() => {
@@ -85,7 +87,32 @@
 		});
 	}
 
-	let eye_pass = false;
+	function link42() {
+		const parametres = "width=800,height=600,resizable=yes,scrollbars=yes,status=yes";
+		let popupWindow = window.open(url_link_42, "Lier42", parametres);
+
+		popupWindow.addEventListener("load", () => {
+			try {
+				const pageContent = popupWindow.document.body.textContent;
+				const jsonData = JSON.parse(pageContent);
+				
+				if (jsonData.error) {
+					popupWindow.close();
+					setTimeout(() => {
+						alert(jsonData.error);
+					}, 100);
+				} else {
+					popupWindow.close();
+					setTimeout(() => {
+						alert("Compte 42 lié avec succès !");
+					}, 100);
+				}
+			} catch (error) {
+				console.error("Erreur lors de la récupération du JSON:", error);
+			}
+		});
+	}
+
 </script>
 
 <main>
@@ -153,6 +180,12 @@
 				<p>Lat</p>
 				<input class="input-text" type="number" id="location-lat" name="Localisation" value={location.lat}>
 			</div>
+		</div>
+
+		<div class="input-place">
+			<label for="Localisation">Connexion à 42</label>
+
+			<button class="btn" style="background-color: #15902f;" on:click={link42}>Se connecter</button>
 		</div>
 
 		{#if error}
