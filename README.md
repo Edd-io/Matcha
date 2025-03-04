@@ -1,7 +1,8 @@
 # 🍃 Matcha - Site de rencontres en ligne  
 
-![Image](https://github.com/user-attachments/assets/8a58cdcc-85b0-4f8e-9493-a51b7257ea47)
-
+<div align="center">
+  <img style="height: 150px; width: 150px; margin-bottom: 50px" src="https://github.com/user-attachments/assets/8a58cdcc-85b0-4f8e-9493-a51b7257ea47"/>
+</div>
 ## 📖 Description  
 
 **Matcha** est une application web de rencontre, développée dans le cadre du programme de 42. Son objectif est de permettre aux utilisateurs de créer un profil, de découvrir d'autres membres en fonction de leurs préférences et d'interagir via un système de matchmaking et de chat en temps réel.  
