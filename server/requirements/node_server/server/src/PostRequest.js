@@ -6,6 +6,7 @@ const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount
 const base64ToFile = require('./utils/base64ToFile');
 const usersWs = require('./Websocket/Websocket').users;
 const userBlocked = require('./utils/userBlocked');
+const isPasswordStrong = require('./utils/isPasswordStrong');
 
 const	missing = "Missing parameters";
 let		userCreatingAccount = [];
@@ -129,8 +130,8 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "First name contains unauthorized characters"})));
 		if (req.body.last_name.split('').some((c) => !authorizedCharsNames.includes(c)))
 			return (res.send(JSON.stringify({error: "Last name contains unauthorized characters"})));
-		if (req.body.password.length < 8 || req.body.password.length > 50)
-			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters"})));
+		if (isPasswordStrong(req.body.password) === false)
+			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters and contain at least one uppercase, one lowercase, one number and one special character"})));
 		if (req.body.nickname.length < 2 || req.body.nickname.length > 50)
 			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
 		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
@@ -485,8 +486,8 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "First name contains unauthorized characters"})));
 		if (req.body.last_name.split('').some((c) => !authorizedCharsNames.includes(c)))
 			return (res.send(JSON.stringify({error: "Last name contains unauthorized characters"})));
-		if (req.body.password.length > 0 && (req.body.password.length < 8 || req.body.password.length > 50))
-			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters"})));
+		if (isPasswordStrong(req.body.password) === false)
+			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters and contain at least one uppercase, one lowercase, one number and one special character"})));
 		if (req.body.nickname.length < 2 || req.body.nickname.length > 50)
 			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
 		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
