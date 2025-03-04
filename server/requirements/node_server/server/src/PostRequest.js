@@ -315,9 +315,11 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.lat || !req.body.lon)
+		if (req.body.lat == undefined || req.body.lon == undefined)
 			return (res.send(JSON.stringify({error: missing})));
-		db.addLocation(req.session.info.id, req.body.lat, req.body.lon);
+		if (typeof req.body.lat !== 'number' || typeof req.body.lon !== 'number')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.addLocation(req.session.info.id, Number(req.body.lat).toFixed(6), Number(req.body.lon).toFixed(6));
 		res.send(JSON.stringify({success: "Location changed"}));
 	}
 
@@ -463,11 +465,12 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.first_name || !req.body.last_name || !req.body.nickname || !req.body.date_of_birth)
+		if (!req.body.first_name || !req.body.last_name || !req.body.nickname || !req.body.date_of_birth || !req.body.location)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.first_name != 'string' || typeof req.body.last_name != 'string'
 			|| typeof req.body.nickname != 'string' || typeof req.body.date_of_birth != 'string'
-			|| typeof req.body.password != 'string')
+			|| typeof req.body.password != 'string' || (typeof req.body.location != 'object'
+			&& typeof req.body.location.lon == 'number' && typeof req.body.location.lat == 'number'))
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		if (req.body.date_of_birth.length !== 10 || req.body.date_of_birth[4] !== '-' || req.body.date_of_birth[7] !== '-' ||
 			isNaN(parseInt(req.body.date_of_birth.substr(0, 4))) || isNaN(parseInt(req.body.date_of_birth.substr(5, 2))) ||
@@ -488,6 +491,8 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
 		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
 			return (res.send(JSON.stringify({error: "Nickname contains unauthorized characters"})));
+		if (req.body.location.lat < -90 || req.body.location.lat > 90 || req.body.location.lon < -180 || req.body.location.lon > 180)
+			return (res.send(JSON.stringify({error: "Invalid location"})));
 		db.changeInfo(req.session.info.id, req.body);
 		res.send(JSON.stringify({success: "Info changed"}));
 	}
@@ -498,7 +503,6 @@ class PostRequest
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		db.getInfo(req.session.info.id).then((data) => res.send(data));
-		
 	}
 
 	static get_all_locations(req, res, db)

@@ -9,6 +9,7 @@
 	let showDisconnectPopup: boolean = false;
 	let dateOfBirth: string = "";
 	let error: string = "";
+	let location: any = {lon: 0, lat: 0};
 	globalThis.path.set('settings');
 
 	onMount(() => {
@@ -28,6 +29,10 @@
 			last_name_user = data.last_name;
 			pseudo = data.nickname;
 			dateOfBirth = data.date_of_birth; // (format: '1990-07-01')
+			if (data.location) {
+				location.lon = data.location.lon;
+				location.lat = data.location.lat;
+			}
 		});
 	}
 
@@ -44,6 +49,10 @@
 				nickname: pseudo,
 				date_of_birth: dateOfBirth,
 				password: password_user,
+				location: {
+					lon: (document.getElementById('location-lon') as HTMLInputElement).value,
+					lat: (document.getElementById('location-lat') as HTMLInputElement).value
+				}
 			})
 		}).then(res => res.json())
 		.then(data => {
@@ -140,9 +149,9 @@
 			<label for="Localisation">Localisation</label>
 			<div class="popis">
 				<p>Lon</p>
-				<input class="input-text" type="number" id="Localisation" name="Localisation">
+				<input class="input-text" type="number" id="location-lon" name="Localisation" value={location.lon}>
 				<p>Lat</p>
-				<input class="input-text" type="number" id="Localisation" name="Localisation">
+				<input class="input-text" type="number" id="location-lat" name="Localisation" value={location.lat}>
 			</div>
 		</div>
 

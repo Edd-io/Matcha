@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/03 08:32:39 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/04 11:07:36 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,7 +358,7 @@ class Database
 			if (!response.ok)
 				return (null);
 			const data = await response.json();
-			return (data);
+			return (data.error ? null : data);
 		}
 
 		const fameRatingCalc = async (user_id) => {
@@ -377,11 +377,21 @@ class Database
 		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
 		const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [user_id]);
 		const rowImages = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
-		const location = row[0]?.location ? await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude) : "Position inconnue";
 		const tags = [];
 		const images = [];
 		let	  sexe = row[0].sexe == 'M' ? "Homme" : (row[0].sexe == 'F' ? "Femme" : "Autre");
 		let	  orientation = null;
+		let	  location = null;
+
+		if (row[0]?.location)
+		{
+			const dataLocation = await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude);
+
+			if (dataLocation)
+				location = dataLocation;
+			else
+				location = "Position inconnue";
+		}
 
 		if (row[0].orientation == 'M' && row[0].sexe == 'M')
 			orientation = "Homosexuel";
@@ -415,10 +425,38 @@ class Database
 	}
 
 	buffer_neverSeenUser = [];
+	clearBufferInterval = null;
 
 	getNeverSeenUser(user_id, filter)
 	{
 		let	selfInfo = null;
+
+		const clearBuffer = () => {
+			console.log("Clearing buffer interval started");
+			const thisClass = this;
+			this.clearBufferInterval = setInterval(() => {
+				if (this.buffer_neverSeenUser.length == 0)
+				{
+					console.log("No user in buffer, canceling clear buffer");
+					clearInterval(thisClass.clearBufferInterval);
+					thisClass.clearBufferInterval = null;
+					return ;
+				}
+				console.log("Starting clear buffer");
+				for (let i = 0; i < thisClass.buffer_neverSeenUser.length; i++)
+				{
+					if (new Date() - thisClass.buffer_neverSeenUser[i].lastUpdate > 120000)
+					{
+						console.log("Clearing buffer for user", thisClass.buffer_neverSeenUser[i].id);
+						thisClass.buffer_neverSeenUser.splice(i, 1);
+						i--;
+					}
+				}
+				console.log("Clearing buffer finished");
+			}, 60000);
+		}
+		if (this.clearBufferInterval == null)
+			clearBuffer();
 
 		const getScore = async (other_id) => {
 			const	otherInfo = await getOtherInfo(other_id);
@@ -487,7 +525,6 @@ class Database
 				return (false);
 			if (filter1.range_age[0] != filter2.range_age[0] || filter1.range_age[1] != filter2.range_age[1])
 				return (false);
-			console.log(filter1.distance, filter2.distance);
 			if (filter1.distance != filter2.distance)
 				return (false);
 			if (filter1.interests.length != filter2.interests.length)
@@ -591,6 +628,7 @@ class Database
 			this.buffer_neverSeenUser[index].lastFilter = filter;
 			this.buffer_neverSeenUser[index].blockedUsersList = blockedUsersList;
 			this.buffer_neverSeenUser[index].lastLocation = lastLocation;
+			this.buffer_neverSeenUser[index].lastUpdate = new Date();
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 			console.log(this.buffer_neverSeenUser[index]);
 			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0 || this.buffer_neverSeenUser[index].neverSeen[0].score == -2 || this.buffer_neverSeenUser[index].neverSeen[0].score == -1)
@@ -816,8 +854,8 @@ class Database
 		const rowAccounts = await conn.query('SELECT email FROM accounts WHERE id = ?', [user_id]);
 		
 		await conn.query(
-			'UPDATE users_info SET first_name = ?, last_name = ?, nickname = ?, date_of_birth = ? WHERE user_id = ?',
-			[info.first_name, info.last_name, info.nickname, info.date_of_birth, user_id]
+			'UPDATE users_info SET first_name = ?, last_name = ?, nickname = ?, date_of_birth = ?, location = ? WHERE user_id = ?',
+			[info.first_name, info.last_name, info.nickname, info.date_of_birth, `{\"latitude\":${Number(info.location.lat).toFixed(6)},\"longitude\":${Number(info.location.lon).toFixed(6)}}`, user_id]
 		);
 		conn.release();
 		conn.end();
@@ -841,6 +879,7 @@ class Database
 		const year = date.toLocaleString("default", { year: "numeric" });
 		const month = date.toLocaleString("default", { month: "2-digit" });
 		const day = date.toLocaleString("default", { day: "2-digit" });
+		const location = row[0].location ? JSON.parse(row[0].location) : null;
 
 		conn.release();
 		conn.end();
@@ -849,7 +888,8 @@ class Database
 			last_name: row[0].last_name,
 			nickname: row[0].nickname,
 			date_of_birth: year + "-" + month + "-" + day,
-		})
+			location: location ? {lon: location.longitude, lat: location.latitude} : null,
+		});
 	}
 
 	async getAllLocations(self_id)
