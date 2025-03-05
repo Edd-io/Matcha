@@ -36,7 +36,6 @@
         padding-inline: 1rem;
         background-color: #111111;
         animation: fadeInUp 0.7s;
-        /* max-width: ; */
     }
 
     .not-saved p{

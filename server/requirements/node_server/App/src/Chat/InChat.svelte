@@ -118,6 +118,8 @@
 			(inputMessage as HTMLInputElement).value = message.slice(0, 1000);
 		}
 	}
+
+	let options = false;
 </script>
 
 <main in:slideHorizontal out:slideHorizontal>
@@ -131,7 +133,19 @@
 			<img src={user.pfp} alt="Pfp de {user.name}" />
 			<p>{user.name}</p>
 		</div>
-		<img src={threeDotsIcon} alt="Options" />
+		<button class="no-button-style" on:click={() => options = !options} aria-label="Options">	
+			<img src={threeDotsIcon} alt="Options" />
+		</button>
+		{#if options}
+			<div class="options">
+				<button class="no-button-style" on:click={() => {}}>
+					Signaler
+				</button>
+				<button class="no-button-style" on:click={() => {}}>
+					Bloquer
+				</button>
+			</div>
+		{/if}
 	</div>
 	<div class="list-messages">
 		{#each listMessages as message}
@@ -171,6 +185,10 @@
 		transform: rotate(180deg);
 		height: 2.5rem;
 		width: 2.5rem;
+	}
+	.option {
+		display: flex;
+		flex-direction: column;
 	}
 	.chat-header {
 		display: flex;

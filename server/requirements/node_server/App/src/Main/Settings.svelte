@@ -134,6 +134,9 @@
 					{/if}
 				</button>
 			</div>
+			{#if password_user.trim() !== ""}
+				<p style="color: red; font-size: 1rem;">Attention, le mot de passe va être changé si vous enregistrez.</p>
+			{/if}
 		</div>
 
 		<div class="input-place">
@@ -153,6 +156,10 @@
 		<div class="mode">
 		</div>
 
+		<!-- <div class="not-saved">
+			<p class="text">Vos modifications on bien été enrengistré !</p>
+		</div> -->
+
 		<div class="settings-button">
 			<button class="btn" style="background-color: #15902f;" on:click={() => setUserInfo()}>Enregistrer</button>
 			<button class="btn" style="background-color: #111;" on:click={() => showDisconnectPopup = true}>Déconnecter</button>
@@ -169,6 +176,38 @@
 		align-items: center;
 		height: 100%;
 	}
+
+    /* @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translate(-50%, 100%);
+        }
+        100% {
+            opacity: 1;
+            transform: translate(-50%, 0);
+        }
+    } */
+
+    /* .not-saved {
+        position: absolute;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 5%;
+        width: 80%;
+        transform: translate(-50%, 0);
+        left: 50%;
+        bottom: 5%;
+        border-radius: 1rem;
+        padding-inline: 1rem;
+        background-color: #111111;
+        animation: fadeInUp 0.7s;
+    }
+
+    .not-saved p{
+        color: white;
+        font-size: 0.7rem;
+    } */
 
 	.overlay {
 		position: fixed;
