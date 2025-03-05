@@ -9,6 +9,9 @@
 	let showDisconnectPopup: boolean = false;
 	let dateOfBirth: string = "";
 	let error: string = "";
+	let location: any = {lon: 0, lat: 0};
+	let eye_pass: boolean = false;
+
 	globalThis.path.set('settings');
 
 	onMount(() => {
@@ -28,6 +31,10 @@
 			last_name_user = data.last_name;
 			pseudo = data.nickname;
 			dateOfBirth = data.date_of_birth; // (format: '1990-07-01')
+			if (data.location) {
+				location.lon = data.location.lon;
+				location.lat = data.location.lat;
+			}
 		});
 	}
 
@@ -44,6 +51,10 @@
 				nickname: pseudo,
 				date_of_birth: dateOfBirth,
 				password: password_user,
+				location: {
+					lon: (document.getElementById('location-lon') as HTMLInputElement).value,
+					lat: (document.getElementById('location-lat') as HTMLInputElement).value
+				}
 			})
 		}).then(res => res.json())
 		.then(data => {
@@ -76,7 +87,32 @@
 		});
 	}
 
-	let eye_pass = false;
+	function link42() {
+		const parametres = "width=800,height=600,resizable=yes,scrollbars=yes,status=yes";
+		let popupWindow = window.open(url_link_42, "Lier42", parametres);
+
+		popupWindow.addEventListener("load", () => {
+			try {
+				const pageContent = popupWindow.document.body.textContent;
+				const jsonData = JSON.parse(pageContent);
+				
+				if (jsonData.error) {
+					popupWindow.close();
+					setTimeout(() => {
+						alert(jsonData.error);
+					}, 100);
+				} else {
+					popupWindow.close();
+					setTimeout(() => {
+						alert("Compte 42 lié avec succès !");
+					}, 100);
+				}
+			} catch (error) {
+				console.error("Erreur lors de la récupération du JSON:", error);
+			}
+		});
+	}
+
 </script>
 
 <main>
@@ -143,10 +179,16 @@
 			<label for="Localisation">Localisation</label>
 			<div class="popis">
 				<p>Lon</p>
-				<input class="input-text" type="number" id="Localisation" name="Localisation">
+				<input class="input-text" type="number" id="location-lon" name="Localisation" value={location.lon}>
 				<p>Lat</p>
-				<input class="input-text" type="number" id="Localisation" name="Localisation">
+				<input class="input-text" type="number" id="location-lat" name="Localisation" value={location.lat}>
 			</div>
+		</div>
+
+		<div class="input-place">
+			<label for="Localisation">Connexion à 42</label>
+
+			<button class="btn" style="background-color: #15902f;" on:click={link42}>Se connecter</button>
 		</div>
 
 		{#if error}

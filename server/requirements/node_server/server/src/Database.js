@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/27 15:29:40 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/04 22:31:36 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ class Database
 				id INTEGER PRIMARY KEY AUTO_INCREMENT,
 				email VARCHAR(320),
 				password TEXT,
+				id_42 INT DEFAULT NULL,
 				banned BOOLEAN DEFAULT FALSE
 			)`);
 			conn.query(`CREATE TABLE IF NOT EXISTS users_info (
@@ -207,6 +208,23 @@ class Database
 		return ({success: true});
 	}
 
+	async deletePicture(user_id, picture)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_images WHERE user_id = ? AND local_url = ?', [user_id, picture]);
+
+		if (row.length == 0)
+		{
+			conn.release();
+			conn.end();
+			return ({error: "Picture not found"});
+		}
+		await conn.query('DELETE FROM users_images WHERE user_id = ? AND local_url = ?', [user_id, picture]);
+		conn.release();
+		conn.end();
+		return ({success: true});
+	}
+
 	async blockUser(self_id, block_id)
 	{
 		const conn = await this.pool.getConnection();
@@ -341,7 +359,7 @@ class Database
 			if (!response.ok)
 				return (null);
 			const data = await response.json();
-			return (data);
+			return (data.error ? null : data);
 		}
 
 		const fameRatingCalc = async (user_id) => {
@@ -360,11 +378,21 @@ class Database
 		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
 		const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [user_id]);
 		const rowImages = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
-		const location = row[0]?.location ? await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude) : "Position inconnue";
 		const tags = [];
 		const images = [];
 		let	  sexe = row[0].sexe == 'M' ? "Homme" : (row[0].sexe == 'F' ? "Femme" : "Autre");
 		let	  orientation = null;
+		let	  location = null;
+
+		if (row[0]?.location)
+		{
+			const dataLocation = await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude);
+
+			if (dataLocation)
+				location = dataLocation;
+			else
+				location = "Position inconnue";
+		}
 
 		if (row[0].orientation == 'M' && row[0].sexe == 'M')
 			orientation = "Homosexuel";
@@ -398,10 +426,38 @@ class Database
 	}
 
 	buffer_neverSeenUser = [];
+	clearBufferInterval = null;
 
 	getNeverSeenUser(user_id, filter)
 	{
 		let	selfInfo = null;
+
+		const clearBuffer = () => {
+			console.log("Clearing buffer interval started");
+			const thisClass = this;
+			this.clearBufferInterval = setInterval(() => {
+				if (this.buffer_neverSeenUser.length == 0)
+				{
+					console.log("No user in buffer, canceling clear buffer");
+					clearInterval(thisClass.clearBufferInterval);
+					thisClass.clearBufferInterval = null;
+					return ;
+				}
+				console.log("Starting clear buffer");
+				for (let i = 0; i < thisClass.buffer_neverSeenUser.length; i++)
+				{
+					if (new Date() - thisClass.buffer_neverSeenUser[i].lastUpdate > 120000)
+					{
+						console.log("Clearing buffer for user", thisClass.buffer_neverSeenUser[i].id);
+						thisClass.buffer_neverSeenUser.splice(i, 1);
+						i--;
+					}
+				}
+				console.log("Clearing buffer finished");
+			}, 60000);
+		}
+		if (this.clearBufferInterval == null)
+			clearBuffer();
 
 		const getScore = async (other_id) => {
 			const	otherInfo = await getOtherInfo(other_id);
@@ -465,12 +521,12 @@ class Database
 			});
 		}
 
-		const isSameFilter = (filter1, filter2) => {
+		const isSameFilter = (filter1, filter2, lastLocation, newLocation) => {
 			if (filter1.distance == undefined || filter2.distance == undefined)
 				return (false);
 			if (filter1.range_age[0] != filter2.range_age[0] || filter1.range_age[1] != filter2.range_age[1])
 				return (false);
-			if (filter1.distance != filter2.distance && filter1.distance != 32089 && filter2.distance != 100)
+			if (filter1.distance != filter2.distance)
 				return (false);
 			if (filter1.interests.length != filter2.interests.length)
 				return (false);
@@ -479,6 +535,8 @@ class Database
 				if (!filter2.interests.includes(filter1.interests[i]))
 					return (false);
 			}
+			if ((!lastLocation && !newLocation) || lastLocation.latitude != newLocation.latitude || lastLocation.longitude != newLocation.longitude)
+				return (false);
 			return (true);
 		}
 
@@ -552,8 +610,9 @@ class Database
 					this.buffer_neverSeenUser[index].lastNb++;
 				}
 			}
-			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length || lastLocation != this.buffer_neverSeenUser[index].lastLocation)
+			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter, lastLocation, this.buffer_neverSeenUser[index].lastLocation) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length)
 			{
+				console.log("Filter changed");
 				for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
 				{
 					if (this.buffer_neverSeenUser[index].neverSeen[i].score != -2)
@@ -565,9 +624,12 @@ class Database
 					}
 				}
 			}
+			else
+				console.log("Filter not changed");
 			this.buffer_neverSeenUser[index].lastFilter = filter;
 			this.buffer_neverSeenUser[index].blockedUsersList = blockedUsersList;
 			this.buffer_neverSeenUser[index].lastLocation = lastLocation;
+			this.buffer_neverSeenUser[index].lastUpdate = new Date();
 			this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 			console.log(this.buffer_neverSeenUser[index]);
 			if (this.buffer_neverSeenUser[index].neverSeen[0].score == 0 || this.buffer_neverSeenUser[index].neverSeen[0].score == -2 || this.buffer_neverSeenUser[index].neverSeen[0].score == -1)
@@ -672,7 +734,7 @@ class Database
 
 		conn.release();
 		conn.end();
-		for (let i = 0; i < row.length; i++)
+		for (let i = row.length - 1; i >= 0; i--)
 		{
 			const	other_id = row[i].from_id == user_id ? row[i].to_id : row[i].from_id;
 			const	otherInfo = await getOtherInfo(other_id);
@@ -793,8 +855,8 @@ class Database
 		const rowAccounts = await conn.query('SELECT email FROM accounts WHERE id = ?', [user_id]);
 		
 		await conn.query(
-			'UPDATE users_info SET first_name = ?, last_name = ?, nickname = ?, date_of_birth = ? WHERE user_id = ?',
-			[info.first_name, info.last_name, info.nickname, info.date_of_birth, user_id]
+			'UPDATE users_info SET first_name = ?, last_name = ?, nickname = ?, date_of_birth = ?, location = ? WHERE user_id = ?',
+			[info.first_name, info.last_name, info.nickname, info.date_of_birth, `{\"latitude\":${Number(info.location.lat).toFixed(6)},\"longitude\":${Number(info.location.lon).toFixed(6)}}`, user_id]
 		);
 		conn.release();
 		conn.end();
@@ -818,6 +880,7 @@ class Database
 		const year = date.toLocaleString("default", { year: "numeric" });
 		const month = date.toLocaleString("default", { month: "2-digit" });
 		const day = date.toLocaleString("default", { day: "2-digit" });
+		const location = row[0].location ? JSON.parse(row[0].location) : null;
 
 		conn.release();
 		conn.end();
@@ -826,7 +889,8 @@ class Database
 			last_name: row[0].last_name,
 			nickname: row[0].nickname,
 			date_of_birth: year + "-" + month + "-" + day,
-		})
+			location: location ? {lon: location.longitude, lat: location.latitude} : null,
+		});
 	}
 
 	async getAllLocations(self_id)
@@ -863,6 +927,146 @@ class Database
 			}
 		}
 		return (usersList);
+	}
+
+	async getSelfInfo(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT bio FROM users_info WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [user_id]);
+		const row3 = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
+
+		conn.release();
+		conn.end();
+		return ({
+			bio: row[0].bio,
+			tags: row2.map((element) => Number(element.tag)),
+			pfp: row3.map((element) => element.local_url),
+		});
+	}
+
+	async updateProfile(user_id, bio, tags)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('UPDATE users_info SET bio = ? WHERE user_id = ?', [bio, user_id]);
+		await conn.query('DELETE FROM users_tags WHERE user_id = ?', [user_id]);
+		for (let i = 0; i < tags.length; i++)
+			await conn.query('INSERT INTO users_tags (tag, user_id) VALUES (?, ?)', [tags[i], user_id]);
+		conn.release();
+		conn.end();
+		return ({success: true});
+	}
+
+	async auth42(code)
+	{
+		try {
+			const body = 'grant_type=authorization_code&client_id=' + credientials.uid_42 + '&client_secret=' + credientials.secret_42 + '&code=' + code + '&redirect_uri=' + encodeURIComponent(credientials.url_42_auth);
+			const response = await fetch('https://api.intra.42.fr/oauth/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: body
+			});
+			const data = await response.json();
+
+			if (data.error)
+				return ({error: "Error to get token"});
+			const response2 = await fetch('https://api.intra.42.fr/v2/me', {
+				headers: {
+					'Authorization': `Bearer ${data.access_token}`
+				}
+			});
+			const data2 = await response2.json();
+			if (data2.error || !data2.id)
+				return ({error: "Error to get user info"});
+			
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM accounts WHERE id_42 = ?', [data2.id]);
+
+			if (row.length == 0)
+				return ({error: "No account found"});
+			return ({success: true, id: row[0].id});
+		}
+		catch (e) {
+			return ({error: e});
+		}
+	}
+
+	async link42(user_id, code)
+	{
+		try {
+			const body = 'grant_type=authorization_code&client_id=' + credientials.uid_42 + '&client_secret=' + credientials.secret_42 + '&code=' + code + '&redirect_uri=' + encodeURIComponent(credientials.url_42_link);
+			const response = await fetch('https://api.intra.42.fr/oauth/token', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				body: body
+			});
+			const data = await response.json();
+
+			if (data.error)
+				return ({error: "Error to get token"});
+			const response2 = await fetch('https://api.intra.42.fr/v2/me', {
+				headers: {
+					'Authorization': `Bearer ${data.access_token}`
+				}
+			});
+			const data2 = await response2.json();
+			if (data2.error || !data2.id)
+				return ({error: "Error to get user info"});
+			
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM accounts WHERE id_42 = ?', [data2.id]);
+		
+			if (row.length != 0)
+				return ({error: "42 account already linked"});
+			await conn.query('UPDATE accounts SET id_42 = ? WHERE id = ?', [data2.id, user_id]);
+			conn.release();
+			conn.end();
+			return ({success: true});
+		}
+		catch (e) {
+			return ({error: 'Error to link 42 account'});
+		}
+	}
+
+	async createPassword(mail)
+	{
+		const  generateStrongPassword = () => {
+			const length = 10;
+			const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,-./:;<=>?@[]^_`{|}~";
+			let password = "";
+			
+			password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 26));
+			password += "abcdefghijklmnopqrstuvwxyz".charAt(Math.floor(Math.random() * 26));
+			password += "0123456789".charAt(Math.floor(Math.random() * 10));
+			password += "!#$%&()*+,-./:;<=>?@[]^_`{|}~".charAt(Math.floor(Math.random() * 32));
+			for (let i = 4; i < length; i++) {
+				password += charset.charAt(Math.floor(Math.random() * charset.length));
+			}
+			password = password.split('').sort(() => 0.5 - Math.random()).join('');
+			return (password);
+		}
+
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM accounts WHERE email = ?', [mail]);
+		const password = generateStrongPassword();
+
+		try {
+			const hash = await bcrypt.hash(mail + password, 10);
+			await conn.query('UPDATE accounts SET password = ? WHERE email = ?', [hash, mail]);
+			conn.release();
+			conn.end();
+			return ({success: true, password});
+		}
+		catch (e) {
+			return ({error: 'Error to hash password'});
+		}
+
+		  
 	}
 }
 

@@ -39,6 +39,13 @@ services:
           MAIL_FROM: ${MAIL_FROM}
           HOST: ${HOST}
           PORT: ${PORT}
+          UID_42: ${UID_42}
+          WEBSITE_URL: ${WEBSITE_URL}
+          SECRET_42: ${SECRET_42}
+          URL_42_AUTH: ${URL_42_AUTH}
+          URL_LOGIN_42: ${URL_LOGIN_42}
+          URL_LINK_42: ${URL_LINK_42}
+          URL_42_LINK: ${URL_42_LINK}
     volumes:
       - user_static_data:/app/user_static_data # This folder will be used to store user uploaded files (like profile pictures)
     restart: always

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   index.js                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/27 13:42:42 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/04 22:48:46 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ function init(db)
 	app.post('/first_step_register', PostRequest.first_step_register);
 	app.post('/second_step_register', PostRequest.second_step_register);
 	app.post('/add_picture_register', (req, res) => PostRequest.add_picture_register(req, res, db));
-	app.post('/delete_picture_register', PostRequest.delete_picture_register);
+	app.post('/delete_picture_register', (req, res) => PostRequest.delete_picture_register(req, res, db));
 	app.post('/finish_register', (req, res) => PostRequest.finish_register(req, res, db));
 	app.post('/report_user', (req, res) => PostRequest.report_user(req, res, db));
 	app.post('/block_user', (req, res) => PostRequest.block_user(req, res, db));
@@ -75,6 +75,12 @@ function init(db)
 	app.post('/change_info', (req, res) => PostRequest.change_info(req, res, db));
 	app.get('/get_info', (req, res) => PostRequest.get_info(req, res, db));
 	app.get('/get_all_locations', (req, res) => PostRequest.get_all_locations(req, res, db));
+	app.get('/get_self_info', (req, res) => PostRequest.get_self_info(req, res, db));
+	app.post('/update_profile', (req, res) => PostRequest.update_profile(req, res, db));
+	app.get('/auth42', (req, res) => PostRequest.auth42(req, res, db));
+	app.get('/link42', (req, res) => PostRequest.link42(req, res, db));
+	app.post('/reset_password', (req, res) => PostRequest.reset_password(req, res, db));
+	app.get('/reset_password_mail', (req, res) => PostRequest.reset_password_mail(req, res, db));
 
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);

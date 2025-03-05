@@ -2,10 +2,13 @@ var fs = require('fs');
 const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
+const {sendResetPasswordMail, checkIfTokenIsValid, template_page} = require('./utils/resetPasswordMail');
 const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
 const base64ToFile = require('./utils/base64ToFile');
 const usersWs = require('./Websocket/Websocket').users;
 const userBlocked = require('./utils/userBlocked');
+const isPasswordStrong = require('./utils/isPasswordStrong');
+const sendMailResetPassword = require('./utils/resetPasswordMail');
 
 const	missing = "Missing parameters";
 let		userCreatingAccount = [];
@@ -56,6 +59,44 @@ class PostRequest
 			else
 				return (res.send(JSON.stringify({error: "Invalid mail or password"})));
 		});
+	}
+
+	static reset_password(req, res, db)
+	{
+		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
+		if (!req.body.email)
+			return (res.send(JSON.stringify({error: missing})));
+		if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)))
+			return (res.send(JSON.stringify({error: "Invalid email format"})));
+		db.checkIfMailExist(req.body.email).then((exist) => {
+			if (!exist)
+				return ;
+			sendResetPasswordMail(req.body.email);
+		});
+		res.send(JSON.stringify({success: true}));
+	}
+
+	static reset_password_mail(req, res, db)
+	{
+		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
+		if (!req.query.token)
+			return (res.send(JSON.stringify({error: missing})));
+		const resToken = checkIfTokenIsValid(req.query.token);
+		if (resToken.valid)
+		{
+			db.createPassword(resToken.mail).then((data) => {
+				if (data.error)
+					return (res.send(JSON.stringify({error: 'Error creating password'})));
+				const password = data.password;
+				res.send(template_page.replace('{{newPassword}}', password));
+			});
+		}
+		else
+			res.send(JSON.stringify({error: "Token invalid"}));
 	}
 
 	// Request to register
@@ -129,8 +170,8 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "First name contains unauthorized characters"})));
 		if (req.body.last_name.split('').some((c) => !authorizedCharsNames.includes(c)))
 			return (res.send(JSON.stringify({error: "Last name contains unauthorized characters"})));
-		if (req.body.password.length < 8 || req.body.password.length > 50)
-			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters"})));
+		if (isPasswordStrong(req.body.password) === false)
+			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters and contain at least one uppercase, one lowercase, one number and one special character"})));
 		if (req.body.nickname.length < 2 || req.body.nickname.length > 50)
 			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
 		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
@@ -231,28 +272,49 @@ class PostRequest
 
 	// Request to delete picture to register
 	// {imgName: string, token: string}
-	static delete_picture_register(req, res)
+	static delete_picture_register(req, res, db)
 	{
 		let	index;
 	
 		Debug.log(req, res);
-		if (!req.body.token || !req.body.imgName)
-			return (res.send(JSON.stringify({error: missing})));
-		
-		index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
-		if (index == -1)
-			return (res.send(JSON.stringify({error: "Invalid token"})));
-
-		for (let i = 0; i < userCreatingAccount[index].pictures.length; i++)
-		{
-			if (userCreatingAccount[index].pictures[i] == req.body.imgName)
+		try {
+			if (req.session.info && req.session.info.logged)
 			{
-				fs.unlinkSync('/app/user_static_data/pfp/' + req.body.imgName);
-				res.send(JSON.stringify({success: "Image deleted"}));
-				return ;
+				if (!req.body.imgName)
+					return (res.send(JSON.stringify({error: missing})));
+				if (typeof req.body.imgName !== 'string')
+					return (res.send(JSON.stringify({error: "Invalid parameters"})));
+				db.deletePicture(req.session.info.id, req.body.imgName).then((ret) => {
+					if (ret.error)
+						return (res.send({error: ret.error}));
+					fs.unlinkSync('/app/user_static_data/' + req.body.imgName);
+					res.send(JSON.stringify({success: "Image deleted"}));
+				});
 			}
-			if (i + 1 == userCreatingAccount[index].pictures.length)
-				return (res.send(JSON.stringify({error: "No image with this name"})));
+			else
+			{
+				if (!req.body.token || !req.body.imgName)
+					return (res.send(JSON.stringify({error: missing})));
+				
+				index = getIndexUserCreatingAccount(userCreatingAccount, req.body.token)
+				if (index == -1)
+					return (res.send(JSON.stringify({error: "Invalid token"})));
+		
+				for (let i = 0; i < userCreatingAccount[index].pictures.length; i++)
+				{
+					if (userCreatingAccount[index].pictures[i] == req.body.imgName)
+					{
+						fs.unlinkSync('/app/user_static_data/' + req.body.imgName);
+						res.send(JSON.stringify({success: "Image deleted"}));
+						return ;
+					}
+					if (i + 1 == userCreatingAccount[index].pictures.length)
+						return (res.send(JSON.stringify({error: "No image with this name"})));
+				}
+			}
+		}
+		catch (e) {
+			res.send({error: e.message});
 		}
 	}
 
@@ -288,15 +350,16 @@ class PostRequest
 		res.send(JSON.stringify({success: "Account created"}));
 	}
 
-	// need to be secured
 	static change_location(req, res, db)
 	{
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.lat || !req.body.lon)
+		if (req.body.lat == undefined || req.body.lon == undefined)
 			return (res.send(JSON.stringify({error: missing})));
-		db.addLocation(req.session.info.id, req.body.lat, req.body.lon);
+		if (typeof req.body.lat !== 'number' || typeof req.body.lon !== 'number')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.addLocation(req.session.info.id, Number(req.body.lat).toFixed(6), Number(req.body.lon).toFixed(6));
 		res.send(JSON.stringify({success: "Location changed"}));
 	}
 
@@ -442,11 +505,12 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.first_name || !req.body.last_name || !req.body.nickname || !req.body.date_of_birth)
+		if (!req.body.first_name || !req.body.last_name || !req.body.nickname || !req.body.date_of_birth || !req.body.location)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.first_name != 'string' || typeof req.body.last_name != 'string'
 			|| typeof req.body.nickname != 'string' || typeof req.body.date_of_birth != 'string'
-			|| typeof req.body.password != 'string')
+			|| typeof req.body.password != 'string' || (typeof req.body.location != 'object'
+			&& typeof req.body.location.lon == 'number' && typeof req.body.location.lat == 'number'))
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		if (req.body.date_of_birth.length !== 10 || req.body.date_of_birth[4] !== '-' || req.body.date_of_birth[7] !== '-' ||
 			isNaN(parseInt(req.body.date_of_birth.substr(0, 4))) || isNaN(parseInt(req.body.date_of_birth.substr(5, 2))) ||
@@ -461,12 +525,14 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "First name contains unauthorized characters"})));
 		if (req.body.last_name.split('').some((c) => !authorizedCharsNames.includes(c)))
 			return (res.send(JSON.stringify({error: "Last name contains unauthorized characters"})));
-		if (req.body.password.length > 0 && (req.body.password.length < 8 || req.body.password.length > 50))
-			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters"})));
+		if (isPasswordStrong(req.body.password) === false)
+			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters and contain at least one uppercase, one lowercase, one number and one special character"})));
 		if (req.body.nickname.length < 2 || req.body.nickname.length > 50)
 			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
 		if (req.body.nickname.split('').some((c) => !authorizedCharsNickname.includes(c)))
 			return (res.send(JSON.stringify({error: "Nickname contains unauthorized characters"})));
+		if (req.body.location.lat < -90 || req.body.location.lat > 90 || req.body.location.lon < -180 || req.body.location.lon > 180)
+			return (res.send(JSON.stringify({error: "Invalid location"})));
 		db.changeInfo(req.session.info.id, req.body);
 		res.send(JSON.stringify({success: "Info changed"}));
 	}
@@ -477,7 +543,6 @@ class PostRequest
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		db.getInfo(req.session.info.id).then((data) => res.send(data));
-		
 	}
 
 	static get_all_locations(req, res, db)
@@ -495,6 +560,52 @@ class PostRequest
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		db.getSelfInfo(req.session.info.id).then((data) => res.send(data));
+	}
+
+	static update_profile(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (req.body.bio == undefined || !req.body.tags)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.bio !== 'string' || !Array.isArray(req.body.tags))
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		if (req.body.bio.length < 10 || req.body.bio.length > 500)
+			return (res.send(JSON.stringify({error: "Bio must be between 10 and 500 characters"})));
+		if (req.body.tags.length < 1 || req.body.tags.length > 5)
+			return (res.send(JSON.stringify({error: "Tags must be between 1 and 5"})));
+		req.body.tags.forEach((tag) => {
+			if (typeof tag !== 'number')
+				return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		});
+		db.updateProfile(req.session.info.id, req.body.bio, req.body.tags).then((data) => res.send(data));
+	}
+
+	////// AUTH42 //////
+	static auth42(req, res, db)
+	{
+		Debug.log(req);
+		if (req.session.info && req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are already logged in"})));
+		if (!req.query.code)
+			return (res.send(JSON.stringify({error: missing})));
+		db.auth42(req.query.code).then((data) => {
+			if (data.error)
+				return (res.send(data));
+			req.session.info = {logged: true, id: data.id};
+			res.send(JSON.stringify({success: "Connected", 'info': 'Ce mode de connexion n\'est pas encore disponible en navigation privée'}));
+		});
+	}
+
+	static link42(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.query.code)
+			return (res.send(JSON.stringify({error: missing})));
+		db.link42(req.session.info.id, req.query.code).then((data) => res.send(data));
 	}
 }
 
