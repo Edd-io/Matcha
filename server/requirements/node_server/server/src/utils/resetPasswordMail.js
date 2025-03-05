@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   resetPasswordMail.js                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:47:16 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/04 22:51:33 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/05 08:20:03 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,23 @@ const	template = `
 	<p>Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer ce mail.</p>
 	<p>L'équipe Matcha</p>
 `;
+
+const template_page = `
+	<!DOCTYPE html>
+	<html lang="fr">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Réinitialisation du mot de passe</title>
+	</head>
+	<body>
+		<h1>Matcha</h1>
+		<p>Voici votre nouveau mot de passe :</p>
+		<p>{{newPassword}}</p>
+		<p>Vous pouvez vous connecter avec ce mot de passe et le modifier dans les paramètres de votre compte.</p>
+	</body>
+	</html>
+`
 
 let		token_reset_password = [];
 let		interval;
@@ -92,4 +109,4 @@ function checkToken()
 	}
 }
 
-module.exports = {sendResetPasswordMail, checkIfTokenIsValid};
+module.exports = {sendResetPasswordMail, checkIfTokenIsValid, template_page};

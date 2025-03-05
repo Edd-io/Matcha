@@ -2,7 +2,7 @@ var fs = require('fs');
 const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
-const {sendResetPasswordMail, checkIfTokenIsValid} = require('./utils/resetPasswordMail');
+const {sendResetPasswordMail, checkIfTokenIsValid, template_page} = require('./utils/resetPasswordMail');
 const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
 const base64ToFile = require('./utils/base64ToFile');
 const usersWs = require('./Websocket/Websocket').users;
@@ -92,7 +92,7 @@ class PostRequest
 				if (data.error)
 					return (res.send(JSON.stringify({error: 'Error creating password'})));
 				const password = data.password;
-				res.send(JSON.stringify({success: "Password changed", password}));
+				res.send(template_page.replace('{{newPassword}}', password));
 			});
 		}
 		else
@@ -350,11 +350,10 @@ class PostRequest
 		res.send(JSON.stringify({success: "Account created"}));
 	}
 
-	// need to be secured
 	static change_location(req, res, db)
 	{
 		Debug.log(req);
-		
+		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (req.body.lat == undefined || req.body.lon == undefined)
 			return (res.send(JSON.stringify({error: missing})));
