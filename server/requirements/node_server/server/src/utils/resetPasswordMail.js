@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   resetPasswordMail.js                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: madegryc <madegryc@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/04 21:47:16 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/05 17:55:49 by madegryc         ###   ########.fr       */
+/*   Updated: 2025/03/05 18:24:01 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ function sendResetPasswordMail(mail)
 			token_reset_password.push({token, mail, date: Date.now() + 600000});
 			if (!interval)
 				interval = setInterval(checkToken, 2000);
-			resolve(token);
+			resolve();
 		}).catch(() => {
 			reject();
 		});

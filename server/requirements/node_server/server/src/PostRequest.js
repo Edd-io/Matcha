@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const Debug = require('./Debug');
 const {sendVerificationMail, checkIfCodeIsValid} = require('./utils/verificationMail');
 const {sendResetPasswordMail, checkIfTokenIsValid, template_page} = require('./utils/resetPasswordMail');
-const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount')
+const getIndexUserCreatingAccount = require('./utils/getIndexUserCreatingAccount');
+const {checkIfCodeIsValidChangeMail} = require('./utils/changeMail');
 const base64ToFile = require('./utils/base64ToFile');
 const usersWs = require('./Websocket/Websocket').users;
 const userBlocked = require('./utils/userBlocked');
@@ -505,11 +506,11 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.first_name || !req.body.last_name || !req.body.nickname || !req.body.date_of_birth || !req.body.location)
+		if (!req.body.first_name || !req.body.last_name || !req.body.nickname || !req.body.date_of_birth || !req.body.location || !req.body.mail)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.first_name != 'string' || typeof req.body.last_name != 'string'
 			|| typeof req.body.nickname != 'string' || typeof req.body.date_of_birth != 'string'
-			|| typeof req.body.password != 'string' || (typeof req.body.location != 'object'
+			|| typeof req.body.password != 'string' || typeof req.body.mail != 'string' ||(typeof req.body.location != 'object'
 			&& typeof req.body.location.lon == 'number' && typeof req.body.location.lat == 'number'))
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		if (req.body.date_of_birth.length !== 10 || req.body.date_of_birth[4] !== '-' || req.body.date_of_birth[7] !== '-' ||
@@ -525,7 +526,7 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "First name contains unauthorized characters"})));
 		if (req.body.last_name.split('').some((c) => !authorizedCharsNames.includes(c)))
 			return (res.send(JSON.stringify({error: "Last name contains unauthorized characters"})));
-		if (isPasswordStrong(req.body.password) === false)
+		if (req.body.password.length > 0 && isPasswordStrong(req.body.password) === false)
 			return (res.send(JSON.stringify({error: "Password must be between 8 and 50 characters and contain at least one uppercase, one lowercase, one number and one special character"})));
 		if (req.body.nickname.length < 2 || req.body.nickname.length > 50)
 			return (res.send(JSON.stringify({error: "Nickname must be between 2 and 50 characters"})));
@@ -533,8 +534,39 @@ class PostRequest
 			return (res.send(JSON.stringify({error: "Nickname contains unauthorized characters"})));
 		if (req.body.location.lat < -90 || req.body.location.lat > 90 || req.body.location.lon < -180 || req.body.location.lon > 180)
 			return (res.send(JSON.stringify({error: "Invalid location"})));
+		if (!(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.mail)))
+			return (res.send(JSON.stringify({error: "Invalid mail"})))
+		db.changeMailConfirm(req.session.info.id, req.body.mail);
 		db.changeInfo(req.session.info.id, req.body);
 		res.send(JSON.stringify({success: "Info changed"}));
+	}
+
+	static confirm_change_mail(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.body.password || !req.body.code)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.password !== 'string' || typeof req.body.code !== 'string')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		if (req.body.code.length !== 4)
+			return (res.send(JSON.stringify({error: "Code must be 4 numbers"})));
+		const resCode = checkIfCodeIsValidChangeMail(req.body.code, req.session.info.id);
+		if (resCode.valid)
+		{
+			db.isCorrectPassword(req.session.info.id, req.body.password).then((correct) => {
+				if (correct)
+				{
+					db.changeMail(req.session.info.id, resCode.mail, req.body.password);
+					res.send(JSON.stringify({success: "Mail changed"}));
+				}
+				else
+					res.send(JSON.stringify({error: "Password invalid"}));
+			});
+		}
+		else
+			res.send(JSON.stringify({error: "Code invalid"}));
 	}
 
 	static get_info(req, res, db)

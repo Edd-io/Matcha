@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/04 22:48:46 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/05 17:53:29 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ function init(db)
 	app.get('/link42', (req, res) => PostRequest.link42(req, res, db));
 	app.post('/reset_password', (req, res) => PostRequest.reset_password(req, res, db));
 	app.get('/reset_password_mail', (req, res) => PostRequest.reset_password_mail(req, res, db));
+	app.post('/confirm_change_mail', (req, res) => PostRequest.confirm_change_mail(req, res, db));
 
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);

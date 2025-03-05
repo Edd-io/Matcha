@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/04 22:31:36 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/05 18:19:51 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@ const credientials = require('../credentials.json');
 const bcrypt = require('bcrypt');
 const haversine = require('./utils/haversine');
 const Websocket = require('./Websocket/Websocket').Websocket;
+const {sendChangeMail, checkIfCodeIsValidChangeMail} = require('./utils/changeMail');
 
 class Database
 {
@@ -876,6 +877,7 @@ class Database
 	{
 		const conn = await this.pool.getConnection();
 		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT email FROM accounts WHERE id = ?', [user_id]);
 		const date = new Date(row[0].date_of_birth);
 		const year = date.toLocaleString("default", { year: "numeric" });
 		const month = date.toLocaleString("default", { month: "2-digit" });
@@ -890,6 +892,7 @@ class Database
 			nickname: row[0].nickname,
 			date_of_birth: year + "-" + month + "-" + day,
 			location: location ? {lon: location.longitude, lat: location.latitude} : null,
+			email: row2[0].email,
 		});
 	}
 
@@ -1036,8 +1039,8 @@ class Database
 	async createPassword(mail)
 	{
 		const  generateStrongPassword = () => {
-			const length = 10;
-			const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,-./:;<=>?@[]^_`{|}~";
+			const length = 16;
+			const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!#$%&()*+,-./:;=?@[]^_~";
 			let password = "";
 			
 			password += "ABCDEFGHIJKLMNOPQRSTUVWXYZ".charAt(Math.floor(Math.random() * 26));
@@ -1067,6 +1070,52 @@ class Database
 		}
 
 		  
+	}
+
+	async changeMailConfirm(user_id, mail)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM accounts WHERE email = ?', [mail]);
+
+		conn.release();
+		conn.end();
+		if (row.length != 0 && row[0].id == user_id)
+			return ;
+		sendChangeMail(mail, row.length != 0, user_id);
+	}
+
+	async changeMail(user_id, mail, password)
+	{
+		const conn = await this.pool.getConnection();
+
+		try {
+			const hash = await bcrypt.hash(mail + password, 10);
+			
+			await conn.query('UPDATE accounts SET email = ? WHERE id = ?', [mail, user_id]);
+			await conn.query('UPDATE accounts SET password = ? WHERE id = ?', [hash, user_id]);
+		} catch (e) {
+		}
+		conn.release();
+		conn.end();
+	}
+
+	async isCorrectPassword(user_id, password)
+	{
+		try {
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT email, password FROM accounts WHERE id = ?', [user_id]);
+			const result = await bcrypt.compare(row[0].email + password, row[0].password);
+	
+			conn.release();
+			conn.end();
+			if (result)
+				return (true);
+			else
+				return (false);
+		}
+		catch (e) {
+			return (false);
+		}
 	}
 }
 

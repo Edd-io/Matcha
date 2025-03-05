@@ -8,9 +8,15 @@
 	let showDeletePopup: boolean = false;
 	let showDisconnectPopup: boolean = false;
 	let dateOfBirth: string = "";
+	let mail: string = "";
+	let last_email: string = "";
 	let error: string = "";
 	let location: any = {lon: 0, lat: 0};
 	let eye_pass: boolean = false;
+	let showPopup: boolean = false;
+	let codePopup: string = "";
+	let passwordPopup: string = "";
+	let err_popup: string = "";
 
 	globalThis.path.set('settings');
 
@@ -35,6 +41,8 @@
 				location.lon = data.location.lon;
 				location.lat = data.location.lat;
 			}
+			mail = data.email;
+			last_email = data.email;
 		});
 	}
 
@@ -54,13 +62,16 @@
 				location: {
 					lon: (document.getElementById('location-lon') as HTMLInputElement).value,
 					lat: (document.getElementById('location-lat') as HTMLInputElement).value
-				}
+				},
+				mail: mail
 			})
 		}).then(res => res.json())
 		.then(data => {
 			if (data.error) {
 				error = data.error;
 			} else {
+				if (last_email !== mail)
+					showPopup = true;
 				error = "";
 				// show popup here to confirm
 			}
@@ -87,7 +98,8 @@
 		});
 	}
 
-	function link42() {
+	function link42()
+	{
 		const parametres = "width=800,height=600,resizable=yes,scrollbars=yes,status=yes";
 		let popupWindow = window.open(url_link_42, "Lier42", parametres);
 
@@ -109,6 +121,40 @@
 				}
 			} catch (error) {
 				console.error("Erreur lors de la récupération du JSON:", error);
+			}
+		});
+	}
+
+	function confirmChangeMail()
+	{
+		if (codePopup.length !== 4 || !/^\d+$/.test(codePopup))
+		{
+			err_popup = "Le code doit contenir exactement 4 chiffres.";
+			return;
+		}
+		if (passwordPopup.trim() === "")
+		{
+			err_popup = "Veuillez entrer votre mot de passe.";
+			return;
+		}
+		fetch('/confirm_change_mail', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				code: codePopup,
+				password: passwordPopup
+			})
+		}).then(res => res.json())
+		.then(data => {
+			if (data.error)
+				err_popup = data.error;
+			else
+			{
+				err_popup = "";
+				showPopup = false;
+				last_email = mail;
 			}
 		});
 	}
@@ -156,6 +202,11 @@
 		<div class="input-place">
 			<label for="date">Date de naissance</label>
 			<input class="input-text" type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value}>
+		</div>
+
+		<div class="input-place">
+			<label for="date">Email</label>
+			<input class="input-text" type="mail" id="mail" name="mail" value={mail} on:change={(e) => mail = e.target.value}>
 		</div>
 
 		<div class="input-place">
@@ -208,7 +259,26 @@
 			<button class="btn" style="background-color: #c64141;" on:click={() => showDeletePopup = true}>Supprimer</button>
 		</div>
 	</div>
-	
+	{#if showPopup}
+		<!-- svelte-ignore a11y_click_events_have_key_events -->
+		<div class="popup-overlay">
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+			<div class="popup" on:click|stopPropagation>
+				<h2>Mail envoyé</h2>
+				<p>Un mail a été envoyé à l'adresse mail '{mail}'</p>
+				<p>Si vous quittez cette page, vous devrez recommencer la procédure</p>
+				<p>Veuillez entrer le code que vous avez reçu par mail ainsi que votre mot de passe. Si vous venez de changer votre mot de passe, celui à entrer sera le nouveau.</p>
+				<div class="popup-input">
+					<input type="text" class="input-text" style='margin-bottom: 1rem;' placeholder="Code" bind:value={codePopup} />
+					<input type="password" class="input-text" placeholder="Mot de passe" bind:value={passwordPopup} />
+				</div>
+				{#if err_popup}
+					<p class='error'>{err_popup}</p>
+				{/if}
+				<button class="reset-button" on:click={confirmChangeMail}>Envoyer</button>
+			</div>
+		</div>
+	{/if}
 </main>
 
 <style>
@@ -358,5 +428,66 @@
 
 	.delete-account p {
 		font-size: 1rem;
+	}
+
+	.popup-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: rgba(0, 0, 0, 0.5);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 1000;
+	}
+
+	.popup {
+		background-color: white;
+		padding: 2rem;
+		border-radius: 0.5rem;
+		width: 90%;
+		max-width: 400px;
+		position: relative;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.popup * {
+		text-align: center;
+	}
+
+	.popup h2 {
+		margin-top: 0;
+		color: #2ebc65;
+	}
+
+	.popup-input {
+		margin: 1.5rem 0;
+	}
+
+	.reset-button {
+		background-color: #2ebc65;
+		color: white;
+		border: none;
+		padding: 0.75rem 1.5rem;
+		border-radius: 0.5rem;
+		width: 100%;
+		cursor: pointer;
+		font-weight: bold;
+	}
+
+	.reset-button:hover {
+		background-color: #259c53;
+	}
+	
+	.error {
+		color: red;
+		font-size: 1rem;
+		font-weight: 600;
+		margin-top: 10px;
+		width: 100%;
+		margin-bottom: 1rem;
+		text-align: center;
 	}
 </style>

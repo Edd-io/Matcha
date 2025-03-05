@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   verificationMail.js                                :+:      :+:    :+:   */
+/*   changeMail.js                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/17 15:13:19 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/05 15:46:08 by edbernar         ###   ########.fr       */
+/*   Created: 2025/03/05 15:31:56 by edbernar          #+#    #+#             */
+/*   Updated: 2025/03/05 18:19:23 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,19 @@ const sendMail = require('./mailer');
 
 const	template = `
 	<h1>Matcha</h1>
-	<p>Merci de vous être inscrit sur Matcha !</p>
+	<p>Il semblerait que vous ayez demandé à changer votre adresse mail.</p>
 	<p>Pour confirmer votre adresse mail, veuillez écrire le code suivant dans le champ prévu à cet effet :</p>
 	<p>{{code}}</p>
 	<p>Le code est valable 10 minutes.</p>
-	<p>Si vous n'êtes pas à l'origine de cette inscription, veuillez ignorer ce mail.</p>
+	<p>Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer ce mail.</p>
+	<p>L'équipe Matcha</p>
+`;
+
+const	templateAlreadyUsed = `
+	<h1>Matcha</h1>
+	<p>Il semblerait que vous ayez demandé à changer votre adresse mail mais ce mail a déjà été utilisé.</p>
+	<p>Si vous êtes à l'origine de cette demande, veuillez actualiser la page Matcha et recommencer la procédure avec une autre adresse mail.</p>
+	<p>Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer ce mail.</p>
 	<p>L'équipe Matcha</p>
 `;
 
@@ -26,41 +34,50 @@ let		listMailToConfirm = [];
 let		interval;
 
 
-function sendVerificationMail(mail)
+function sendChangeMail(mail, alreadyUsed, user_id)
 {
-	const	chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 	const	numbers = '0123456789';
-	let		token = '';
-	let		code;
+	let		message = '';
+	let		code = '';
+	let		object;
 
-	for (let i = 0; i < 32; i++)
-		token += chars[Math.floor(Math.random() * chars.length)];
-	code = '';
 	for (let i = 0; i < 4; i++)
 		code += numbers[Math.floor(Math.random() * numbers.length)];
-	message = template.replace('{{code}}', code);
+	if (alreadyUsed)
+	{
+		object = 'Oups... Problème';
+		message = templateAlreadyUsed;
+	}
+	else
+	{
+		object = 'Changement d\'adresse mail';
+		message = template.replace('{{code}}', code);
+	}
 	return (new Promise((resolve, reject) => {
-		sendMail(mail, 'Confirmation de votre adresse mail', '', message).then(() => {
-			listMailToConfirm.push({mail, token, code, date: Date.now() + 600000});
+		sendMail(mail, object, '', message).then(() => {
+			if (!alreadyUsed)
+			{
+				if (listMailToConfirm.find(e => e.user_id === user_id))
+					listMailToConfirm.pop(listMailToConfirm.findIndex(e => e.mail === mail));
+				listMailToConfirm.push({mail, date: Date.now() + 600000, code, user_id});
+			}
 			if (!interval)
 				interval = setInterval(checkCode, 2000);
-			resolve(token);
+			resolve();
 		}).catch(() => {
 			reject();
 		});
 	}));
 }
 
-function checkIfCodeIsValid(token, code)
+function checkIfCodeIsValidChangeMail(code, user_id)
 {
 	for (let i = listMailToConfirm.length - 1; i >= 0; i--)
 	{
-		if (listMailToConfirm[i].token === token && listMailToConfirm[i].code === code)
+		if (listMailToConfirm[i].user_id === user_id && listMailToConfirm[i].code === code)
 		{
 			const mail = listMailToConfirm[i].mail;
-			const token = listMailToConfirm[i].token;
-			listMailToConfirm.pop(i);
-			return ({valid: true, mail, token});
+			return ({valid: true, mail});
 		}
 	}
 	return ({valid: false});
@@ -85,4 +102,4 @@ function checkCode()
 	}
 }
 
-module.exports = {sendVerificationMail, checkIfCodeIsValid};
+module.exports = {sendChangeMail, checkIfCodeIsValidChangeMail};

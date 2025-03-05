@@ -135,7 +135,7 @@
 			<button class="reset-button" on:click={handlePasswordReset}>Envoyer</button>
 			</div>
 		</div>
-		{/if}
+	{/if}
 </main>
 
 <style>
