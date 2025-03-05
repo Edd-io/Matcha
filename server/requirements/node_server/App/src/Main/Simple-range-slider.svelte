@@ -8,12 +8,14 @@
     let button;
 
     export let range = 1;
+    export let fame = 1;
 
     import { onMount } from "svelte";
 
     onMount(() => {
         sliderWidth = slider.offsetWidth;
         position = scaleValue(range, 1, 100, 0, sliderWidth - buttonWidth);
+        position = scaleValue(fame, 1, 10, 0, sliderWidth - buttonWidth);
         buttonWidth = button.offsetWidth;
     });
 
@@ -30,6 +32,7 @@
             position = Math.min(Math.max(newPos, 0), sliderWidth - buttonWidth);
             
             range = Math.round(scaleValue(position, 0, sliderWidth - buttonWidth, 1, 100));
+            fame = Math.round(scaleValue(position, 0, sliderWidth - buttonWidth, 1, 10));
         }
 
         function stopDrag() {

@@ -133,7 +133,7 @@
 			<img src={user.pfp} alt="Pfp de {user.name}" />
 			<p>{user.name}</p>
 		</div>
-		<button class="no-button-style" on:click={() => options = !options} aria-label="Options">	
+		<button id="testtt" class="no-button-style" on:click={() => options = !options} aria-label="Options">	
 			<img src={threeDotsIcon} alt="Options" />
 		</button>
 		{#if options}
@@ -186,9 +186,19 @@
 		height: 2.5rem;
 		width: 2.5rem;
 	}
-	.option {
+	#testtt{
+		position: relative;
+	}
+	.options {
+		position: absolute;
+		top: 4rem;
+		right: 10px;
 		display: flex;
 		flex-direction: column;
+		background-color: white;
+		padding: 10px;
+		gap: 10px;
+		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 	}
 	.chat-header {
 		display: flex;
