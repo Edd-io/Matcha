@@ -15,6 +15,7 @@
     import BottomBar from "./Main/Bottom-bar.svelte";
 	import NotificationPage from "./Main/Notification-page.svelte";
 	import Settings from "./Main/Settings.svelte";
+	import Search from "./Search/Search.svelte";
 	import Ws from './websocket/ws';
 
 	let path: string = window.location.pathname;
@@ -27,7 +28,7 @@
 		globalThis.last_path = path;
 		path = window.location.pathname;
 	});
-	let isConnected = false;
+	let isConnected = true;
 
 	globalThis.connected = writable(isConnected);
 	globalThis.connected.subscribe(value => {
@@ -166,6 +167,7 @@
 				<Route path="/login" component={Login}/>
 				<Route path="/map" component={Map}/>
 				<Route path="/profile" component={SelfInfo} />
+				<Route path="/search" component={Search} />
 				<Route path="/chat" component={Chat} />
 				<Route path="/notification" component={NotificationPage} />
 				<Route path="/settings" component={Settings} />

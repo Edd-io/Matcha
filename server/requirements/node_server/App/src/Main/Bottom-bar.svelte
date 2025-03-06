@@ -5,17 +5,11 @@
     import profilLogo from "../assets/profil.svg";
     import chatLogo from "../assets/chat.svg";
     import settingsLogo from "../assets/settings.svg";
+    import searchLogo from "../assets/search.svg";
     import { navigate } from "svelte-routing";
     import { writable } from "svelte/store";
     let category = null;
 
-    onMount(() => {
-        const storedState = localStorage.getItem("category");
-        if (storedState) {
-            category = JSON.parse(storedState);
-        }
-    });
-  
     function handleClick(buttonIndex) {
         category = buttonIndex;
         localStorage.setItem("category", JSON.stringify(category));
@@ -29,25 +23,21 @@
 </script>
 
 <main>
-    {#each [0, 1, 2, 3] as index}
-        {#if index === 0}
-            <button on:click={() => {navigate('/'), handleClick(index)}} ariel-label="home" class={category === index ? "selected" : "default"}>
+            <button on:click={() => {navigate('/'), handleClick(0)}} ariel-label="home" class={category === 0 ? "selected" : "default"}>
                 <img src={homeLogo} alt="homeLogo"/>
             </button>
-        {:else if index === 1}
-            <button on:click={() => {navigate('/profile'), handleClick(index)}} ariel-label="profil" class={category === index ? "selected" : "default"}>
+            <button on:click={() => {navigate('/profile'), handleClick(1)}} ariel-label="profil" class={category === 1 ? "selected" : "default"}>
                 <img src={profilLogo} alt="profilLogo"/>
             </button>
-        {:else if index === 2}
-            <button on:click={() => {navigate('/chat'), handleClick(index)}} ariel-label="chat" class={category === index ? "selected" : "default"}>
+            <button on:click={() => {navigate('/chat'), handleClick(2)}} ariel-label="chat" class={category === 2 ? "selected" : "default"}>
                 <img src={chatLogo} alt="chatLogo"/>
             </button>
-        {:else if index === 3}
-            <button on:click={() => {navigate('/settings'), handleClick(index)}} ariel-label="settings" class={category === index ? "selected" : "default"}>
+            <button on:click={() => {navigate('/search'), handleClick(3)}} ariel-label="search" class={category === 3 ? "selected" : "default"}>
+                <img src={searchLogo} alt="settingsLogo"/>
+            </button>
+            <button on:click={() => {navigate('/settings'), handleClick(4)}} ariel-label="settings" class={category === 4 ? "selected" : "default"}>
                 <img src={settingsLogo} alt="settingsLogo"/>
             </button>
-        {/if}
-    {/each}
 </main>
 
 <style>
@@ -64,6 +54,7 @@
     button img {
         width: 2.1rem;
         height: 2.1rem;
+        color: #111111;
     }
 
     .selected {

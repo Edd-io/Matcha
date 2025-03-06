@@ -110,7 +110,6 @@
 		margin-left: auto;
 		align-items: center;
 		gap: 25px;
-		margin-right: 20px;
 	}
 
 	.icon-right svg {
