@@ -77,7 +77,8 @@
 			body: JSON.stringify({
 				distance: globalThis.filterData.range,
 				range_age: [globalThis.filterData.min_age, globalThis.filterData.max_age],
-				interests: globalThis.filterData.interests
+				interests: globalThis.filterData.interests,
+				fame: globalThis.filterData.fame,
 			})
 		}).then(res => res.json())
 		.then(data => {

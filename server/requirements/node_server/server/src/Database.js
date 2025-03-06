@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/06 08:47:14 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/06 09:25:50 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -368,10 +368,11 @@ class Database
 			const row = await conn.query('SELECT * FROM users_likes WHERE user_liked_id = ?', [user_id]);
 			const row2 = await conn.query('SELECT * FROM users_dislikes WHERE user_disliked_id = ?', [user_id]);
 			const nbInteractions = row.length + row2.length;
+			const res = row.length * 100 / nbInteractions;
 
 			conn.release();
 			conn.end();
-			return (row.length * 100 / nbInteractions);
+			return (isNaN(res) ? 0 : res);
 		}
 
 		const conn = await this.pool.getConnection();
@@ -464,6 +465,7 @@ class Database
 			let		distance = 0;
 			let		scoreDistance = 0;
 			let		scoreTags = 0;
+			let		scoreFame = 0;
 			let		tags = [];
 
 			if (!selfInfo)
@@ -499,7 +501,23 @@ class Database
 			}
 			if (filter.interests.length > 0 && scoreTags != filter.interests.length)
 				return (0);
+
+			if (filter.fame > otherInfo.fame)
+				return (0);
+
 			return (scoreTags + scoreDistance);
+		}
+
+		const fameRatingCalc = async (user_id) => {
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM users_likes WHERE user_liked_id = ?', [user_id]);
+			const row2 = await conn.query('SELECT * FROM users_dislikes WHERE user_disliked_id = ?', [user_id]);
+			const nbInteractions = row.length + row2.length;
+			const res = row.length * 100 / nbInteractions;
+
+			conn.release();
+			conn.end();
+			return (isNaN(res) ? 0 : res);
 		}
 
 		const getOtherInfo = async (other_id) => {
@@ -517,7 +535,8 @@ class Database
 				tags,
 				age: new Date().getFullYear() - new Date(rowInfo[0].date_of_birth).getFullYear(),
 				sexe: rowInfo[0] && rowInfo[0].sexe ? rowInfo[0].sexe : null,
-				orientation: rowInfo[0] && rowInfo[0].orientation ? rowInfo[0].orientation : null
+				orientation: rowInfo[0] && rowInfo[0].orientation ? rowInfo[0].orientation : null,
+				fame: await fameRatingCalc(other_id),
 			});
 		}
 
@@ -536,6 +555,8 @@ class Database
 					return (false);
 			}
 			if ((!lastLocation && !newLocation) || lastLocation.latitude != newLocation.latitude || lastLocation.longitude != newLocation.longitude)
+				return (false);
+			if (filter1.fame != filter2.fame)
 				return (false);
 			return (true);
 		}

@@ -442,12 +442,22 @@ class PostRequest
 		Debug.log(req);
 		if (!req.session.info || !req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are not logged in"})));
-		if (!req.body.distance || !req.body.range_age || !req.body.interests)
+		if (!req.body.distance || !req.body.range_age || !req.body.interests || req.body.fame === undefined)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.distance !== 'number' || !Array.isArray(req.body.range_age)
 			|| typeof req.body.range_age[0] !== 'number' || typeof req.body.range_age[0] !== 'number'
-			|| !Array.isArray(req.body.interests))
+			|| !Array.isArray(req.body.interests) || typeof req.body.fame !== 'number')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		if (req.body.range_age[0] < 18 || req.body.range_age[0] > 100 || req.body.range_age[1] < 18 || req.body.range_age[1] > 100)
+			return (res.send(JSON.stringify({error: "Invalid age range"})));
+		if (req.body.range_age[0] > req.body.range_age[1])
+			return (res.send(JSON.stringify({error: "Invalid age range"})));
+		if (req.body.distance < 0 || req.body.distance > 100)
+			return (res.send(JSON.stringify({error: "Invalid distance"})));
+		if (req.body.interests.length > 5)
+			return (res.send(JSON.stringify({error: "Invalid interests"})));
+		if (req.body.fame < 0 || req.body.fame > 100)
+			return (res.send(JSON.stringify({error: "Invalid fame"})));		
 		db.getNeverSeenUser(req.session.info.id, req.body).then((ret) => {res.send(ret)});
 	}
 
