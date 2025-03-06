@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/05 18:19:51 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/06 08:47:14 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -371,8 +371,7 @@ class Database
 
 			conn.release();
 			conn.end();
-			console.log("Fame rating for user", user_id, "is", nbInteractions * row2.length / 100);
-			return (nbInteractions * row2.length / 100);
+			return (row.length * 100 / nbInteractions);
 		}
 
 		const conn = await this.pool.getConnection();
@@ -677,14 +676,14 @@ class Database
 			else
 			{
 				const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
-				Websocket.sendNotification(other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png");
-				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png"]);
+				Websocket.sendNotification(other_id, `${name_user[0].first_name} a liké ton profil`, "like.png");
+				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, `${name_user[0].first_name} a liké ton profil`, "seen.png"]);
 			}
 		}
 		else
 		{
 			const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
-			Websocket.sendNotification(other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png");
+			Websocket.sendNotification(other_id, `${name_user[0].first_name} a disliké ton profil`, "dislike.png");
 			await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png"]);
 			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
 		}
