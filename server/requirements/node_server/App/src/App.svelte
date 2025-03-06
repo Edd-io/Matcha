@@ -28,7 +28,7 @@
 		globalThis.last_path = path;
 		path = window.location.pathname;
 	});
-	let isConnected = true;
+	let isConnected = false;
 
 	globalThis.connected = writable(isConnected);
 	globalThis.connected.subscribe(value => {
@@ -83,12 +83,14 @@
 
 	function getLocation()
 	{
+		globalThis.self_location = {latitude: -1, longitude: -1};
 		const getLocationWithIP = () => {
 			fetch('https://ipapi.co/json/')
 			.then(res => res.json())
 			.then(data => {
 				latitude = data.latitude;
 				longitude = data.longitude;
+				globalThis.self_location = {latitude, longitude};
 				fetch('/change_location', {
 					method: 'POST',
 					headers: {
@@ -115,6 +117,7 @@
 				(position) => {
 					latitude = position.coords.latitude;
 					longitude = position.coords.longitude;
+					globalThis.self_location = {latitude, longitude};
 					fetch('/change_location', {
 						method: 'POST',
 						headers: {

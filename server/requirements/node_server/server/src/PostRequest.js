@@ -649,6 +649,26 @@ class PostRequest
 			return (res.send(JSON.stringify({error: missing})));
 		db.link42(req.session.info.id, req.query.code).then((data) => res.send(data));
 	}
+
+	////// SEARCH //////
+	static get_list_users(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		db.getListUsers(req.session.info.id).then((data) => res.send(data));
+	}
+
+	static get_user_profile(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.body.id)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.id !== 'number')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.getUserProfile(req.body.id).then((data) => res.send(data));
+	}
+
 }
 
 module.exports = PostRequest;

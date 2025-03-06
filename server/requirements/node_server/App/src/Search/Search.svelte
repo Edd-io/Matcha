@@ -1,6 +1,7 @@
 <script lang="ts">
 	import UserLine from "./UserLine.svelte";
 	import ChooseInterests from "../Register/Choose_interests.svelte";
+    import { onMount } from "svelte";
 
 	let showFilter = false;
 	let selected_interests: number[] = [];
@@ -9,7 +10,7 @@
 		fame: [0, 100],
 		distance: 40000,
 	};
-	let sort_by = '';
+	let sort_by = 'age';
 	let self_location = {
 		latitude: 48.1566,
 		longitude: 2.3622
@@ -20,70 +21,41 @@
 		distance: false
 	}
 
-	let lstUsers = [
-		{
-			first_name: "John",
-			last_name: "Doe",
-			age: 25,
-			pfp: "https://www.w3schools.com/howto/img_avatar.png",
-			user_id: 1,
-			fame: 50,
-			location: {
-				latitude: 48.8566,
-				longitude: 2.3522
-			},
-			interests: [1, 2, 3],
-			distance: -1
-		},
-		{
-			first_name: "John",
-			last_name: "DSDA",
-			age: 29,
-			pfp: "https://www.w3schools.com/howto/img_avatar.png",
-			user_id: 1,
-			fame: 0,
-			location: {
-				latitude: 47.8566,
-				longitude: 2.3522
-			},
-			interest: [1, 2, 3],
-			distance: -1
-		},
-		{
-			first_name: "John",
-			last_name: "DFDGSGSDoe",
-			age: 21,
-			pfp: "https://www.w3schools.com/howto/img_avatar.png",
-			user_id: 1,
-			fame: 4,
-			location: {
-				latitude: 48.8566,
-				longitude: 3.3522
-			},
-			interest: [1, 2, 3],
-			distance: -1
-		},
-		{
-			first_name: "John",
-			last_name: "DGSDHSDHoe",
-			age: 35,
-			pfp: "https://www.w3schools.com/howto/img_avatar.png",
-			user_id: 1,
-			fame: 44,
-			location: {
-				latitude: 48.8566,
-				longitude: 6.3522
-			},
-			interest: [1, 2, 3],
-			distance: -1
-		},
-	];
+	let lstUsers = [];
 	let lstUsersSorted = lstUsers;
+
+	onMount(() => {
+		get_users();
+	});
+
+	function get_users()
+	{
+		fetch('get_list_users')
+		.then(response => response.json())
+		.then(data => {
+			lstUsers = data;
+			lstUsersSorted = lstUsers;
+			console.log(globalThis.self_location);
+			if (globalThis.self_location.latitude !== -1)
+			{
+				lstUsers.forEach(user => {
+					user.distance = haversine([self_location.latitude, self_location.longitude], [user.location.latitude, user.location.longitude]);
+				});
+			}
+			else
+			{
+				lstUsers.forEach(user => {
+					user.distance = -2;
+				});
+			}
+		})
+		.catch(err => console.error(err));
+	}
 
 	function haversine(pos1, pos2): number
     {
         const earth_radius = 6378000;
-        const radius = (n) => n  * (Math.PI / 180);
+        const radius = (n: number) => n  * (Math.PI / 180);
 
         pos1[0] = radius(pos1[0]);
         pos1[1] = radius(pos1[1]);
@@ -99,11 +71,6 @@
         )
         return (Number((distance / 1000).toFixed(2)))
     }
-
-
-	lstUsers.forEach(user => {
-		user.distance = haversine([self_location.latitude, self_location.longitude], [user.location.latitude, user.location.longitude]);
-	});
 
 	function sort_by_func(age: boolean, fame: boolean, distance: boolean)
 	{
@@ -147,6 +114,7 @@
 			(user.interests && user.interests.some(interest => selected_interests.includes(interest))) ||
 			(user.interest && user.interest.some(interest => selected_interests.includes(interest))))
 		);
+		showFilter = false;
 	}
 </script>
 
@@ -262,6 +230,7 @@
 		padding: 2rem;
 		padding-top: 1.5rem;
 		border-radius: 1rem;
+		max-width: 50rem;
 		margin: auto;
 	}
 

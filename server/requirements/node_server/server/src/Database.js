@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/06 09:25:50 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/06 23:07:30 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -542,22 +542,44 @@ class Database
 
 		const isSameFilter = (filter1, filter2, lastLocation, newLocation) => {
 			if (filter1.distance == undefined || filter2.distance == undefined)
+			{
+				console.log("Distance undefined");
 				return (false);
+			}
 			if (filter1.range_age[0] != filter2.range_age[0] || filter1.range_age[1] != filter2.range_age[1])
+			{
+				console.log("Age range changed");
 				return (false);
+			}
 			if (filter1.distance != filter2.distance)
+			{
+				console.log("Distance 1: ", filter1.distance, "Distance 2: ", filter2.distance);
+				console.log("Distance changed");
 				return (false);
+			}
 			if (filter1.interests.length != filter2.interests.length)
+			{
+				console.log("Interests length changed");
 				return (false);
+			}
 			for (let i = 0; i < filter1.interests.length; i++)
 			{
 				if (!filter2.interests.includes(filter1.interests[i]))
+				{
+					console.log("Interests changed");
 					return (false);
+				}
 			}
-			if ((!lastLocation && !newLocation) || lastLocation.latitude != newLocation.latitude || lastLocation.longitude != newLocation.longitude)
+			if (!lastLocation || !newLocation || lastLocation.latitude != newLocation.latitude || lastLocation.longitude != newLocation.longitude)
+			{
+				console.log("Location changed");
 				return (false);
+			}
 			if (filter1.fame != filter2.fame)
+			{
+				console.log("Fame changed");
 				return (false);
+			}
 			return (true);
 		}
 
@@ -647,7 +669,7 @@ class Database
 			}
 			else
 				console.log("Filter not changed");
-			this.buffer_neverSeenUser[index].lastFilter = filter;
+			this.buffer_neverSeenUser[index].lastFilter = {...filter, distance: filter.distance == 32089 ? 100 : filter.distance};
 			this.buffer_neverSeenUser[index].blockedUsersList = blockedUsersList;
 			this.buffer_neverSeenUser[index].lastLocation = lastLocation;
 			this.buffer_neverSeenUser[index].lastUpdate = new Date();
@@ -1136,6 +1158,143 @@ class Database
 		catch (e) {
 			return (false);
 		}
+	}
+
+	async getListUsers(user_id)
+	{
+		const fameRatingCalc = async (user_id) => {
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM users_likes WHERE user_liked_id = ?', [user_id]);
+			const row2 = await conn.query('SELECT * FROM users_dislikes WHERE user_disliked_id = ?', [user_id]);
+			const nbInteractions = row.length + row2.length;
+			const res = row.length * 100 / nbInteractions;
+
+			conn.release();
+			conn.end();
+			return (isNaN(res) ? 0 : res);
+		}
+
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT * FROM users_info WHERE sexe = ? AND orientation = ? AND user_id != ?', [row[0].orientation, row[0].sexe, user_id]);
+		const row3 = await conn.query('SELECT * FROM users_blocked WHERE user_id = ? OR user_blocked_id = ?', [user_id, user_id]);
+		const row4 = await conn.query('SELECT * FROM users_likes WHERE user_id = ?', [user_id]);
+		const row5 = await conn.query('SELECT * FROM users_dislikes WHERE user_id = ?', [user_id]);
+		const usersList = [];
+		
+		for (let i = 0; i < row2.length; i++)
+		{
+			if (row3.find((element) => element.user_id == row2[i].user_id || element.user_blocked_id == row2[i].user_id))
+				continue;
+			usersList.push({
+				first_name: row2[i].first_name,
+				last_name: row2[i].last_name,
+				age: new Date().getFullYear() - new Date(row2[i].date_of_birth).getFullYear(),
+				pfp: (await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [row2[i].user_id]))[0].local_url,
+				user_id: row2[i].user_id,
+				fame: await fameRatingCalc(row2[i].user_id),
+				location: row2[i].location ? JSON.parse(row2[i].location) : null,
+				interests: (await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [row2[i].user_id])).map((element) => Number(element.tag)),
+				distance: -1,
+				alreadyLiked: row4.find((element) => element.user_liked_id == row2[i].user_id) ? true : false,
+				alreadyDisliked: row5.find((element) => element.user_disliked_id == row2[i].user_id) ? true : false,
+			});
+		}
+		conn.release();
+		conn.end();
+		return (usersList);
+	}
+
+	// {
+	// 	"id": 4,
+	// 	"nbPhotos": 3,
+	// 	"name": "Alice",
+	// 	"age": 30,
+	// 	"city": "Voingt",
+	// 	"country": "France",
+	// 	"sexe": "Femme",
+	// 	"orientation": "Hétérosexuel",
+	// 	"bio": "Exploring life, one adventure at a time.",
+	// 	"tags": [
+	// 		"3",
+	// 		"10",
+	// 		"8"
+	// 	],
+	// 	"images": [
+	// 		"test7.jpg",
+	// 		"test8.jpg",
+	// 		"test9.jpg"
+	// 	],
+	// 	"fameRatingCalc": 0
+	// }
+
+	async getUserProfile(user_id)
+	{
+		const fameRatingCalc = async (user_id) => {
+			const conn = await this.pool.getConnection();
+			const row = await conn.query('SELECT * FROM users_likes WHERE user_liked_id = ?', [user_id]);
+			const row2 = await conn.query('SELECT * FROM users_dislikes WHERE user_disliked_id = ?', [user_id]);
+			const nbInteractions = row.length + row2.length;
+			const res = row.length * 100 / nbInteractions;
+
+			conn.release();
+			conn.end();
+			return (isNaN(res) ? 0 : res);
+		}
+
+		const getCityName = async (lat, lon) => {
+			const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+			if (!response.ok)
+				return (null);
+			const data = await response.json();
+			return (data.error ? null : data);
+		}
+
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT * FROM users_tags WHERE user_id = ?', [user_id]);
+		const row3 = await conn.query('SELECT * FROM users_images WHERE user_id = ?', [user_id]);
+		let	  location = null;
+
+		conn.release();
+		conn.end();
+		if (row.length == 0)
+			return ({error: "User not found"});
+
+		let	  sexe = row[0].sexe == 'M' ? "Homme" : (row[0].sexe == 'F' ? "Femme" : "Autre");
+		let	  orientation = null;
+
+		if (row[0].location)
+		{
+			const dataLocation = await getCityName(JSON.parse(row[0].location).latitude, JSON.parse(row[0].location).longitude);
+
+			if (dataLocation)
+				location = dataLocation;
+			else
+				location = "Position inconnue";
+		}
+		if (row[0].orientation == 'M' && row[0].sexe == 'M')
+			orientation = "Homosexuel";
+		else if (row[0].orientation == 'F' && row[0].sexe == 'F')
+			orientation = "Lesbienne";
+		else if ((row[0].orientation == 'M' && row[0].sexe == 'F') || (row[0].orientation == 'F' && row[0].sexe == 'M'))
+			orientation = "Hétérosexuel";
+		else
+			orientation = "Autre";
+		return ({
+			id: user_id,
+			nbPhotos: row3.length,
+			name: row[0].first_name,
+			age: new Date().getFullYear() - new Date(row[0].date_of_birth).getFullYear(),
+			city: typeof location == 'string' ? "Position inconnue" : (location.address.city || location.address.town || location.address.village),
+			country: typeof location == 'string' ? "Pays inconnue" : location.address.country,
+			sexe,
+			orientation,
+			bio: row[0].bio,
+			tags: row2.map((element) => Number(element.tag)),
+			images: row3.map((element) => element.local_url),
+			fameRatingCalc: await fameRatingCalc(user_id),
+		});
 	}
 }
 

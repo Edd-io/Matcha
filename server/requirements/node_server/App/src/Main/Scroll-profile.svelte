@@ -6,7 +6,7 @@
 
 	export let users: any;
 	export let showComponent = false;
-	export let getSwipeUser: Function;
+	export let getSwipeUser: Function | null = null;
 
 	let hideComponent = true;
 	let showSignalPopup = false;
@@ -50,7 +50,8 @@
 			if (data.success)
 			{
 				showComponent = false;
-				getSwipeUser();
+				if (getSwipeUser)
+					getSwipeUser();
 				alert("Utilisateur/Utilisatrice bloqué(e) avec succès");
 			}
 			else 
@@ -150,6 +151,11 @@
 
 main {
 	z-index: 999;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
 }
 
 p {
@@ -242,6 +248,7 @@ p {
 	z-index: 2;
 	transition: bottom 0.5s;
 	padding-bottom: 20px;
+	max-width: 60rem;
 }
 
 .info-profil p {

@@ -1,8 +1,17 @@
 <script lang="ts">
-	export let userInfo: any;
-	export let self_location: any;
+	import ProfilePopup from './ProfilePopup.svelte';
 
-	console.log(typeof userInfo.distance);
+	export let userInfo: any;
+
+	let distance = userInfo.distance;
+	let showProfilePopup = false;
+
+	if (distance == -1)
+		distance = 'Calculating...';
+	else if (distance == -2)
+		distance = 'Inconnu';
+	else
+		distance = distance + ' km';
 </script>
 
 <main>
@@ -10,9 +19,18 @@
 	<div class="user-info">
 		<p class='name'>{userInfo.first_name} {userInfo.last_name}</p>
 		<p class='age'>{userInfo.age} ans</p>
-		<p class='data'>Fame: {userInfo.fame}% | Distance: {userInfo.distance} {userInfo.distance == -1 ? '' : ' km'}</p>
+		<p class='data'>Fame: {userInfo.fame}% | Distance: {distance}</p>
 	</div>
-	<button class='see-profile-btn'>Voir le profil</button>
+	{#if userInfo.alreadyLiked}
+		<button class='see-profile-btn' style="background-color: #2cb637;" disabled>Déjà liké</button>
+	{:else if userInfo.alreadyDisliked}
+		<button class='see-profile-btn' style="background-color: #c21111;" disabled>Déjà disliké</button>
+	{:else}
+		<button class='see-profile-btn' style="background-color: #a4a4a4;" on:click={() => showProfilePopup = true}>Voir le profil</button>
+	{/if}
+	{#if showProfilePopup}
+		<ProfilePopup userId={userInfo.user_id} bind:showProfilePopup={showProfilePopup}/>
+	{/if}
 </main>
 
 <style>
@@ -27,6 +45,7 @@
 		height: 6rem;
 		border-radius: 50%;
 		margin: 0.5rem 1rem;
+		object-fit: cover;
 	}
 
 	.user-info {
@@ -50,7 +69,6 @@
 		align-self: center;
 		padding: 0.5rem 1rem;
 		border-radius: 1rem;
-		background-color: #2cb637;
 		border: none;
 		color: white;
 		font-size: 1rem;
