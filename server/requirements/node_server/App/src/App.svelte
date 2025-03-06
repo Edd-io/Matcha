@@ -81,6 +81,32 @@
 
 	function getLocation()
 	{
+		const getLocationWithIP = () => {
+			fetch('https://ipapi.co/json/')
+			.then(res => res.json())
+			.then(data => {
+				latitude = data.latitude;
+				longitude = data.longitude;
+				fetch('/change_location', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({lat: latitude, lon: longitude})
+				})
+				.then(res => res.json())
+				.then(data => {
+					if (data.success)
+					{
+						const event = new CustomEvent('locationUpdated', {detail: {}});
+						document.dispatchEvent(event);
+					}
+					else
+						console.warn("Location not updated");
+				});
+			});
+		}
+
 		if (navigator.geolocation)
 		{
 			navigator.geolocation.getCurrentPosition(
@@ -107,11 +133,15 @@
 				},
 				(err) => {
 					console.warn("Error getLocation: ", err.message);
+					getLocationWithIP();
 				}
 			);
 		}
 		else
+		{
 			console.warn("Geolocation is not supported by this browser.");
+			getLocationWithIP();
+		}
 	}
 
 	const pageWithoutBorder = ["/register", "/"];
