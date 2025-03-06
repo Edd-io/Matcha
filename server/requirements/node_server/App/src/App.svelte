@@ -73,7 +73,8 @@
 		min_age: localStorage.getItem('min_age') ? parseInt(localStorage.getItem('min_age')) : 18,
 		max_age: localStorage.getItem('max_age') ? parseInt(localStorage.getItem('max_age')) : 100,
 		range: localStorage.getItem('range') ? parseInt(localStorage.getItem('range')) : 100,
-		interests: localStorage.getItem('interests') ? JSON.parse(localStorage.getItem('interests')) : []
+		interests: localStorage.getItem('interests') ? JSON.parse(localStorage.getItem('interests')) : [],
+		fame: localStorage.getItem('fame') ? parseInt(localStorage.getItem('fame')) : 1
 	};
 
 	let latitude = null;

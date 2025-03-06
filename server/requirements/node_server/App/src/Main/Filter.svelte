@@ -19,7 +19,8 @@
 				min_age: min_age,
 				max_age: max_age,
 				range: range,
-				interests: interests
+				interests: interests,
+				fame: fame
 			};
 			globalThis.pageLoaded = false;
 			navigate(globalThis.last_path);
@@ -28,10 +29,14 @@
 		max_age = globalThis.filterData.max_age;
 		range = globalThis.filterData.range;
 		interests = globalThis.filterData.interests;
+		fame = globalThis.filterData.fame;
 		$: localStorage.setItem('min_age', String(min_age));
 		$: localStorage.setItem('max_age', String(max_age));
 		$: localStorage.setItem('range', String(range));
 		$: localStorage.setItem('interests', JSON.stringify(interests));
+		$: localStorage.setItem('fame', String(fame));
+		$: globalThis.filterData = {min_age, max_age, range, interests, fame};
+		$: console.log({min_age, max_age, range, interests, fame});
 </script>
 	
 <main>
@@ -46,7 +51,7 @@
 		<p class="text">Tranche d'age [{min_age} - {max_age == 100 ? '100+' : max_age}]</p>
 		<DoubleRangeSlider bind:min_age={min_age} bind:max_age={max_age} />
 		<p class="text">Fame rate [{fame}]</p>
-		<SimpleRangeSlider bind:fame={fame}/>
+		<SimpleRangeSlider bind:range={fame}/>
 		<p class="text">Distance [{range == 100 ? '100+' : range}] km</p>
 		<SimpleRangeSlider bind:range={range}/>
 		<p class="text">Interets</p>
