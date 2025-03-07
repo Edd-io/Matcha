@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/06 22:47:34 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/07 15:29:56 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ function init(db)
 	});
 
 	app.get('/get_status_self_connected', (req, res) => PostRequest.get_status_self_connected(req, res));
+	app.post('/get_user_status', (req, res) => PostRequest.get_user_status(req, res, db));
 	app.post('/login', (req, res) => PostRequest.login(req, res, db));
 	app.post('/register', (req, res) => PostRequest.register(req, res, db));
 	app.post('/confirm_register', PostRequest.confirm_register);

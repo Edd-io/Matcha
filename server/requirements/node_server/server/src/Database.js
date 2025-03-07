@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/07 14:06:36 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/07 21:32:47 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,6 +136,12 @@ class Database
 				message TEXT,
 				image VARCHAR(80),
 				seen BOOLEAN DEFAULT FALSE,
+				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE
+			)`);
+			conn.query(`CREATE TABLE IF NOT EXISTS users_last_connection (
+				id INTEGER PRIMARY KEY AUTO_INCREMENT,
+				user_id INT,
+				date DATETIME DEFAULT CURRENT_TIMESTAMP,
 				FOREIGN KEY(user_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
 			conn.release();
@@ -1209,29 +1215,6 @@ class Database
 		return (usersList);
 	}
 
-	// {
-	// 	"id": 4,
-	// 	"nbPhotos": 3,
-	// 	"name": "Alice",
-	// 	"age": 30,
-	// 	"city": "Voingt",
-	// 	"country": "France",
-	// 	"sexe": "Femme",
-	// 	"orientation": "Hétérosexuel",
-	// 	"bio": "Exploring life, one adventure at a time.",
-	// 	"tags": [
-	// 		"3",
-	// 		"10",
-	// 		"8"
-	// 	],
-	// 	"images": [
-	// 		"test7.jpg",
-	// 		"test8.jpg",
-	// 		"test9.jpg"
-	// 	],
-	// 	"fameRatingCalc": 0
-	// }
-
 	async getUserProfile(user_id)
 	{
 		const fameRatingCalc = async (user_id) => {
@@ -1299,6 +1282,34 @@ class Database
 			images: row3.map((element) => element.local_url),
 			fameRatingCalc: await fameRatingCalc(user_id),
 		});
+	}
+
+	async userDisconnected(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_last_connection WHERE user_id = ?', [user_id]);
+		const currentDate = new Date().toLocaleString('en-GB', { timeZone: 'Europe/Paris' }).replace(',', '');
+
+		if (row.length == 0)
+			await conn.query('INSERT INTO users_last_connection (user_id, date) VALUES (?, STR_TO_DATE(?, "%d/%m/%Y %H:%i:%s"))', [user_id, currentDate]);
+		else
+			await conn.query('UPDATE users_last_connection SET date = STR_TO_DATE(?, "%d/%m/%Y %H:%i:%s") WHERE user_id = ?', [currentDate, user_id]);
+		conn.release();
+		conn.end();
+	}
+	async getUserStatus(user_id)
+	{
+		if (Websocket.userIsConnected(user_id))
+			return ({connected: true});
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_last_connection WHERE user_id = ?', [user_id]);
+
+		conn.release();
+		conn.end();
+		if (row.length == 0)
+			return ({connected: false});
+		const lastConnection = new Date(row[0].date);
+		return ({connected: false, lastConnection});
 	}
 }
 

@@ -154,7 +154,7 @@
 							<div style="position: relative;">
 								<p id="main-info">{user?.name} • {user?.age}</p>
 								<div class="test">
-									<OnlineBtn />
+									<OnlineBtn user_id={user?.id} />
 								</div>
 							</div>
 							<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>

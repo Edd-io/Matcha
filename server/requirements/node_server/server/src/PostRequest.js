@@ -26,16 +26,25 @@ class PostRequest
 			res.send(JSON.stringify({logged: false}));
 	}
 
+	static get_user_status(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.body.id)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.id !== 'number')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.getUserStatus(req.body.id).then((data) => {
+			res.send(JSON.stringify(data));
+		});
+	}
+
 	// Request to login
 	// {email: string, password: string}
 	static login(req, res, db)
 	{
 		Debug.log(req);
-
-		// just to get the hash of the password for testing
-		bcrypt.hash(req.body.email + req.body.password, 10, (err, hash) => {
-			console.log('Password hash:', hash);
-		});
 
 		if (req.session.info && req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
