@@ -4,6 +4,7 @@
 	import threeDotsIcon from '../assets/3-dots.svg';
 	import sendIcon from '../assets/send.svg';
     import { cubicOut } from 'svelte/easing';
+    import OnlineBtn from '../Main/Online-btn.svelte';
 
 	export let user: any;
 	export let chatOpened: boolean;
@@ -130,7 +131,12 @@
 			</svg>
 		</button>
 		<div class='center'>
-			<img src={user.pfp} alt="Pfp de {user.name}" />
+			<div style="position: relative;">
+				<img src={user.pfp} alt="Pfp de {user.name}"/>
+				<div style="position: absolute; top: 0; right: 5px;">
+					<OnlineBtn />
+				</div>
+			</div>
 			<p>{user.name}</p>
 		</div>
 		<button id="testtt" class="no-button-style" on:click={() => options = !options} aria-label="Options">	

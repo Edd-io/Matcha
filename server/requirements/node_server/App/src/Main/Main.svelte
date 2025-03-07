@@ -2,6 +2,7 @@
 	import TopBar from "./Top-bar.svelte";
 	import BottomBar from "./Bottom-bar.svelte";
 	import Notification from "./Notification.svelte";
+	import OnlineBtn from "./Online-btn.svelte";
 
 	import positionLogo from "../assets/position.svg";
 	import likeLogo from "../assets/heart.svg";
@@ -150,7 +151,12 @@
 					</div>
 					<div class="user-info">
 						<div class="info">
-							<p id="main-info">{user?.name} • {user?.age}</p>
+							<div style="position: relative;">
+								<p id="main-info">{user?.name} • {user?.age}</p>
+								<div class="test">
+									<OnlineBtn />
+								</div>
+							</div>
 							<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
 								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
 									<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
@@ -330,6 +336,12 @@
 		color: white;
 		font-weight: 700;
 		font-size: 2.5rem;
+	}
+
+	.test {
+		position: absolute;
+		right: -25px;
+		top: 20px;
 	}
 
 	.info {
