@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/06 23:07:30 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/07 14:06:36 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -502,10 +502,14 @@ class Database
 			if (filter.interests.length > 0 && scoreTags != filter.interests.length)
 				return (0);
 
+			// calcul score for fame
 			if (filter.fame > otherInfo.fame)
 				return (0);
-
-			return (scoreTags + scoreDistance);
+			else
+				scoreFame = 5 - ((otherInfo.fame * 100 / filter.fame) / 100);
+			if (isNaN(scoreFame))
+				scoreFame = 0;
+			return (scoreTags + scoreDistance + scoreFame);
 		}
 
 		const fameRatingCalc = async (user_id) => {

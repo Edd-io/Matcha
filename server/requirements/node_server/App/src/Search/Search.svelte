@@ -5,7 +5,7 @@
 
 	let showFilter = false;
 	let selected_interests: number[] = [];
-	const filter_by = {
+	let filter_by = {
 		age: [18, 100],
 		fame: [0, 100],
 		distance: 40000,
@@ -23,16 +23,17 @@
 
 	let lstUsers = [];
 	let lstUsersSorted = lstUsers;
+	let searchQuery = "";
 
 	onMount(() => {
 		get_users();
 	});
 
-	function get_users()
+	async function get_users()
 	{
-		fetch('get_list_users')
-		.then(response => response.json())
-		.then(data => {
+		try {
+			const response = await fetch('get_list_users');
+			const data = await response.json();
 			lstUsers = data;
 			lstUsersSorted = lstUsers;
 			console.log(globalThis.self_location);
@@ -48,8 +49,9 @@
 					user.distance = -2;
 				});
 			}
-		})
-		.catch(err => console.error(err));
+		} catch (error) {
+			console.error(error);
+		}
 	}
 
 	function haversine(pos1, pos2): number
@@ -76,25 +78,26 @@
 	{
 		if (age)
 		{
-			lstUsers = lstUsers.sort((a, b) => a.age - b.age);
+			lstUsersSorted = [...lstUsers].sort((a, b) => a.age - b.age);
 			sort_by = 'age';
 		}
 		else if (fame)
 		{
-			lstUsers = lstUsers.sort((a, b) => b.fame - a.fame);
+			lstUsersSorted = [...lstUsers].sort((a, b) => b.fame - a.fame);
 			sort_by = 'fame';
 		}
 		else if (distance)
 		{
-			lstUsers = lstUsers.sort((a, b) => a.distance - b.distance);
+			lstUsersSorted = [...lstUsers].sort((a, b) => a.distance - b.distance);
 			sort_by = 'distance';
+		}
+		else {
+			lstUsersSorted = [...lstUsers];
 		}
 	}
 
-	// to remember: when filters are selected, it is enough for a user to match just one filter to be displayed
 	function filter_by_change()
 	{
-		console.log(selected_interests);
 		if (filter_by.age[0] > filter_by.age[1] || filter_by.age[0] < 18 || filter_by.age[1] > 100)
 			err.age = true;
 		if (filter_by.fame[0] > filter_by.fame[1] || filter_by.fame[0] < 0 || filter_by.fame[1] > 100)
@@ -116,20 +119,23 @@
 		);
 		showFilter = false;
 	}
+
+	$: {
+		lstUsersSorted = lstUsers.filter(user => user.first_name.toLowerCase().includes(searchQuery.toLowerCase()));
+	}
 </script>
 
 <main>
 	<div style="display: flex; justify-content: space-between;">
-		<input type="text" placeholder="Rechercher un utilisateur" class="search-bar">
+		<input type="text" placeholder="Rechercher un utilisateur (Rechercher retire les filtres)" class="search-bar" bind:value={searchQuery} >
 		<button class='filter-btn' on:click={() => showFilter = true}>Filtrer</button>
 	</div>
 
 	<div class="search-results">
 		{#each lstUsersSorted as user}
-			<UserLine userInfo={user} self_location={self_location} />
+			<UserLine userInfo={user} />
 		{/each}
 	</div>
-
 	{#if showFilter}
 		<div class="filter">
 			<div class="filter-container">
@@ -140,21 +146,21 @@
 				<div class="line">
 					<label for="age">Âge</label>
 					<div style="display: flex; justify-content: space-between; width: 10rem;">
-						<input class='input-nbr' type="number" placeholder="18" style="width: 45%;" value={filter_by.age[0]} on:change={(e) => filter_by.age[0] = e.target.value}>
-						<input class='input-nbr' type="number" placeholder="100" style="width: 45%;" value={filter_by.age[1]} on:change={(e) => filter_by.age[1] = e.target.value}>
+						<input class='input-nbr' type="number" placeholder="18" style="width: 45%;" bind:value={filter_by.age[0]} >
+						<input class='input-nbr' type="number" placeholder="100" style="width: 45%;" bind:value={filter_by.age[1]} >
 					</div>
 				</div>
 				<div class="line">
 					<label for="fame">Fame</label>
 					<div style="display: flex; justify-content: space-between; width: 10rem;">
-						<input class='input-nbr' type="number" placeholder="0" style="width: 45%;" value={filter_by.fame[0]} on:change={(e) => filter_by.fame[0] = e.target.value}>
-						<input class='input-nbr' type="number" placeholder="100" style="width: 45%;" value={filter_by.fame[1]} on:change={(e) => filter_by.fame[1] = e.target.value}>
+						<input class='input-nbr' type="number" placeholder="0" style="width: 45%;" bind:value={filter_by.fame[0]} >
+						<input class='input-nbr' type="number" placeholder="100" style="width: 45%;" bind:value={filter_by.fame[1]} >
 					</div>
 				</div>
 				<div class="line">
 					<label for="distance">Distance max</label>
 					<div style="display: flex; justify-content: space-between; width: 10rem;">
-						<input class='input-nbr' type="number" placeholder="Max" style="width: 45%;" min="0" max="40000" value={filter_by.distance} on:change={(e) => filter_by.distance = e.target.value}>
+						<input class='input-nbr' type="number" placeholder="Max" style="width: 45%;" min="0" max="40000" bind:value={filter_by.distance} >
 					</div>
 				</div>
 				<label for="interests">Intérêts</label>
@@ -183,7 +189,6 @@
 			</div>
 		</div>
 	{/if}
-
 </main>
 
 <style>
