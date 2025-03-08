@@ -53,7 +53,7 @@
 
 		return () => {
 			document.removeEventListener('newMessage', newMessage)
-		};
+ex		};
 	})
 
 	function slideHorizontal(node) {

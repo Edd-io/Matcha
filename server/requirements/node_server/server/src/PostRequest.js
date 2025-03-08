@@ -671,11 +671,25 @@ class PostRequest
 	static get_user_profile(req, res, db)
 	{
 		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
 		if (!req.body.id)
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.id !== 'number')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
 		db.getUserProfile(req.body.id).then((data) => res.send(data));
+	}
+
+	static remove_reaction(req, res, db)
+	{
+		Debug.log(req);
+		if (!req.session.info || !req.session.info.logged)
+			return (res.send(JSON.stringify({error: "You are not logged in"})));
+		if (!req.body.userId)
+			return (res.send(JSON.stringify({error: missing})));
+		if (typeof req.body.userId !== 'number')
+			return (res.send(JSON.stringify({error: "Invalid parameters"})));
+		db.removeReaction(req.session.info.id, req.body.userId).then((data) => res.send(data));
 	}
 
 }

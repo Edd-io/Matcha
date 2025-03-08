@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/07 21:32:47 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/08 15:04:55 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,6 +133,7 @@ class Database
 			conn.query(`CREATE TABLE IF NOT EXISTS users_notifications (
 				id INTEGER PRIMARY KEY AUTO_INCREMENT,
 				user_id INT,
+				from_id INT,
 				message TEXT,
 				image VARCHAR(80),
 				seen BOOLEAN DEFAULT FALSE,
@@ -722,22 +723,22 @@ class Database
 			{
 				Websocket.sendNotification(user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
 				Websocket.sendNotification(other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
-				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png"]);
-				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png"]);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png", other_id]);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png", user_id]);
 				await conn.query('INSERT INTO users_last_message (from_id, to_id, message, system) VALUES (?, ?, ?, ?)', [user_id, other_id, "Commence la conversation !", true]);
 			}
 			else
 			{
 				const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
 				Websocket.sendNotification(other_id, `${name_user[0].first_name} a liké ton profil`, "like.png");
-				await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, `${name_user[0].first_name} a liké ton profil`, "seen.png"]);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `${name_user[0].first_name} a liké ton profil`, "seen.png", user_id]);
 			}
 		}
 		else
 		{
 			const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
 			Websocket.sendNotification(other_id, `${name_user[0].first_name} a disliké ton profil`, "dislike.png");
-			await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png"]);
+			await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png", user_id]);
 			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
 		}
 
@@ -750,10 +751,9 @@ class Database
 	{
 		const conn = await this.pool.getConnection();
 		const row = await conn.query('SELECT * FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [other_id, user_id]);
+		const row2 = await conn.query('SELECT * FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [user_id, other_id]);
 
-		conn.release();
-		conn.end();
-		if (row.length != 0)
+		if (row.length != 0 && row2.length != 0)
 		{
 			const name_user_one = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
 			const name_user_two = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [other_id]);
@@ -763,7 +763,9 @@ class Database
 			Websocket.sendMatch(user_id, name_user_two[0].first_name, pfp_user_two[0].local_url);
 			Websocket.sendMatch(other_id, name_user_one[0].first_name, pfp_user_one[0].local_url);
 		}
-		return (row.length != 0);
+		conn.release();
+		conn.end();
+		return (row.length != 0 && row2.length != 0);
 	}
 
 	async getChatList(user_id)
@@ -856,11 +858,11 @@ class Database
 		conn.end();
 	}
 	
-	async newNotification(user_id, message, image)
+	async newNotification(user_id, message, image, from_id)
 	{
 		const conn = await this.pool.getConnection();
 
-		await conn.query('INSERT INTO users_notifications (user_id, message, image) VALUES (?, ?, ?)', [user_id, message, image]);
+		await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [user_id, message, image, from_id]);
 		conn.release();
 		conn.end();
 	}
@@ -1208,6 +1210,7 @@ class Database
 				distance: -1,
 				alreadyLiked: row4.find((element) => element.user_liked_id == row2[i].user_id) ? true : false,
 				alreadyDisliked: row5.find((element) => element.user_disliked_id == row2[i].user_id) ? true : false,
+				matched: await this.#hasMatch(user_id, row2[i].user_id),
 			});
 		}
 		conn.release();
@@ -1310,6 +1313,27 @@ class Database
 			return ({connected: false});
 		const lastConnection = new Date(row[0].date);
 		return ({connected: false, lastConnection});
+	}
+
+	async removeReaction(user_id, other_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [user_id, other_id]);
+		const row2 = await conn.query('SELECT * FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [other_id, user_id]);
+
+		if (row.length != 0 && row2.length != 0)
+		{
+			conn.release();
+			conn.end();
+			return ({error: "Match can't be removed"});
+		}
+		await conn.query('DELETE FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [user_id, other_id]);
+		await conn.query('DELETE FROM users_dislikes WHERE user_id = ? AND user_disliked_id = ?', [user_id, other_id]);
+		await conn.query('DELETE FROM users_notifications WHERE user_id = ? AND from_id = ?', [other_id, user_id]);
+
+		conn.release();
+		conn.end();
+		return ({success: true});
 	}
 }
 

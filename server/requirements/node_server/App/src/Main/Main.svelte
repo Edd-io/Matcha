@@ -23,6 +23,7 @@
 	let user = null;
 	let like = false;
 	let dislike = false;
+	let lastConnection = '';
 
 	onMount(() => {
 		const handleLocationUpdated = () => {
@@ -132,7 +133,7 @@
 
 		{#key counter}
 			{#if showComponent}
-				<ScrollProfile bind:users={user} bind:showComponent={showComponent} getSwipeUser={getSwipeUser} />
+				<ScrollProfile bind:users={user} bind:showComponent={showComponent} getSwipeUser={getSwipeUser} lastConnection={lastConnection} />
 			{/if}
 
 			<div class="photo" class:active={like} class:active2={dislike} class:showProfile={!like && !dislike}>
@@ -154,7 +155,7 @@
 							<div style="position: relative;">
 								<p id="main-info">{user?.name} • {user?.age}</p>
 								<div class="test">
-									<OnlineBtn user_id={user?.id} />
+									<OnlineBtn user_id={user?.id} bind:lastConnection={lastConnection} />
 								</div>
 							</div>
 							<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>

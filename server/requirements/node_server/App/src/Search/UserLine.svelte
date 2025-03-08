@@ -12,6 +12,27 @@
 		distance = 'Inconnu';
 	else
 		distance = distance + ' km';
+
+	async function removeReaction()
+	{
+		if (userInfo.matched)
+			return;
+		const response = await fetch('/remove_reaction', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				userId: userInfo.user_id
+			})
+		});
+		const data = await response.json();
+		if (data.success)
+		{
+			userInfo.alreadyLiked = false;
+			userInfo.alreadyDisliked = false;
+		}
+	}
 </script>
 
 <main>
@@ -22,9 +43,11 @@
 		<p class='data'>Fame: {userInfo.fame}% | Distance: {distance}</p>
 	</div>
 	{#if userInfo.alreadyLiked}
-		<button class='see-profile-btn' style="background-color: #2cb637;" disabled>Déjà liké</button>
+		<button class='see-profile-btn' style="background-color: #2cb637;" on:click={removeReaction}>Déjà liké</button>
 	{:else if userInfo.alreadyDisliked}
-		<button class='see-profile-btn' style="background-color: #c21111;" disabled>Déjà disliké</button>
+		<button class='see-profile-btn' style="background-color: #c21111;" on:click={removeReaction}>Déjà disliké</button>
+	{:else if userInfo.matched}
+		<button class='see-profile-btn' style="background-color: #f7b500;" disabled>Match !</button>
 	{:else}
 		<button class='see-profile-btn' style="background-color: #a4a4a4;" on:click={() => showProfilePopup = true}>Voir le profil</button>
 	{/if}
