@@ -34,7 +34,7 @@
 	globalThis.path.set('/');
 </script>
 
-<main>
+<main class="main-host">
 	<div class="main-logo">
 		<img class="matcha-logo" src={matchaLogo} alt="Matcha logo"/>
 		<h1>MATCHA</h1>
