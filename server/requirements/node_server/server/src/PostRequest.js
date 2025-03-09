@@ -297,7 +297,9 @@ class PostRequest
 				db.deletePicture(req.session.info.id, req.body.imgName).then((ret) => {
 					if (ret.error)
 						return (res.send({error: ret.error}));
-					fs.unlinkSync('/app/user_static_data/' + req.body.imgName);
+					try {
+						fs.unlinkSync('/app/user_static_data/' + req.body.imgName);
+					} catch (e) {}
 					res.send(JSON.stringify({success: "Image deleted"}));
 				});
 			}

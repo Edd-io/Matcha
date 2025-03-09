@@ -28,7 +28,7 @@
 		globalThis.last_path = path;
 		path = window.location.pathname;
 	});
-	let isConnected = true;
+	let isConnected = false;
 
 	globalThis.connected = writable(isConnected);
 	globalThis.connected.subscribe(value => {

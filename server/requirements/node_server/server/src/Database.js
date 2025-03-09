@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/08 15:04:55 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/09 17:19:55 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,12 +220,19 @@ class Database
 	{
 		const conn = await this.pool.getConnection();
 		const row = await conn.query('SELECT * FROM users_images WHERE user_id = ? AND local_url = ?', [user_id, picture]);
+		const row2 = await conn.query('SELECT * FROM users_images WHERE user_id = ?', [user_id]);
 
 		if (row.length == 0)
 		{
 			conn.release();
 			conn.end();
 			return ({error: "Picture not found"});
+		}
+		if (row2.length == 1)
+		{
+			conn.release();
+			conn.end();
+			return ({error: "You must have at least one picture"});
 		}
 		await conn.query('DELETE FROM users_images WHERE user_id = ? AND local_url = ?', [user_id, picture]);
 		conn.release();
