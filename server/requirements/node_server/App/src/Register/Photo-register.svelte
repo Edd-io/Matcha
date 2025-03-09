@@ -7,13 +7,13 @@
 	import crossLogo from "../assets/cross.svg";
 
 	let count = 0;
-	let lstPhotos = [];
+	const lstPhotos: string[] = ["", "", "", "", "", ""];
 	let err = false;
 
 	onMount(() => {
 		function clicked()
 		{
-			if (lstPhotos.length == 0)
+			if (lstPhotos[0] === "")
 				return ;
 			page++;
 		}
@@ -49,10 +49,17 @@
 					}).then(res => {
 						if (!res.ok)
 							throw new Error("Error");
-						res.json()
+						return res.json()
 					})
-					.then(data => {
-						lstPhotos.push(e.target.result);
+					.then((data) => {
+						for (let i = 0; i < lstPhotos.length; i++)
+						{
+							if (lstPhotos[i] === "")
+							{
+								lstPhotos[i] = data.imgName;
+								break;
+							}
+						}
 						count++;
 					})
 					.catch(err => {
@@ -69,6 +76,38 @@
 		};
 		input.click();
 	}
+
+	function removePhoto(i: number, event: any)
+	{
+		event.stopPropagation();
+		if (lstPhotos[i] === "")
+			return;
+		fetch('/delete_picture_register', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				token: token,
+				imgName: lstPhotos[i],
+			})
+		}).then(res => res.json())
+		.then(data => {
+			if (data.success)
+			{
+				lstPhotos[i] = "";
+				for (let j = i; j < lstPhotos.length - 1; j++)
+					lstPhotos[j] = lstPhotos[j + 1];
+				lstPhotos[lstPhotos.length - 1] = "";
+				count++;
+			}
+			else
+				err = data.error;
+		})
+		.catch(err => {
+			err = err;
+		});
+	}
 </script>
 
 <main>
@@ -81,10 +120,11 @@
     <div class="part">
 		{#key count}
 			{#each {length: 6} as _, i}
-				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={choose_picture}>
+				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={lstPhotos[i] === "" ? choose_picture : null}>
 					{#if lstPhotos[i]}
 						<img src={lstPhotos[i]} alt="Pfp 1" />
-						<div class="test" role="button" aria-label='Remove photo' tabindex="0">
+						<!-- svelte-ignore a11y_click_events_have_key_events -->
+						<div class="test" role="button" aria-label='Remove photo' tabindex="0" on:click={(e) => removePhoto(i, e)}>
 							<img src={crossLogo} alt="Remove"/>
 						</div>
 					{:else}
