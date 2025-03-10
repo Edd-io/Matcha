@@ -131,6 +131,14 @@
 		<button class='filter-btn' on:click={() => showFilter = true}>Filtrer</button>
 	</div>
 
+	<!-- <div class="overlay"></div>
+	<div class="delete-account">
+		<h2>Retirer une réaction</h2>
+		<p>Souhaitez-vous vraiment retirer la réaction que vous avez mis à {name} ?</p>
+		<button class="btn" style="background-color: #c64141;">Oui</button>
+		<button class="btn" style="background-color: #111;">Annuler</button>
+	</div> -->
+
 	<div class="search-results">
 		{#each lstUsersSorted as user}
 			<UserLine userInfo={user} />
@@ -192,6 +200,60 @@
 </main>
 
 <style>
+
+	main {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		height: 100%;
+	}
+
+	.overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(5px);
+		border: none;
+		z-index: 2;
+	}
+
+	.delete-account {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		background-color: white;
+		top: 50%;
+		transform: translateY(-50%);
+		margin-top: 20px;
+		width: 80%;
+		padding: 20px;
+		gap: 20px;
+		border-radius: 2rem;
+		z-index: 3;
+	}
+
+	.delete-account h2 {
+		font-size: 1.5rem;
+		display: flex;
+		justify-content: center;
+	}
+
+	.delete-account p {
+		font-size: 1rem;
+	}
+
+	.btn {
+		color: white;
+		padding: 10px 20px;
+		border-radius: 2rem;
+		cursor: pointer;
+		border: none;
+		font-weight: 600;
+	}
+
 	.search-bar {
 		width: 85%;
 		height: 50px;

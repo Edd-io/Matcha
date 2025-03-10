@@ -1,6 +1,5 @@
 <script>
     import { onMount } from "svelte";
-
     import homeLogo from "../assets/home.svg";
     import profilLogo from "../assets/profil.svg";
     import chatLogo from "../assets/chat.svg";
