@@ -72,7 +72,6 @@
 <style>
 
 	.matcha-logo {
-		filter: invert(95%);
 		height: 3.5rem;
 		width: 3.5rem;
 	}
@@ -131,7 +130,6 @@
 	}
 
 	h1 {
-		color: #111111;
 		font-size: 1.3rem;
 		font-weight: 900;
 	}

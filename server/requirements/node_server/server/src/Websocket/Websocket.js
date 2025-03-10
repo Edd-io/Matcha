@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/26 08:46:00 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/07 15:41:27 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ class Websocket
 	{
 		users.splice(users.indexOf(this), 1);
 		Debug.closeConnection(ws);
+		this.db.userDisconnected(this.id);
 	}
 
 	onMessage(message)
@@ -90,6 +91,11 @@ class Websocket
 	{
 		this.ws.send(JSON.stringify({type: 'ban'}));
 		this.ws.close();
+	}
+
+	static userIsConnected(user_id)
+	{
+		return (users[user_id] ? true : false);
 	}
 }
 

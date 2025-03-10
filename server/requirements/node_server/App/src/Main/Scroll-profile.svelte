@@ -3,10 +3,12 @@
 	import genderLogo from "../assets/gender.svg";
 	import typeLogo from "../assets/type.svg";
 	import ChooseInterests from "../Register/Choose_interests.svelte";
+	import '@fortawesome/fontawesome-free/css/all.css';
 
 	export let users: any;
 	export let showComponent = false;
 	export let getSwipeUser: Function | null = null;
+	export let lastConnection: string = '';
 
 	let hideComponent = true;
 	let showSignalPopup = false;
@@ -105,6 +107,11 @@
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m16 11.78l4.24-7.33l1.73 1l-5.23 9.05l-6.51-3.75L5.46 19H22v2H2V3h2v14.54L9.5 8z"/></svg>
 					<p id="scd-info">{users.fameRatingCalc}%</p>
 				</div>
+				<div class="min-info">
+					<i class="fa-solid fa-circle-info" style=""></i>
+					<p id="scd-info">{lastConnection}</p>
+				</div>
+
 		</div>
 		<div class="bar-scroll"></div>
 		<div class="bio">
@@ -356,5 +363,10 @@ p {
 	font-weight: 700;
 	background-color: #111111;
 	color: white;
+}
+
+.min-info i, .min-info svg, .min-info img{
+	width: 1.5rem;
+	height: 1.5rem;
 }
 </style>

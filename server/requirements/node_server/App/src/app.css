@@ -1,9 +1,32 @@
+:root {
+	--text-color: #111111;
+	--background-color: #ffffff;
+	--invert-svg: 0;
+}
+
 * {
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
 	font-family: 'Red Hat Display', sans-serif;
 }
+
+* p, * h1, * h2, * i, * label, * img {
+	color: var(--text-color);
+}
+
+* svg {
+	filter: invert(var(--invert-svg));
+}
+
+.bottom-bar img {
+	filter: invert(var(--invert-svg));
+}
+
+.top-bar img {
+	filter: invert(var(--invert-svg));
+}
+
 ::-webkit-scrollbar {
 	width: 8px;
 	height: 8px;
@@ -15,12 +38,15 @@
 ::-webkit-scrollbar-track {
 	background: white;
 }
+
 body {
 	font-size: 26px;
 	height: 100vh;
 	width: 100vw;
 	overflow: hidden;
+	background-color: var(--background-color);
 }
+
 .text {
 	font-size: 1.1rem;
 	font-weight: 600;

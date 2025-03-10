@@ -10,7 +10,9 @@
 	export let chatOpened: boolean;
 
 	let listMessages = [];
+	let options = false;
 	const writableListMessages = writable(listMessages);
+	let lastConnection = '';
 
 	writableListMessages.subscribe(value => {
 		listMessages = value;
@@ -44,11 +46,14 @@
 
 		document.addEventListener('newMessage', newMessage);
 		const listMessagesDiv = document.querySelector('.list-messages');
+		getChat();
 		setTimeout(() => {
 			listMessagesDiv.scrollTop = listMessagesDiv.scrollHeight;
 		}, 100);
 
-		return () => document.removeEventListener('newMessage', newMessage);
+		return () => {
+			document.removeEventListener('newMessage', newMessage)
+ex		};
 	})
 
 	function slideHorizontal(node) {
@@ -85,7 +90,6 @@
 		});
 	}
 
-	getChat();
 
 	function sendMessage(event: any)
 	{
@@ -119,8 +123,6 @@
 			(inputMessage as HTMLInputElement).value = message.slice(0, 1000);
 		}
 	}
-
-	let options = false;
 </script>
 
 <main in:slideHorizontal out:slideHorizontal>
@@ -134,10 +136,11 @@
 			<div style="position: relative;">
 				<img src={user.pfp} alt="Pfp de {user.name}"/>
 				<div style="position: absolute; top: 0; right: 5px;">
-					<OnlineBtn />
+					<OnlineBtn user_id={user.id} bind:lastConnection={lastConnection}/>
 				</div>
 			</div>
 			<p>{user.name}</p>
+			<p style="color: #4e4e4e; margin-left: 1rem; font-size: 0.9rem">{lastConnection}</p>
 		</div>
 		<button id="testtt" class="no-button-style" on:click={() => options = !options} aria-label="Options">	
 			<img src={threeDotsIcon} alt="Options" />

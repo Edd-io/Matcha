@@ -7,7 +7,7 @@
 
 	globalThis.path.set('/self_info');
 
-	const lstPhotos: string[] = [];
+	const lstPhotos: string[] = ["", "", "", "", "", ""];
 	let aboutMeContent = "";
 	let count = 0;
 	let err: String = "";
@@ -56,7 +56,17 @@
 					}).then(res => res.json())
 					.then(data => {
 						if (data.success)
-							lstPhotos.push(data.imgName);
+						{
+							for (let i = 0; i < lstPhotos.length; i++)
+							{
+								if (lstPhotos[i] === "")
+								{
+									lstPhotos[i] = data.imgName;
+									count++;
+									break;
+								}
+							}
+						}
 						else
 							err = data.error;
 						count++;
@@ -88,8 +98,10 @@
 				interests.push(element);
 				lastInterests.push(element);
 			});
+			let i = 0;
 			data.pfp.forEach((element: string) => {
-				lstPhotos.push(element);
+				lstPhotos[i] = element;
+				i++;
 			});
 			count++;
 		})
@@ -111,7 +123,13 @@
 		}).then(res => res.json())
 		.then(data => {
 			if (data.success)
+			{
 				lstPhotos[i] = "";
+				for (let j = i; j < lstPhotos.length - 1; j++)
+					lstPhotos[j] = lstPhotos[j + 1];
+				lstPhotos[lstPhotos.length - 1] = "";
+				count++;
+			}
 			else
 				err = data.error;
 		})
@@ -184,8 +202,8 @@
 	<div class="part">
 		{#key count}
 			{#each {length: 6} as _, i}
-				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={choose_picture}>
-					{#if lstPhotos[i]}
+				<button class="no-style-button button-image" aria-label='Photo {i + 1}' on:click={lstPhotos[i] === "" ? choose_picture : null}>
+					{#if lstPhotos[i] !== ""}
 						<img src={lstPhotos[i]} alt="Pfp 1" />
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<div class="test" aria-label='Remove photo' role="button" tabindex="0" on:click={(e) => removePhoto(i, e)}>

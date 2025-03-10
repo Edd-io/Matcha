@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+    import { on } from "svelte/events";
 
 	let name_user: string = "";
 	let pseudo: string = "";
@@ -159,6 +160,23 @@
 		});
 	}
 
+	function darkMode(enable)
+	{
+		if (enable)
+		{
+			document.documentElement.style.setProperty('--background-color', '#111111');
+			document.documentElement.style.setProperty('--text-color', '#ffffff');
+			document.documentElement.style.setProperty('--invert-svg', '1');
+		}
+		else
+		{
+			document.documentElement.style.setProperty('--background-color', '#ffffff');
+			document.documentElement.style.setProperty('--text-color', '#000000');
+			document.documentElement.style.setProperty('--invert-svg', '0');
+		}
+		localStorage.setItem('darkMode', enable);
+	}
+
 </script>
 
 <main>
@@ -240,6 +258,16 @@
 			<label for="Localisation">Connexion à 42</label>
 
 			<button class="btn" style="background-color: #15902f;" on:click={link42}>Se connecter</button>
+		</div>
+
+
+		<div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+			<label for="dark-mode">Mode sombre</label>
+
+			<label class="switch">
+				<input type="checkbox" on:change={(e) => darkMode(e.target.checked)}>
+				<span class="slider round"></span>
+			</label>
 		</div>
 
 		{#if error}
@@ -490,4 +518,64 @@
 		margin-bottom: 1rem;
 		text-align: center;
 	}
+
+	.switch {
+		position: relative;
+		display: inline-block;
+		width: 60px;
+		height: 34px;
+	}
+
+	.switch input {
+		opacity: 0;
+		width: 0;
+		height: 0;
+	}
+
+	.slider {
+		position: absolute;
+		cursor: pointer;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background-color: #ccc;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
+
+	.slider:before {
+		position: absolute;
+		content: "";
+		height: 26px;
+		width: 26px;
+		left: 4px;
+		bottom: 4px;
+		background-color: white;
+		-webkit-transition: .4s;
+		transition: .4s;
+	}
+
+	input:checked + .slider {
+		background-color: #30b844;
+	}
+
+	input:focus + .slider {
+		box-shadow: 0 0 1px #30b844;
+	}
+
+	input:checked + .slider:before {
+		-webkit-transform: translateX(26px);
+		-ms-transform: translateX(26px);
+		transform: translateX(26px);
+	}
+
+	.slider.round {
+		border-radius: 34px;
+	}
+
+	.slider.round:before {
+		border-radius: 50%;
+	}
+
 </style>
