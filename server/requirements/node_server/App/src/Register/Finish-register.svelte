@@ -23,6 +23,7 @@
 		function clicked()
 		{
 			connected = true;
+			globalThis.connected.set(true);
 			navigate('/');
 		}
 		window.addEventListener('btnClicked', clicked);

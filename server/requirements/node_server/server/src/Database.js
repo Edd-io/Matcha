@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/09 17:19:55 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/10 15:50:59 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -178,25 +178,31 @@ class Database
 
 	addUser(user)
 	{
-		bcrypt.hash(user.mail + user.password, 10, (err, hash) => {
-			if (err)
-				throw Error("Error to hash password")
-			this.pool.getConnection().then((conn) => {
-				conn.query('INSERT INTO accounts (email, password) VALUES (?, ?)', [user.mail, hash]);
-				conn.release().then(() => {
-					conn.query('SELECT id FROM accounts WHERE email = ?', [user.mail]).then((row) => {
-						const user_id = row[0].id;
-						conn.query(`INSERT INTO users_info (first_name, last_name, nickname, date_of_birth, sexe, orientation, bio, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-							[user.first_name, user.last_name, user.nickname, user.date_of_birth, user.sexe, user.orientation, user.bio, user_id]
-						);
-						for (let i = 0; i < user.tags.length; i++)
-							conn.query('INSERT INTO users_tags (tag, user_id) VALUES (?, ?)', [user.tags[i], user_id]);
-						for (let i = 0; i < user.pictures.length; i++)
-							conn.query('INSERT INTO users_images (local_url, user_id) VALUES (?, ?)', [user.pictures[i], user_id]);
-						})
-				}).finally(() => {conn.release(); conn.end()});
+		return (new Promise((resolve) => {
+			bcrypt.hash(user.mail + user.password, 10, (err, hash) => {
+				if (err)
+					throw Error("Error to hash password")
+				this.pool.getConnection().then((conn) => {
+					conn.query('INSERT INTO accounts (email, password) VALUES (?, ?)', [user.mail, hash]);
+					conn.release().then(() => {
+						conn.query('SELECT id FROM accounts WHERE email = ?', [user.mail]).then((row) => {
+							const user_id = row[0].id;
+							conn.query(`INSERT INTO users_info (first_name, last_name, nickname, date_of_birth, sexe, orientation, bio, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+								[user.first_name, user.last_name, user.nickname, user.date_of_birth, user.sexe, user.orientation, user.bio, user_id]
+							);
+							for (let i = 0; i < user.tags.length; i++)
+								conn.query('INSERT INTO users_tags (tag, user_id) VALUES (?, ?)', [user.tags[i], user_id]);
+							for (let i = 0; i < user.pictures.length; i++)
+								conn.query('INSERT INTO users_images (local_url, user_id) VALUES (?, ?)', [user.pictures[i], user_id]);
+							})
+					}).finally(() => {
+						conn.release();
+						conn.end()
+						resolve();
+					});
+				});
 			});
-		});
+		}));
 	}
 
 	async addPicture(user_id, picture)
@@ -318,18 +324,15 @@ class Database
 		})
 	}
 
-	getIdFromMail(email)
+	async getIdFromMail(email)
 	{
-		return (new Promise((resolve) => {
-			this.pool.getConnection().then((conn) => {
-				conn.query('SELECT id FROM accounts WHERE email = ?', [email]).then((row) => {
-					if (row.length == 0)
-						resolve(null);
-					else
-						resolve(row[0].id);
-				}).finally(() => {conn.release(); conn.end()});
-			});
-		}));
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT id FROM accounts WHERE email = ?', [email]);
+
+		conn.release();
+		conn.end();
+		console.log(row);
+		return (row.length == 0 ? null : row[0].id);
 	}
 
 	addLocation(user_id, latitude, longitude)
@@ -344,11 +347,11 @@ class Database
 	async #getNbUsers()
 	{
 		const conn = await this.pool.getConnection();
-		const row = await conn.query('SELECT COUNT(*) FROM accounts');
+		const row = await conn.query('SELECT * FROM accounts ORDER BY id DESC LIMIT 1');
 
 		conn.release();
 		conn.end();
-		return (row[0]['COUNT(*)']);
+		return (row[0].id);
 	}
 
 	async #getListSeenUsers(user_id)
@@ -482,6 +485,8 @@ class Database
 			let		scoreFame = 0;
 			let		tags = [];
 
+			if (otherInfo.exist === false)
+				return (-2);
 			if (!selfInfo)
 				selfInfo = await getOtherInfo(user_id);
 			if (otherInfo.age < filter.range_age[0] || otherInfo.age > filter.range_age[1])
@@ -544,10 +549,17 @@ class Database
 			const rowTags = await conn.query('SELECT tag FROM users_tags WHERE user_id = ?', [other_id]);
 			const tags = [];
 
+			if (rowInfo.length == 0)
+			{
+				conn.release();
+				conn.end();
+				return ({exist: false});
+			}
 			for (let i = 0; i < rowTags.length; i++)
 				tags.push(rowTags[i].tag);
 			conn.release();
 			conn.end();
+			console.log('Get other info for user', other_id);
 			return ({
 				location: rowInfo[0] && rowInfo[0].location ? JSON.parse(rowInfo[0].location) : null,
 				tags,
@@ -653,15 +665,6 @@ class Database
 			}
 			else
 			{
-				for (let i = 0; i <= this.buffer_neverSeenUser[index].neverSeen; i++)
-				{
-					if (seen.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
-						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
-					else if (blockedUsersList.includes(this.buffer_neverSeenUser[index].neverSeen[i].id))
-						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: -2});
-					else
-						this.buffer_neverSeenUser[index].neverSeen.push({id: i, score: await getScore(this.buffer_neverSeenUser[index].neverSeen[i].id)});
-				}
 				while (this.buffer_neverSeenUser[index].lastNb < nbUsers)
 				{
 					if (blockedUsersList.includes(this.buffer_neverSeenUser[index].neverSeen[lastNb].id))
@@ -674,7 +677,7 @@ class Database
 			if (!isSameFilter(this.buffer_neverSeenUser[index].lastFilter, filter, lastLocation, this.buffer_neverSeenUser[index].lastLocation) || blockedUsersList.length != this.buffer_neverSeenUser[index].blockedUsersList.length)
 			{
 				console.log("Filter changed");
-				for (let i = 0; i < this.buffer_neverSeenUser[index].neverSeen.length; i++)
+				for (let i = 0; i < nbUsers; i++)
 				{
 					if (this.buffer_neverSeenUser[index].neverSeen[i].score != -2)
 					{
@@ -687,7 +690,11 @@ class Database
 			}
 			else
 				console.log("Filter not changed");
-			this.buffer_neverSeenUser[index].lastFilter = {...filter, distance: filter.distance == 32089 ? 100 : filter.distance};
+			if (filter.distance > 100)
+				filter.distance = 100;
+			if (this.buffer_neverSeenUser[index].lastFilter.distance > 100)
+				this.buffer_neverSeenUser[index].lastFilter.distance = 100;
+			this.buffer_neverSeenUser[index].lastFilter = filter;
 			this.buffer_neverSeenUser[index].blockedUsersList = blockedUsersList;
 			this.buffer_neverSeenUser[index].lastLocation = lastLocation;
 			this.buffer_neverSeenUser[index].lastUpdate = new Date();

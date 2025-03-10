@@ -354,12 +354,14 @@ class PostRequest
 				!userCreatingAccount[index].orientation || !userCreatingAccount[index].bio || !userCreatingAccount[index].tags ||
 				!userCreatingAccount[index].pictures)
 			return (res.send(JSON.stringify({error: "Incomplete account"})));
-		db.addUser(userCreatingAccount[index]);
-		db.getIdFromMail(userCreatingAccount[index].mail).then((id) => {
-			req.session.info = {logged: true, id: id};
+		db.addUser(userCreatingAccount[index]).then(() => {
+			console.log('Ouais ouais ouais');
+			db.getIdFromMail(userCreatingAccount[index].mail).then((id) => {
+				req.session.info = {logged: true, id: id};
+				res.send(JSON.stringify({success: "Account created"}));
+				userCreatingAccount.pop(index);
+			});
 		});
-		userCreatingAccount.pop(index);
-		res.send(JSON.stringify({success: "Account created"}));
 	}
 
 	static change_location(req, res, db)
