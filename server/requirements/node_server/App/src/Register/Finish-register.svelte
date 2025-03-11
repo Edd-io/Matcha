@@ -3,7 +3,6 @@
 	import { navigate } from 'svelte-routing';
 
 	export let token: string;
-	export let connected: boolean;
 
 	fetch('/finish_register', {
 		method: 'POST',
@@ -22,7 +21,6 @@
 	onMount(() => {
 		function clicked()
 		{
-			connected = true;
 			globalThis.connected.set(true);
 			navigate('/');
 		}

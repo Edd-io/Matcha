@@ -14,8 +14,6 @@
 	import { cubicOut } from 'svelte/easing';
 	import { navigate } from 'svelte-routing';
 
-	export let connected: boolean;
-
 	let token = null;
 	let currentPage = 1;
 	let dataSecondStep = {};
@@ -96,7 +94,7 @@
 
 	{#if currentPage === 8}
 		<div in:flyWithDelay={{ x: 500, delay: 300 }} out:slideHorizontal class="input-slider">
-			<FinishRegister token={token} bind:connected={connected}/>
+			<FinishRegister token={token}/>
 		</div>
 	{/if}
 

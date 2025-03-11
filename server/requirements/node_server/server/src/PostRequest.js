@@ -299,6 +299,7 @@ class PostRequest
 						return (res.send({error: ret.error}));
 					try {
 						fs.unlinkSync('/app/user_static_data/' + req.body.imgName);
+						userCreatingAccount[index].pictures = userCreatingAccount[index].pictures.filter((img) => img !== req.body.imgName);
 					} catch (e) {}
 					res.send(JSON.stringify({success: "Image deleted"}));
 				});
@@ -354,6 +355,8 @@ class PostRequest
 				!userCreatingAccount[index].orientation || !userCreatingAccount[index].bio || !userCreatingAccount[index].tags ||
 				!userCreatingAccount[index].pictures)
 			return (res.send(JSON.stringify({error: "Incomplete account"})));
+		if (userCreatingAccount[index].pictures.length < 1)
+			return (res.send(JSON.stringify({error: "You need at least one picture"})));
 		db.addUser(userCreatingAccount[index]).then(() => {
 			console.log('Ouais ouais ouais');
 			db.getIdFromMail(userCreatingAccount[index].mail).then((id) => {
