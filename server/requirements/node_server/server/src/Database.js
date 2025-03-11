@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/10 15:50:59 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/11 17:20:58 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -733,7 +733,7 @@ class Database
 		{
 			console.log("User liked");
 			await conn.query('INSERT INTO users_likes (user_id, user_liked_id) VALUES (?, ?)', [user_id, other_id]);
-			if (await this.#hasMatch(user_id, other_id))
+			if (await this.hasMatch(user_id, other_id))
 			{
 				Websocket.sendNotification(user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
 				Websocket.sendNotification(other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
@@ -761,13 +761,13 @@ class Database
 		return ({success: true});
 	}
 
-	async #hasMatch(user_id, other_id)
+	async hasMatch(user_id, other_id, sendToWebsocket = true)
 	{
 		const conn = await this.pool.getConnection();
 		const row = await conn.query('SELECT * FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [other_id, user_id]);
 		const row2 = await conn.query('SELECT * FROM users_likes WHERE user_id = ? AND user_liked_id = ?', [user_id, other_id]);
 
-		if (row.length != 0 && row2.length != 0)
+		if (row.length != 0 && row2.length != 0 && sendToWebsocket)
 		{
 			const name_user_one = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
 			const name_user_two = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [other_id]);
@@ -1224,7 +1224,7 @@ class Database
 				distance: -1,
 				alreadyLiked: row4.find((element) => element.user_liked_id == row2[i].user_id) ? true : false,
 				alreadyDisliked: row5.find((element) => element.user_disliked_id == row2[i].user_id) ? true : false,
-				matched: await this.#hasMatch(user_id, row2[i].user_id),
+				matched: await this.hasMatch(user_id, row2[i].user_id, false),
 			});
 		}
 		conn.release();
@@ -1348,6 +1348,23 @@ class Database
 		conn.release();
 		conn.end();
 		return ({success: true});
+	}
+
+	async getUserCall(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
+
+		conn.release();
+		conn.end();
+		if (row.length == 0)
+			return (null);
+		return ({
+			pfp: row[0].local_url,
+			name: row2[0].first_name,
+			id: user_id,
+		});
 	}
 }
 

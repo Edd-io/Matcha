@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 10:04:07 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/11 10:40:24 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/11 18:04:59 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,39 +15,57 @@ callInWaiting = [];
 function wsCall (users, content, from, db)
 {
 	if (content.action == 'start')
-		startCall(users, from, content.id);
+		startCall(users, from, content.id, db);
 	else if (content.action == 'accept')
-		acceptCall(users, from, to);
+		acceptCall(users, from, content.id);
+	else if (content.action == 'reject')
+		rejectCall(users, from, content.id);
 	else if (content.action == 'end')
 		endCall(users, from, to);
 	else if (content.action == 'voiceData')
 		sendVoiceData(users, from, to, content.data);
 	else
-		users[from].ws.send(JSON.stringify({ type: 'error', content: 'Invalid action' }));
+		users[from].send({ type: 'error', content: 'Invalid action' });
 
 }
 
-function startCall(users, from, to)
+async function startCall(users, from, to, db)
 {
 	let call = callInWaiting.find(c => c.from == from && c.to == to);
 
 	if (call)
 	{
-		users[from].ws.send(JSON.stringify({ type: 'error', content: 'Call already in progress' }));
+		users[from].send({ type: 'error', content: 'Call already in progress' });
 		return;
 	}
 	if (users[to])
 	{
-		users[to].ws.send(JSON.stringify({ type: 'call', action: 'incoming', from }));
-		users[from].ws.send(JSON.stringify({ type: 'call', action: 'calling', to }));
-		let timeout = setTimeout(() => {
-			users[to].ws.send(JSON.stringify({ type: 'call', action: 'end' }));
-			users[from].ws.send(JSON.stringify({ type: 'call', action: 'end' }));
-		}, 15000);
-		callInWaiting.push({ from, to, timeout });
+		const user1 = await db.getUserCall(from);
+		const user2 = await db.getUserCall(to);
+
+		if (user1 !== null && user2 !== null)
+		{
+			db.hasMatch(from, to, false).then((res) => {
+				if (!res)
+				{
+					users[from].send({ type: 'error', content: 'You can only call a person you matched with' });
+					return;
+				}
+				users[to].send({ type: 'call', action: 'incoming', from, content: {user1, user2} });
+				users[from].send({ type: 'call', action: 'calling', to, content: {user1, user2} });
+				let timeout = setTimeout(() => {
+					users[to].send({ type: 'call', action: 'end' });
+					users[from].send({ type: 'call', action: 'end' });
+					callInWaiting = callInWaiting.filter(c => c.from != from && c.to != to);
+				}, 15000);
+				callInWaiting.push({ from, to, timeout });
+			});
+		}
+		else
+			users[from].send({ type: 'error', content: 'Error getting user' });
 	}
 	else
-		users[from].ws.send(JSON.stringify({ type: 'error', content: 'User not connected' }));
+		users[from].send({ type: 'error', content: 'User not connected' });
 }
 
 function acceptCall(users, from, to)
@@ -56,9 +74,31 @@ function acceptCall(users, from, to)
 
 	if (call)
 	{
+		users[to].send({ type: 'call', action: 'inCall', with: from });
+		users[from].send({ type: 'call', action: 'inCall', with: to });
 		clearTimeout(call.timeout);
-		users[to].ws.send(JSON.stringify({ type: 'call', action: 'inCall', with: from }));
-		users[from].ws.send(JSON.stringify({ type: 'call', action: 'inCall', with: to }));
+	}
+	else
+	{
+		users[to].send({ type: 'error', content: 'Call not found' });
+	}
+}
+
+function rejectCall(users, from, to)
+{
+	console.log('reject with', from, to);
+	let call = callInWaiting.find(c => c.from == to && c.to == from);
+
+	if (call)
+	{
+		users[to].send({ type: 'call', action: 'end' });
+		users[from].send({ type: 'call', action: 'end' });
+		callInWaiting = callInWaiting.filter(c => c.from != to && c.to != from);
+		clearTimeout(call.timeout);
+	}
+	else
+	{
+		users[from].send({ type: 'error', content: 'Call not found' });
 	}
 }
 
@@ -69,8 +109,8 @@ function endCall(users, from, to)
 	if (call)
 	{
 		clearTimeout(call.timeout);
-		users[to].ws.send(JSON.stringify({ type: 'call', action: 'end' }));
-		users[from].ws.send(JSON.stringify({ type: 'call', action: 'end' }));
+		users[to].send({ type: 'call', action: 'end' });
+		users[from].send({ type: 'call', action: 'end' });
 	}
 }
 
@@ -79,7 +119,7 @@ function sendVoiceData(users, from, to, data)
 	let call = callInWaiting.find(c => c.from == from && c.to == to);
 
 	if (call)
-		users[to].ws.send(JSON.stringify({ type: 'call', action: 'voiceData', data }));
+		users[to].send({ type: 'call', action: 'voiceData', data });
 }
 
 module.exports = wsCall;
