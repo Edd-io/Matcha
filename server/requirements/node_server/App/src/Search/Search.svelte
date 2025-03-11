@@ -2,6 +2,7 @@
 	import UserLine from "./UserLine.svelte";
 	import ChooseInterests from "../Register/Choose_interests.svelte";
     import { onMount } from "svelte";
+	import Cross from "../assets/cross.svg";
 
 	let showFilter = false;
 	let selected_interests: number[] = [];
@@ -149,7 +150,9 @@
 			<div class="filter-container">
 				<div class="line">
 					<h2>Filtre</h2>
-					<button class="close-filter-btn" on:click={() => showFilter = false}>X</button>
+					<button class="close-filter-btn" on:click={() => showFilter = false}>
+						<img src="{Cross}" alt="Close filter"/>
+					</button>
 				</div>
 				<div class="line">
 					<label for="age">Âge</label>
@@ -204,7 +207,6 @@
 	main {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
 		height: 100%;
 	}
 
@@ -258,7 +260,7 @@
 		width: 85%;
 		height: 50px;
 		border-radius: 1.1rem;
-		border: 1px solid black;
+		border: 3px solid black;
 		padding: 0 1rem;
 		font-size: 1rem;
 		margin-inline: 1%;
@@ -266,11 +268,12 @@
 	}
 
 	.filter-btn {
-		width: 11%;
+		width: 20%;
 		height: 50px;
 		border-radius: 1.1rem;
-		border: 1px solid black;
+		border: 3px solid black;
 		font-size: 1rem;
+		font-weight: 600;
 		margin-inline: 1%;
 		margin-bottom: 1rem;
 		cursor: pointer;
@@ -310,6 +313,11 @@
 		cursor: pointer;
 	}
 
+	.close-filter-btn img {
+		width: 1rem;
+		filter: invert(1);
+	}
+
 	.line {
 		display: flex;
 		justify-content: space-between;
@@ -320,28 +328,29 @@
 	.input-nbr {
 		height: 2rem;
 		border-radius: 1rem;
-		border: 1px solid black;
+		border: 3px solid black;
 		padding-left: 0.5rem;
 		font-size: 1rem;
+		background-color: #f9f9f9;
 	}
 
 	select {
 		height: 2rem;
 		border-radius: 1rem;
-		border: 1px solid black;
 		padding-left: 0.5rem;
 		font-size: 1rem;
+		border: none;
 	}
 
 	.filter-btn-container {
-		width: 100%;
-		height: 2.5rem;
-		border-radius: 1rem;
-		border: 1px solid black;
-		background-color: #2cb637;
 		color: white;
-		font-size: 1rem;
+		padding: 10px 20px;
+		border-radius: 2rem;
+		background-color: #15902F;
 		cursor: pointer;
+		border: none;
+		font-weight: 600;
+		border: none;
 	}
 
 </style>

@@ -48,7 +48,7 @@
 </script>
 
 <main>
-	<input id="search-input" placeholder="Rechercher..." />
+	<input type="text" placeholder="Rechercher..." class="search-input" >
 	<div class="list-user">
 		{#key counter}
 			{#each userList as user}
@@ -103,17 +103,15 @@
 		border: none;
 		text-align: left;
 	}
-	#search-input {
-		width: 90%;
-		height: 2rem;
-		margin-inline: 5%;
-		border-radius: 3rem;
-		border: 0.25rem solid #111;
+	.search-input {
+		height: 50px;
+		border-radius: 1.1rem;
+		border: 3px solid black;
+		padding: 0 1rem;
+		font-size: 1rem;
+		margin-inline: 1%;
+		margin-bottom: 1rem;
 		padding-inline: 1rem;
-		margin-block: 1rem;
-	}
-	#search-input:focus {
-		outline: none;
 	}
 	.list-user {
 		width: 100%;

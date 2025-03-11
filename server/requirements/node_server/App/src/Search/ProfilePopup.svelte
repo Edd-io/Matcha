@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
 	import positionLogo from "../assets/position.svg";
 	import ScrollProfile from "../Main/Scroll-profile.svelte";
+	import Cross from "../assets/cross.svg";
 
 	export let userId: number;
 	export let showProfilePopup: boolean;
@@ -63,7 +64,9 @@
 				{:else}
 					<p>Profil de {user.name}</p>
 				{/if}
-				<button class="close-profile-popup-btn" on:click={() => showProfilePopup = false}>X</button>
+				<button class="close-profile-popup-btn" on:click={() => showProfilePopup = false}>
+					<img src="{Cross}" alt="Close filter"/>
+				</button>
 			</div>
 			<div class='photos-container'>
 				<div class="photo">
@@ -130,6 +133,11 @@
 		height: 2rem;
 		cursor: pointer;
 		font-size: 1.5rem;
+	}
+
+	.close-profile-popup-btn img {
+		width: 1rem;
+		filter: invert(1);
 	}
 
 	.zone-pass {

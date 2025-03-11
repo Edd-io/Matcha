@@ -206,8 +206,8 @@
 					{#if lstPhotos[i] !== ""}
 						<img src={lstPhotos[i]} alt="Pfp 1" />
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
-						<div class="test" aria-label='Remove photo' role="button" tabindex="0" on:click={(e) => removePhoto(i, e)}>
-							<img src={crossLogo} alt="Remove"/>
+						<div class="cross-btn" aria-label='Remove photo' role="button" tabindex="0" on:click={(e) => removePhoto(i, e)}>
+							<img id="cross" src={crossLogo} alt="Remove"/>
 						</div>
 					{:else}
 						<p style="color: #A0A0A0; font-size: 2rem">+</p>
@@ -288,8 +288,7 @@
 		resize: none;
 	}
 
-
-	.test{
+	.cross-btn{
 		position: absolute;
 		top: 10px;
 		right: 10px;
@@ -304,9 +303,10 @@
 		z-index: 5;
 	}
 
-    #txt {
-        margin-top: 45px;
-    }
+	#cross{
+		width: 10px;
+		height: 10px;
+	}
 
     .part {
 		display: flex;

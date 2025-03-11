@@ -108,7 +108,7 @@
 		<div class="password">
 			<input class="input-text" type="password" id="password" placeholder="Mot de passe" />
 		</div>
-		<p class="text">Mot de passe oublié ? Clique <button type="button" class="link-button" on:click={passwordForgotten} aria-label="Mot de passe oublié">ici</button></p>
+		<p class="text-forget">Mot de passe oublié ? Clique <button type="button" class="link-button" on:click={passwordForgotten} aria-label="Mot de passe oublié">ici</button></p>
 	</div>
 	<div id="next-button">
 		<NextButton page={0}/>
@@ -119,11 +119,6 @@
 		<div class="popup-overlay" on:click={() => showPopup = false}>
 			<!-- svelte-ignore a11y_no_static_element_interactions -->
 			<div class="popup" on:click|stopPropagation>
-			<button class="close-button" on:click={() => showPopup = false} aria-label="Fermer">
-				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-				<path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-				</svg>
-			</button>
 			<h2>Réinitialisation du mot de passe</h2>
 			<p>Entrez votre adresse email pour recevoir un lien de réinitialisation</p>
 			{#if resetMessage}
@@ -133,6 +128,7 @@
 				<input type="email" id="reset-email" placeholder="Votre email" class="input-text" />
 			</div>
 			<button class="reset-button" on:click={handlePasswordReset}>Envoyer</button>
+			<button class="reset-button" style="color: white; background-color: #111;">Annuler</button>
 			</div>
 		</div>
 	{/if}
@@ -201,90 +197,83 @@
 	}
 
 	.link-button {
-		background-color: rgb(213, 221, 211);
-		padding: 0.2rem;
-		padding-inline: 0.5rem;
-		border-radius: 0.2rem;
 		border: none;
+		border-bottom: 2px solid #2ebc65;
+		background-color: transparent;
 		color: #2ebc65;
 		cursor: pointer;
+		font-size: 1rem;
+	}
+
+	.text-forget {
+		margin-top: 20px;
+		font-size: 1rem;
 	}
 
 	/* Ajouter à la fin du style */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
+	.popup-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		backdrop-filter: blur(5px);
+		border: none;
+		z-index: 10;
+	}
 
-.popup {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  width: 90%;
-  max-width: 400px;
-  position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
+	.popup {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		background-color: white;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 80%;
+		padding: 20px;
+		gap: 20px;
+		border-radius: 2rem;
+		z-index: 11;
+	}
 
-.close-button {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #666;
-}
+	.popup h2 {
+		margin-top: 0;
+		color: #2ebc65;
+	}
 
-.close-button:hover {
-  color: #000;
-}
+	.popup-input {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+	}
 
-.popup h2 {
-  margin-top: 0;
-  color: #2ebc65;
-}
+	.reset-button {
+		color: white;
+		padding: 10px 20px;
+		border-radius: 2rem;
+		cursor: pointer;
+		border: none;
+		font-weight: 600;
+		background-color: #2ebc65;
+	}
 
-.popup-input {
-  margin: 1.5rem 0;
-}
+	.reset-message {
+		padding: 0.5rem;
+		border-radius: 0.25rem;
+		margin: 0.5rem 0;
+	}
 
-.reset-button {
-  background-color: #2ebc65;
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  font-weight: bold;
-}
+	.success {
+		background-color: rgba(46, 188, 101, 0.1);
+		color: #2ebc65;
+	}
 
-.reset-button:hover {
-  background-color: #259c53;
-}
-
-.reset-message {
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  margin: 0.5rem 0;
-}
-
-.success {
-  background-color: rgba(46, 188, 101, 0.1);
-  color: #2ebc65;
-}
-
-.error {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: red;
-}
+	.error {
+		background-color: rgba(255, 0, 0, 0.1);
+		color: red;
+	}
 
 </style>

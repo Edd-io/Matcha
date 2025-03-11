@@ -247,7 +247,7 @@ p {
 
 .info-profil{
 	width: 94%;
-	border-radius: 2rem;
+	border-radius: 2rem 2rem 0 0;
 	background-color: white;
 	position: fixed;
 	transform: translate(-50%);
