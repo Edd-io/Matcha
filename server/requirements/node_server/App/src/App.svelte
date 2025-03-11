@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Router, Route } from "svelte-routing";
+	import { onMount, mount, unmount } from "svelte";
 	import { writable } from "svelte/store";
 	import Host from './Register/Host.svelte';
 	import Main from './Main/Main.svelte'
@@ -16,6 +17,7 @@
 	import NotificationPage from "./Main/Notification-page.svelte";
 	import Settings from "./Main/Settings.svelte";
 	import Search from "./Search/Search.svelte";
+	import IncomingCall from "./Global/IncomingCall.svelte";
 	import Ws from './websocket/ws';
 
 	let path: string = window.location.pathname;
@@ -54,6 +56,25 @@
 		path = value;
 	});
 
+	onMount(() => {
+		let incomingCallInstance = null;
+
+		function incommingCall()
+		{
+			incomingCallInstance = mount(IncomingCall, {
+				target: document.body,
+			});
+		}
+
+		incommingCall();
+
+		document.addEventListener('incommingCall', incommingCall);
+		return (() => {
+			document.removeEventListener('incommingCall', incommingCall);
+			incomingCallInstance.$destroy();
+		});
+	});
+
 
 	fetch('/get_status_self_connected')
 	.then(res => res.json())
@@ -75,7 +96,7 @@
 		max_age: localStorage.getItem('max_age') ? parseInt(localStorage.getItem('max_age')) : 100,
 		range: localStorage.getItem('range') ? parseInt(localStorage.getItem('range')) : 100,
 		interests: localStorage.getItem('interests') ? JSON.parse(localStorage.getItem('interests')) : [],
-		fame: localStorage.getItem('fame') ? parseInt(localStorage.getItem('fame')) : 1
+		fame: localStorage.getItem('fame') ? parseInt(localStorage.getItem('fame')) : 0
 	};
 
 	let latitude = null;

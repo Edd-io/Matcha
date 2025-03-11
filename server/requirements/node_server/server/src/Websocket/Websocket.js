@@ -3,16 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/07 15:41:27 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/11 10:35:54 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const Debug = require('../Debug');
 const wsMessage = require('./typeRequest/message');
 const wsMessageSeen = require('./typeRequest/messageSeen');
+const wsCall = require('./typeRequest/wsCall');
 const users = [];
 
 class Websocket
@@ -54,6 +55,8 @@ class Websocket
 				wsMessageSeen(this.id, json.to, this.db);
 			else if (json.type == 'seen_notifs')
 				this.db.seenNotifs(this.id);
+			else if (json.type == 'call')
+				wsCall(users, json.content, this.id, this.db);
 			else
 			{
 				Debug.errorWebsocket("Invalid type", json.type);

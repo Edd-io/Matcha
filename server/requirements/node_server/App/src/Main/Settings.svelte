@@ -245,7 +245,7 @@
 		</div>
 
 		<div class="input-place">
-			<label for="Localisation">Localisation</label>
+			<label for="Localisation">Localisation (Temporaire)</label>
 			<div class="popis">
 				<p>Lon</p>
 				<input class="input-text" type="number" id="location-lon" name="Localisation" value={location.lon}>

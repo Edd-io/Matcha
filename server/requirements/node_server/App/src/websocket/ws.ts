@@ -6,9 +6,11 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:03:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/26 08:34:21 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/11 10:27:33 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+import { callFunctions } from "./callFunctions.ts";
 
 class Ws
 {
@@ -41,6 +43,8 @@ class Ws
 				customEvent = new CustomEvent("newNotification", {detail: {content: data.content}});
 			else if (data.type === "ban")
 				globalThis.banned.set(true);
+			else if (data.type === "call")
+				callFunctions(data);
 			if (customEvent)
 				document.dispatchEvent(customEvent);
 
@@ -60,6 +64,11 @@ class Ws
 	send(message: any)
 	{
 		this.socket.send(message);
+	}
+
+	startCall(id: number)
+	{
+		this.socket.send(JSON.stringify({type: "call", content: {action: "start", id: id}}));
 	}
 }
 

@@ -53,10 +53,11 @@
 
 		return () => {
 			document.removeEventListener('newMessage', newMessage)
-ex		};
+		};
 	})
 
-	function slideHorizontal(node) {
+	function slideHorizontal(node)
+	{
 		const	delay = 0, duration = 500, easing = cubicOut;
 		const	style = getComputedStyle(node);
 		let		width = parseFloat(style.width);
@@ -123,6 +124,15 @@ ex		};
 			(inputMessage as HTMLInputElement).value = message.slice(0, 1000);
 		}
 	}
+
+	function startCall()
+	{
+		const ws = globalThis.ws;
+
+		if (!confirm('Appeler ' + user.name + ' ?'))
+			return;
+		ws.startCall(user.id);
+	}
 </script>
 
 <main in:slideHorizontal out:slideHorizontal>
@@ -142,9 +152,14 @@ ex		};
 			<p>{user.name}</p>
 			<p style="color: #4e4e4e; margin-left: 1rem; font-size: 0.9rem">{lastConnection}</p>
 		</div>
-		<button id="testtt" class="no-button-style" on:click={() => options = !options} aria-label="Options">	
-			<img src={threeDotsIcon} alt="Options" />
-		</button>
+		<div style="display: flex; gap: 1rem; align-items: center;">
+			<button class="no-button-style" aria-label="Appeler" on:click={startCall}>
+				<i class="fa-solid fa-phone"></i>
+			</button>
+			<button id="testtt" class="no-button-style" on:click={() => options = !options} aria-label="Options">	
+				<img src={threeDotsIcon} alt="Options" />
+			</button>
+		</div>
 		{#if options}
 			<div class="options">
 				<button class="no-button-style" on:click={() => {}}>
@@ -294,5 +309,9 @@ ex		};
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+	i {
+		width: 1.5rem;
+		height: 1.5rem;
 	}
 </style>
