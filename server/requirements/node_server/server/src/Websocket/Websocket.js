@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/11 10:35:54 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/12 09:00:36 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,13 @@ class Websocket
 	{
 		let	json;
 
-		try {
+		// try {
+			const isBinary = Buffer.isBuffer(message) || message instanceof Uint8Array;
+			if (isBinary)
+			{
+				wsCall(users, { action: "voiceData", data: message }, this.id);
+				return;
+			}
 			json = JSON.parse(message);
 			if (json.type == 'message')
 				wsMessage(users, json.content, this.id, json.to, this.db);
@@ -63,11 +69,11 @@ class Websocket
 				this.send({type: 'error', content: 'Invalid type'});
 				return;
 			}
-		} catch (e) {
-			Debug.errorWebsocket("Invalid JSON", e.message);
-			this.send({type: 'error', content: 'Invalid JSON'});
-			return;
-		}
+		// } catch (e) {
+		// 	Debug.errorWebsocket("Invalid JSON", e.message);
+		// 	this.send({type: 'error', content: 'Invalid JSON'});
+		// 	return;
+		// }
 		Debug.logWebsocket(json);
 	}
 

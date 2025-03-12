@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 10:04:07 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/11 18:04:59 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/12 09:01:04 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ function wsCall (users, content, from, db)
 	else if (content.action == 'end')
 		endCall(users, from, to);
 	else if (content.action == 'voiceData')
-		sendVoiceData(users, from, to, content.data);
+		sendVoiceData(users, content.data, from);
 	else
 		users[from].send({ type: 'error', content: 'Invalid action' });
 
@@ -114,10 +114,19 @@ function endCall(users, from, to)
 	}
 }
 
-function sendVoiceData(users, from, to, data)
+function sendVoiceData(users, data, from)
 {
-	let call = callInWaiting.find(c => c.from == from && c.to == to);
+	let to = callInWaiting.find(c => c.from == from || c.to == from);
 
+	if (!to)
+	{
+		users[from].send({ type: 'error', content: 'You are not in a call' });
+		return;
+	}
+	if (to.to == from)
+		to = to.from;
+	else
+		to = to.to;
 	if (call)
 		users[to].send({ type: 'call', action: 'voiceData', data });
 }

@@ -61,8 +61,6 @@
 
 		function incommingCall(e: any)
 		{
-			console.log("Incoming calldsadasdsadsa");
-			console.log('Detail: ', e.detail);
 			incomingCallInstance = mount(IncomingCall, {
 				target: document.body,
 				props: {
@@ -73,20 +71,36 @@
 			});
 		}
 
+		function calling(e: any)
+		{
+			incomingCallInstance = mount(IncomingCall, {
+				target: document.body,
+				props: {
+					user: e.detail.user1,
+					user2: e.detail.user2,
+					calling: true,
+				}
+			});
+		}
+
 		function endCall()
 		{
-			console.log("Ending call");
-			unmount(incomingCallInstance);
+			if (incomingCallInstance)
+				unmount(incomingCallInstance);
+			if (incomingCallInstance)
+				unmount(incomingCallInstance);
 			incomingCallInstance = null;
 		}
 
 		console.log("Adding event listener");
 
 		window.addEventListener('incomingCall', incommingCall);
+		window.addEventListener('calling', calling);
 		window.addEventListener('endCall', endCall);
 		return (() => {
 			console.log("Removing event listener");
 			window.removeEventListener('incomingCall', incommingCall);
+			window.removeEventListener('calling', calling);
 			window.removeEventListener('endCall', endCall);
 			incomingCallInstance.$destroy();
 		});
