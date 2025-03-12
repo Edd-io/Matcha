@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/12 09:00:36 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/12 15:00:03 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ class Websocket
 
 		ws.on('message', (message) => this.onMessage(message));
 		ws.on('close', () => this.onClose(ws));
-
-		ws.send('Connected to websocket. Welcome !');
 	}
 
 	onClose(ws)
@@ -48,13 +46,19 @@ class Websocket
 		let	json;
 
 		// try {
-			const isBinary = Buffer.isBuffer(message) || message instanceof Uint8Array;
-			if (isBinary)
+			if (typeof message === 'string')
+				json = JSON.parse(message);
+			else if (message instanceof Buffer)
 			{
-				wsCall(users, { action: "voiceData", data: message }, this.id);
-				return;
+				const strMessage = message.toString('utf8');
+
+				if (strMessage.startsWith('{'))
+					json = JSON.parse(strMessage);
+				else {
+					wsCall(users, { action: "voiceData", data: message }, this.id, this.db);
+					return;
+				}
 			}
-			json = JSON.parse(message);
 			if (json.type == 'message')
 				wsMessage(users, json.content, this.id, json.to, this.db);
 			else if (json.type == 'message_seen')

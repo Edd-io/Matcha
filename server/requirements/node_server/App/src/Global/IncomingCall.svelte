@@ -7,11 +7,9 @@
     export let calling: boolean = false;
 
     let inProgress: boolean = false;
-    let finished: boolean = false;
 	let callTime: number = 0;
 	let intervalCallTime: any = null;
 	let mediaRecorder: any = null;
-	let audioChunks: any = [];
 
 	onMount(() => {
 		function inCall()
@@ -65,17 +63,32 @@
 	{
 		const ws = globalThis.ws;
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-		mediaRecorder = new MediaRecorder(stream, {
-			mimeType: 'audio/webm;codecs=opus'
-		});
-
-		mediaRecorder.ondataavailable = (e) => {
-			if (e.data.size > 0)
-				ws.send(e.data);
+		
+		const options = {
+			mimeType: 'audio/webm;codecs=opus',
+			audioBitsPerSecond: 128000
 		};
-		mediaRecorder.start(100);
+		if (!MediaRecorder.isTypeSupported(options.mimeType))
+			options.mimeType = '';
+		
+		mediaRecorder = new MediaRecorder(stream, options);
+		
+		mediaRecorder.ondataavailable = async (e) => {
+			if (e.data.size > 0) {
+				try {
+					const arrayBuffer = await e.data.arrayBuffer();
+					ws.send(arrayBuffer);
+				} catch (error) {
+					console.error("Erreur d'envoi audio:", error);
+				}
+			}
+		};
+		mediaRecorder.start(50);
+		mediaRecorder.onerror = (event) => {
+			console.error("Erreur d'enregistrement:", event);
+		};
 	}
+
 
 	function stopRecording()
 	{
