@@ -255,7 +255,7 @@ p {
 	z-index: 2;
 	transition: bottom 0.5s;
 	padding-bottom: 20px;
-	max-width: 60rem;
+	max-width: 38rem;
 }
 
 .info-profil p {

@@ -308,14 +308,6 @@
 		height: 10px;
 	}
 
-    .part {
-		display: flex;
-		flex-wrap: wrap;
-		width: 90%;
-        margin-top: 40px;
-		margin-inline: auto;
-	}
-
     .no-style-button {
 		background: none;
 		border: none;

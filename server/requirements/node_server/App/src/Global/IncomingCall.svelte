@@ -8,10 +8,10 @@
 <main>
 	<div id='popup'>
 		<div class="pfp-call">
-			<div style="display: flex; flex-direction: column; align-items: center;">
+			<!-- <div style="display: flex; flex-direction: column; align-items: center;">
 				<img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" class="avatar">
 				<p>{name1}</p>
-			</div>
+			</div> -->
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<img src="https://www.w3schools.com/howto/img_avatar.png" alt="Avatar" class="avatar">
 				<p>{name2}</p>
@@ -54,7 +54,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		top: 25vh;
-		border-radius: 1rem;
+		border-radius: 2rem;
 		max-width: 50rem;
 		max-height: 50rem;
 		display: flex;

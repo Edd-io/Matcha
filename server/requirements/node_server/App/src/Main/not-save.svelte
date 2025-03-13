@@ -36,7 +36,7 @@
         width: 80%;
         transform: translate(-50%, 0);
         left: 50%;
-        bottom: 5%;
+        bottom: 10%;
         border-radius: 1rem;
         padding-inline: 1rem;
         background-color: #111111;

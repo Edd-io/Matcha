@@ -66,7 +66,7 @@
 			});
 		}
 
-		incommingCall();
+		// incommingCall();
 
 		document.addEventListener('incommingCall', incommingCall);
 		return (() => {
