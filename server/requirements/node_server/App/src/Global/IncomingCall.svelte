@@ -1,19 +1,19 @@
 <script lang='ts'>
-    import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 
 	export let user: any;
 	export let user2: any;
 	export let incomming: boolean = false;
-    export let calling: boolean = false;
+	export let calling: boolean = false;
 
-    let inProgress: boolean = false;
+	let inProgress: boolean = false;
 	let callTime: number = 0;
 	let intervalCallTime: any = null;
 	let mediaRecorder: any = null;
+	let inCallHandler: any;
 
 	onMount(() => {
-		function inCall()
-		{
+		inCallHandler = () => {
 			incomming = false;
 			calling = false;
 			inProgress = true;
@@ -23,12 +23,12 @@
 			startRecording();
 		}
 
-		window.addEventListener('inCall', inCall);
+		window.addEventListener('inCall', inCallHandler);
 		return (() => {
+			window.removeEventListener('inCall', inCallHandler);
+			endCall();
 			if (intervalCallTime)
 				clearInterval(intervalCallTime);
-			window.removeEventListener('inCall', inCall);
-			stopRecording();
 		});
 	});
 
@@ -87,15 +87,30 @@
 		mediaRecorder.onerror = (event) => {
 			console.error("Erreur d'enregistrement:", event);
 		};
+		mediaRecorder.onstop = () => {
+			console.log("Recording stopped");
+		};
 	}
 
 
 	function stopRecording()
 	{
-		if (mediaRecorder)
+		if (mediaRecorder) {
 			mediaRecorder.stop();
+			mediaRecorder.stream.getTracks().forEach(track => {
+				track.stop();
+				track.enabled = false;
+			});
+			mediaRecorder = null;
+		}
 	}
 
+	function endCall()
+	{
+		stopRecording();
+		inProgress = false;
+		callTime = 0;
+	}
 </script>
 
 <main>
