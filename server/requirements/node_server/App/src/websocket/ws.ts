@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ws.ts                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:03:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/11 10:27:33 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/12 16:41:20 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,12 @@ import { callFunctions } from "./callFunctions.ts";
 
 class Ws
 {
-	private socket: any;
+	socket: WebSocket;
 
 	constructor()
 	{
 		this.socket = new WebSocket("/ws");
+		this.socket.binaryType = "arraybuffer";
 
 		this.socket.onopen = function()
 		{
@@ -31,10 +32,16 @@ class Ws
 			let data: any = null;
 
 			console.log("Message received: " + event.data);
+			if (event.data instanceof ArrayBuffer)
+			{
+				callFunctions({action: "voiceData", data: event.data});
+				return;
+			}
 			try {
 				data = JSON.parse(event.data);
 			}
 			catch (e) {
+				console.error("Error parsing JSON:", e);
 				return;
 			}
 			if (data.type === "message")

@@ -59,18 +59,39 @@
 	onMount(() => {
 		let incomingCallInstance = null;
 
-		function incommingCall()
+		function incommingCall(e: any)
 		{
 			incomingCallInstance = mount(IncomingCall, {
 				target: document.body,
+				props: {
+					user: e.detail.user1,
+					user2: e.detail.user2,
+					incomming: true,
+				}
 			});
 		}
 
 		// incommingCall();
 
-		document.addEventListener('incommingCall', incommingCall);
+		function endCall()
+		{
+			if (incomingCallInstance)
+				unmount(incomingCallInstance);
+			if (incomingCallInstance)
+				unmount(incomingCallInstance);
+			incomingCallInstance = null;
+		}
+
+		console.log("Adding event listener");
+
+		window.addEventListener('incomingCall', incommingCall);
+		window.addEventListener('calling', calling);
+		window.addEventListener('endCall', endCall);
 		return (() => {
-			document.removeEventListener('incommingCall', incommingCall);
+			console.log("Removing event listener");
+			window.removeEventListener('incomingCall', incommingCall);
+			window.removeEventListener('calling', calling);
+			window.removeEventListener('endCall', endCall);
 			incomingCallInstance.$destroy();
 		});
 	});

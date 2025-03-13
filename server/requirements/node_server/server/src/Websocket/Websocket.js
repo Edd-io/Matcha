@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/11 10:35:54 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/12 15:00:03 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,6 @@ class Websocket
 
 		ws.on('message', (message) => this.onMessage(message));
 		ws.on('close', () => this.onClose(ws));
-
-		ws.send('Connected to websocket. Welcome !');
 	}
 
 	onClose(ws)
@@ -47,8 +45,20 @@ class Websocket
 	{
 		let	json;
 
-		try {
-			json = JSON.parse(message);
+		// try {
+			if (typeof message === 'string')
+				json = JSON.parse(message);
+			else if (message instanceof Buffer)
+			{
+				const strMessage = message.toString('utf8');
+
+				if (strMessage.startsWith('{'))
+					json = JSON.parse(strMessage);
+				else {
+					wsCall(users, { action: "voiceData", data: message }, this.id, this.db);
+					return;
+				}
+			}
 			if (json.type == 'message')
 				wsMessage(users, json.content, this.id, json.to, this.db);
 			else if (json.type == 'message_seen')
@@ -63,11 +73,11 @@ class Websocket
 				this.send({type: 'error', content: 'Invalid type'});
 				return;
 			}
-		} catch (e) {
-			Debug.errorWebsocket("Invalid JSON", e.message);
-			this.send({type: 'error', content: 'Invalid JSON'});
-			return;
-		}
+		// } catch (e) {
+		// 	Debug.errorWebsocket("Invalid JSON", e.message);
+		// 	this.send({type: 'error', content: 'Invalid JSON'});
+		// 	return;
+		// }
 		Debug.logWebsocket(json);
 	}
 
