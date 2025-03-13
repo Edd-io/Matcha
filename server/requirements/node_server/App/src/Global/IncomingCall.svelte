@@ -169,7 +169,7 @@
 		left: 50%;
 		transform: translateX(-50%);
 		top: 25vh;
-		border-radius: 1rem;
+		border-radius: 2rem;
 		max-width: 50rem;
 		max-height: 50rem;
 		display: flex;

@@ -71,17 +71,7 @@
 			});
 		}
 
-		function calling(e: any)
-		{
-			incomingCallInstance = mount(IncomingCall, {
-				target: document.body,
-				props: {
-					user: e.detail.user1,
-					user2: e.detail.user2,
-					calling: true,
-				}
-			});
-		}
+		// incommingCall();
 
 		function endCall()
 		{
