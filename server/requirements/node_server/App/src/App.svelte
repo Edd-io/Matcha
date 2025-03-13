@@ -71,12 +71,20 @@
 			});
 		}
 
-		// incommingCall();
+		function calling(e: any)
+		{
+			incomingCallInstance = mount(IncomingCall, {
+				target: document.body,
+				props: {
+					user: e.detail.user1,
+					user2: e.detail.user2,
+					calling: true,
+				}
+			});
+		}
 
 		function endCall()
 		{
-			if (incomingCallInstance)
-				unmount(incomingCallInstance);
 			if (incomingCallInstance)
 				unmount(incomingCallInstance);
 			incomingCallInstance = null;
