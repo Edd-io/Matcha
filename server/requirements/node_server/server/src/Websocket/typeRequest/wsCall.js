@@ -3,34 +3,50 @@
 /*                                                        :::      ::::::::   */
 /*   wsCall.js                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 10:04:07 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/12 18:01:29 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/13 09:18:44 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const { time } = require("console");
 
 callInWaiting = [];
+usersOcupied = [];
 
 function wsCall (users, content, from, db)
 {
-	if (content.action == 'start')
-		startCall(users, from, content.id, db);
-	else if (content.action == 'accept')
-		acceptCall(users, from);
-	else if (content.action == 'reject')
-		rejectCall(users, from);
-	else if (content.action == 'end')
-		endCall(users, from);
-	else if (content.action == 'voiceData')
-		sendVoiceData(users, content.data, from);
-	else
-		users[from].send({ type: 'error', content: 'Invalid action' });
+	db.isBlockedUser(from, content.id).then(async (res) => {
+		if (res)
+		{
+			users[from].send({ type: 'error', content: 'You can\'t contact a blocked user' });
+			return;
+		}
+		if (content.action == 'start')
+		{
+			if (await db.hasMatch(from, content.id, false) === false)
+			{
+				users[from].send({ type: 'error', content: 'You can only contact a person you matched with' });
+				return;
+			}
+			startCall(users, from, content.id, db);
+		}
+		else if (content.action == 'accept')
+			acceptCall(users, from);
+		else if (content.action == 'reject')
+			rejectCall(users, from);
+		else if (content.action == 'end')
+			endCall(users, from);
+		else if (content.action == 'voiceData')
+			sendVoiceData(users, content.data, from);
+		else
+			users[from].send({ type: 'error', content: 'Invalid action' });
+	});
+
 }
 
-function findPartner(users, from)
+function findPartner(from)
 {
 	let call = callInWaiting.find(c => c.from == from || c.to == from);
 
@@ -60,9 +76,12 @@ async function startCall(users, from, to, db)
 				}
 				users[to].send({ type: 'call', action: 'incoming', from, content: {user1, user2} });
 				users[from].send({ type: 'call', action: 'calling', to, content: {user1, user2} });
+				usersOcupied.push(from);
+				usersOcupied.push(to);
 				let timeout = setTimeout(() => {
 					users[to].send({ type: 'call', action: 'end' });
 					users[from].send({ type: 'call', action: 'end' });
+					usersOcupied = usersOcupied.filter(u => u != from && u != to);
 					callInWaiting = callInWaiting.filter(c => c.from != from && c.to != to);
 				}, 15000);
 				callInWaiting.push({ from, to, timeout });
@@ -77,7 +96,7 @@ async function startCall(users, from, to, db)
 
 function acceptCall(users, from)
 {
-	const call = findPartner(users, from);
+	const call = findPartner(from);
 
 	if (call === -1)
 	{
@@ -91,7 +110,7 @@ function acceptCall(users, from)
 
 function rejectCall(users, from)
 {
-	const call = findPartner(users, from);
+	const call = findPartner(from);
 
 	if (call === -1)
 	{
@@ -105,7 +124,7 @@ function rejectCall(users, from)
 
 function endCall(users, from, to)
 {
-	const call = findPartner(users, from);
+	const call = findPartner(from);
 
 	if (call === -1)
 	{
@@ -119,7 +138,7 @@ function endCall(users, from, to)
 
 function sendVoiceData(users, data, from)
 {
-	const call = findPartner(users, from);
+	const call = findPartner(from);
 
 	if (call === -1)
 		return;

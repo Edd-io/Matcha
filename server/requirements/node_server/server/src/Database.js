@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/11 17:20:58 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/13 09:13:36 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1365,6 +1365,16 @@ class Database
 			name: row2[0].first_name,
 			id: user_id,
 		});
+	}
+
+	async isBlockedUser(user_id, other_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT * FROM users_blocked WHERE (user_id = ? AND user_blocked_id = ?) OR (user_id = ? AND user_blocked_id = ?)', [user_id, other_id, other_id, user_id]);
+
+		conn.release();
+		conn.end();
+		return (row.length != 0);
 	}
 }
 

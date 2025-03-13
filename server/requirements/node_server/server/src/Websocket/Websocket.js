@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/12 15:00:03 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/13 13:10:18 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ class Websocket
 
 	onClose(ws)
 	{
-		users.splice(users.indexOf(this), 1);
+		users[this.id] = null;
 		Debug.closeConnection(ws);
 		this.db.userDisconnected(this.id);
 	}

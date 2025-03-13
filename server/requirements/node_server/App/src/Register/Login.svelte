@@ -4,7 +4,7 @@
 	import { onMount } from 'svelte';
 	import { navigate } from 'svelte-routing';
 
-	let err = false;
+	let err: boolean | string = false;
 	let showPopup = false;
 	let resetMessage = '';
 	let resetSuccess = false;
@@ -39,6 +39,10 @@
 			else
 			{
 				err = true;
+				if (data.error === 'User already connected')
+					err = 'Vous êtes déjà connecté';
+				else
+					err = 'Email ou mot de passe incorrect';
 				console.log('Error:', data);
 			}
 		})
@@ -47,7 +51,8 @@
 		});
 	}
 
-	function handlePasswordReset() {
+	function handlePasswordReset()
+	{
 		const emailInput = document.querySelector('#reset-email');
 		const email = emailInput.value.trim();
 		
@@ -100,7 +105,7 @@
 	<div class="main">
 		<p class="text" id="txt">Heureux de vous revoir ! Connectez-vous dès maintenant.</p>
 		{#if err}
-			<p>Email ou mot de passe incorrect</p>
+			<p>{err}</p>
 		{/if}
 		<div class="login">
 			<input class="input-text" style='margin-top: 70px;' id="email" type="text" placeholder="Email" />

@@ -40,7 +40,8 @@
 	<div class="user-info">
 		<p class='name'>{userInfo.first_name} {userInfo.last_name}</p>
 		<p class='age'>{userInfo.age} ans</p>
-		<p class='data'>Fame: {userInfo.fame}% | Distance: {distance}</p>
+		<p class='data'>Fame: {userInfo.fame}%</p>
+		<p class='data'>Distance: {distance}</p>
 	</div>
 	{#if userInfo.alreadyLiked}
 		<button class='see-profile-btn' style="background-color: #2cb637;" on:click={removeReaction}>Déjà liké</button>
@@ -99,7 +100,8 @@
 	}
 
 	.data {
-		font-size: 1rem;
+		font-size: 0.8rem;
+		color: rgb(37, 37, 37);
 	}
 
 </style>

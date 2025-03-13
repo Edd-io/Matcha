@@ -58,6 +58,9 @@ class PostRequest
 				bcrypt.compare(req.body.email + req.body.password, data.password, (err, result) => {
 					if (result)
 					{
+						console.log(usersWs[data.id]);
+						if (usersWs[data.id])
+							return (res.send(JSON.stringify({error: "User already connected"})));
 						if (data.banned)
 							return (res.send(JSON.stringify({error: "You has been banned"})));
 						req.session.info = {logged: true, id: data.id};
