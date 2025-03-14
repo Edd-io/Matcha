@@ -133,6 +133,49 @@
 			return;
 		ws.startCall(user.id);
 	}
+
+	async function reportUser()
+	{
+		try {
+			const res = await fetch('/report_user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({report_id: user.id})
+			});
+			const data = await res.json();
+			if (data.error)
+				alert(data.error);
+			else
+				alert('Utilisateur signalé');
+		} catch (e) {
+			alert('Erreur lors du signalement');
+		}
+	}
+
+	async function blockUser()
+	{
+		try {
+			const res = await fetch('/block_user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({block_id: user.id})
+			});
+			const data = await res.json();
+			if (data.error)
+				alert(data.error);
+			else
+			{
+				alert('Utilisateur bloqué');
+				chatOpened = false;
+			}
+		} catch (e) {
+			alert('Erreur lors du blocage');
+		}
+	}
 </script>
 
 <main in:slideHorizontal out:slideHorizontal>
@@ -162,10 +205,10 @@
 		</div>
 		{#if options}
 			<div class="options">
-				<button class="no-button-style" on:click={() => {}}>
+				<button class="no-button-style" on:click={() => reportUser()}>
 					Signaler
 				</button>
-				<button class="no-button-style" on:click={() => {}}>
+				<button class="no-button-style" on:click={() => blockUser()}>
 					Bloquer
 				</button>
 			</div>

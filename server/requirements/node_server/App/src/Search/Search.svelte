@@ -33,7 +33,7 @@
 	async function get_users()
 	{
 		try {
-			const response = await fetch('get_list_users');
+			const response = await fetch('/get_list_users');
 			const data = await response.json();
 			lstUsers = data;
 			lstUsersSorted = lstUsers;

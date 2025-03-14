@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/13 09:13:36 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/14 14:47:48 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -982,7 +982,7 @@ class Database
 		conn.end();
 		for (let i = 0; i < row.length; i++)
 		{
-			if (row3.find((element) => element.user_id == row[i].user_id || element.user_blocked_id == row[i].user_id))
+			if (row3.find((element) => (element.user_id == row2[i].user_id && element.user_blocked_id == self_id) || (element.user_blocked_id == row2[i].user_id && element.user_id == self_id)))
 				continue;
 			if (row[i].location)
 			{
@@ -1210,7 +1210,7 @@ class Database
 		
 		for (let i = 0; i < row2.length; i++)
 		{
-			if (row3.find((element) => element.user_id == row2[i].user_id || element.user_blocked_id == row2[i].user_id))
+			if (row3.find((element) => (element.user_id == row2[i].user_id && element.user_blocked_id == user_id) || (element.user_blocked_id == row2[i].user_id && element.user_id == user_id)))
 				continue;
 			usersList.push({
 				first_name: row2[i].first_name,
@@ -1232,7 +1232,7 @@ class Database
 		return (usersList);
 	}
 
-	async getUserProfile(user_id)
+	async getUserProfile(user_id, self_id)
 	{
 		const fameRatingCalc = async (user_id) => {
 			const conn = await this.pool.getConnection();
@@ -1254,6 +1254,8 @@ class Database
 			return (data.error ? null : data);
 		}
 
+		if (await this.isBlockedUser(user_id, self_id))
+			return ({error: "User blocked"});
 		const conn = await this.pool.getConnection();
 		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
 		const row2 = await conn.query('SELECT * FROM users_tags WHERE user_id = ?', [user_id]);

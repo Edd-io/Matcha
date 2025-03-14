@@ -687,7 +687,7 @@ class PostRequest
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.id !== 'number')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
-		db.getUserProfile(req.body.id).then((data) => res.send(data));
+		db.getUserProfile(req.body.id, req.session.info.id).then((data) => res.send(data));
 	}
 
 	static remove_reaction(req, res, db)
