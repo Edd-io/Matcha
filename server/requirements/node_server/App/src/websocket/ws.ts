@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:03:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/12 16:41:20 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/15 13:48:47 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ class Ws
 			}
 			if (data.type === "message")
 				customEvent = new CustomEvent("newMessage", {detail: {content: data.content, from: data.from}});
+			else if (data.type === "image")
+				customEvent = new CustomEvent("newImage", {detail: {content: data.content, from: data.from, to: data.to}});
 			else if (data.type === "notification")
 				customEvent = new CustomEvent("newNotification", {detail: {content: data.content}});
 			else if (data.type === "ban")

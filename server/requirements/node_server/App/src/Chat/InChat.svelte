@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import threeDotsIcon from '../assets/3-dots.svg';
 	import sendIcon from '../assets/send.svg';
+	import addPhoto from '../assets/add_photo.svg';
     import { cubicOut } from 'svelte/easing';
     import OnlineBtn from '../Main/Online-btn.svelte';
 
@@ -44,7 +45,22 @@
 			}));
 		}
 
+		function newImage(event: any)
+		{
+			const image = event.detail.content;
+			const sendBySelf = event.detail.from !== user.id;
+			writableListMessages.update(value => {
+				value.push({content: image, sendBySelf, isImage: true});
+				return (value);
+			});
+			globalThis.ws.send(JSON.stringify({
+				type: 'message_seen',
+				to: user.id
+			}));
+		}
+
 		document.addEventListener('newMessage', newMessage);
+		document.addEventListener('newImage', newImage);
 		const listMessagesDiv = document.querySelector('.list-messages');
 		getChat();
 		setTimeout(() => {
@@ -53,6 +69,7 @@
 
 		return () => {
 			document.removeEventListener('newMessage', newMessage)
+			document.removeEventListener('newImage', newImage)
 		};
 	})
 
@@ -176,6 +193,31 @@
 			alert('Erreur lors du blocage');
 		}
 	}
+
+	async function sendImage()
+	{
+		const ws = globalThis.ws;
+		const input = document.createElement('input');
+
+		input.type = 'file';
+		input.accept = 'image/*';
+		input.click();
+		input.onchange = async () => {
+			const file = input.files[0];
+			if (!file)
+				return;
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = async () => {
+				const base64 = reader.result as string;
+				ws.send(JSON.stringify({
+					type: 'image',
+					content: base64,
+					to: user.id
+				}));
+			}
+		}
+	}
 </script>
 
 <main in:slideHorizontal out:slideHorizontal>
@@ -216,17 +258,28 @@
 	</div>
 	<div class="list-messages">
 		{#each listMessages as message}
-			<div class="message {message.sendBySelf ? 'self' : 'other'}">
-				<p>{message.content}</p>
-			</div>
+			{#if message.isImage}
+				<div class="message {message.sendBySelf ? 'self' : 'other'}">
+					<img src={message.content} alt={message.content} style="max-width: 100%; max-height: 20rem; margin: 0.5rem; border-radius: 2rem;"/>
+				</div>
+			{:else}
+				<div class="message {message.sendBySelf ? 'self' : 'other'}">
+					<p>{message.content}</p>
+				</div>
+			{/if}
 		{/each}
 	</div>
-	<div class=input-message-container>
-		<input type="text" placeholder="Écris un message..." class="input-message" id='inputMessage' on:keypress={(e) => sendMessage(e)}/>
-		
-		<button class="send-button no-button-style" on:click={(e) => sendMessage({key: 'Enter'})}>
-			<img src={sendIcon} alt="Send" />
+	<div class='bottom'>
+		<button class="send-image-btn" on:click={sendImage} aria-label="Envoyer une image">
+			<img src={addPhoto} alt="Envoyer" />
 		</button>
+		<div class=input-message-container>
+			<input type="text" placeholder="Écris un message..." class="input-message" id='inputMessage' on:keypress={(e) => sendMessage(e)}/>
+			
+			<button class="send-button no-button-style" on:click={(e) => sendMessage({key: 'Enter'})}>
+				<img src={sendIcon} alt="Send" />
+			</button>
+		</div>
 	</div>
 </main>
 
@@ -322,7 +375,6 @@
 	}
 	.input-message-container {
 		width: 90%;
-		margin-inline: 5%;
 		border-radius: 3rem;
 		border: 0.25rem solid #111;
 		margin-block: 1rem;
@@ -356,5 +408,34 @@
 	i {
 		width: 1.5rem;
 		height: 1.5rem;
+	}
+
+	.bottom {
+		display: flex;
+		justify-content: center;
+		flex-direction: row;
+		align-items: center;
+	}
+
+	.bottom .send-image-btn {
+		background-color: transparent;
+		cursor: pointer;
+		width: 4rem;
+		height: 4rem;
+		margin-right: 1rem;
+		display: flex;
+		justify-content: center;
+		flex-direction: row;
+		align-items: center;
+		justify-content: center;
+		border: 0.25rem solid #111;
+		border-radius: 100%;
+		padding: 1.5rem;
+	}
+
+	.bottom .send-image-btn img {
+		width: 2rem;
+		height: 2rem;
+		
 	}
 </style>

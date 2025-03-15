@@ -11,7 +11,7 @@ function base64ToFile(base64String)
 	];
 	const availableChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 	const matches = base64String.match(/^data:(.+);base64,(.+)$/);
-	let file_name = "".concat(...Array.from({length: 60}, () => availableChars.charAt(Math.floor(Math.random() * availableChars.length))));
+	let file_name = "".concat(...Array.from({length: 75}, () => availableChars.charAt(Math.floor(Math.random() * availableChars.length))));
 
 	if (!matches || matches.length !== 3)
 		throw new Error('Chaîne Base64 invalide');

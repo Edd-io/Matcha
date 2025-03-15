@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/14 14:47:48 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/15 12:08:14 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ class Database
 				to_id INT,
 				message TEXT,
 				date DATETIME,
+				is_image BOOLEAN DEFAULT FALSE,
 				FOREIGN KEY(from_id) REFERENCES accounts(id) ON DELETE CASCADE,
 				FOREIGN KEY(to_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
@@ -840,6 +841,7 @@ class Database
 			chat.push({
 				content: row[i].message,
 				sendBySelf: row[i].from_id == from_id,
+				isImage: row[i].is_image,
 			});
 		}
 		return (chat);
@@ -859,6 +861,15 @@ class Database
 			await conn.query('DELETE FROM users_last_message WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', [from_id, to_id, to_id, from_id]);
 			await conn.query('INSERT INTO users_last_message (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
 		}
+		conn.release();
+		conn.end();
+	}
+
+	async sendImage(from_id, to_id, image_name)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('INSERT INTO users_messages (from_id, to_id, message, is_image) VALUES (?, ?, ?, ?)', [from_id, to_id, image_name, true]);
 		conn.release();
 		conn.end();
 	}
