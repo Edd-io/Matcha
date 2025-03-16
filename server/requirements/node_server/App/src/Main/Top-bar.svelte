@@ -40,11 +40,19 @@
 			globalThis.path.unsubscribe();
 		});
 	});
+
+	function returnToHome()
+	{
+		globalThis.last_path = window.location.pathname;
+		globalThis.path.set('/');
+		globalThis.bottomBarCategory.set(0);
+		navigate('/');
+	}
 </script>
 
 <main>
 	<div class='top-bar'>
-		<button class="main-logo" on:click={() => navigate('/')}>
+		<button class="main-logo" on:click={returnToHome}>
 			<img class="matcha-logo" src={matchaLogo} alt="Matcha logo"/>
 			<h1>MATCHA</h1>
 		</button>

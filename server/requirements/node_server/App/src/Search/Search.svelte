@@ -25,6 +25,8 @@
 	let lstUsers = [];
 	let lstUsersSorted = lstUsers;
 	let searchQuery = "";
+	globalThis.path.set('/search');
+	globalThis.last_path = window.location.pathname;
 
 	onMount(() => {
 		get_users();

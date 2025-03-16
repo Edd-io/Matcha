@@ -9,9 +9,9 @@
     import { writable } from "svelte/store";
     let category = null;
 
-	function handleClick(buttonIndex) {
-		category = buttonIndex;
-		localStorage.setItem("category", JSON.stringify(category));
+	function handleClick(buttonIndex)
+	{
+		globalThis?.bottomBarCategory.set(buttonIndex);
 	}
 
 	globalThis.bottomBarCategory = writable(0);

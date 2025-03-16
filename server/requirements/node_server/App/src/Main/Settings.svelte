@@ -18,6 +18,7 @@
 	let codePopup: string = "";
 	let passwordPopup: string = "";
 	let err_popup: string = "";
+	let darkModeEnabled = localStorage.getItem('darkMode') === 'true';
 
 	globalThis.path.set('settings');
 
@@ -265,7 +266,7 @@
 			<label for="dark-mode">Mode sombre</label>
 
 			<label class="switch">
-				<input type="checkbox" on:change={(e) => darkMode(e.target.checked)}>
+				<input type="checkbox" on:change={(e) => darkMode(e.target.checked)} bind:checked={darkModeEnabled}>
 				<span class="slider round"></span>
 			</label>
 		</div>

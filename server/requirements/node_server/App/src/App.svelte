@@ -90,8 +90,7 @@
 			incomingCallInstance = null;
 		}
 
-		console.log("Adding event listener");
-
+		darkMode();
 		window.addEventListener('incomingCall', incommingCall);
 		window.addEventListener('calling', calling);
 		window.addEventListener('endCall', endCall);
@@ -196,6 +195,24 @@
 		{
 			console.warn("Geolocation is not supported by this browser.");
 			getLocationWithIP();
+		}
+	}
+
+	function darkMode()
+	{
+		const enable = localStorage.getItem('darkMode') === 'true';
+
+		if (enable)
+		{
+			document.documentElement.style.setProperty('--background-color', '#111111');
+			document.documentElement.style.setProperty('--text-color', '#ffffff');
+			document.documentElement.style.setProperty('--invert-svg', '1');
+		}
+		else
+		{
+			document.documentElement.style.setProperty('--background-color', '#ffffff');
+			document.documentElement.style.setProperty('--text-color', '#000000');
+			document.documentElement.style.setProperty('--invert-svg', '0');
 		}
 	}
 
