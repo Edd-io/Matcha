@@ -25,36 +25,31 @@
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
+
 		fetch('/get_all_locations')
 		.then(res => res.json())
 		.then(data => {
 			self_data = data.find(e => e.self);
-			for (let i = 0; i < data.length; i++)
-			{
-				try {
-					console.log(data[i]);
-					if (data[i].self)
-					{
-						L.marker([data[i].location.latitude, data[i].location.longitude], {
-							icon: L.divIcon({
-								className: '',
-								html: `<img src="${data[i].pfp}" alt="position" style='width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; transform: translateX(-2.1rem); margin-top: 0.5rem;'/>`
-							})
-						}).addTo(map)
-							.bindPopup(css_marker_info(data[i].name, data[i].age, 'Vous êtes ici', data[i].pfp))
-							.openPopup();
-						continue;
-					}
-					createMarker(
-						data[i].location.latitude,
-						data[i].location.longitude,
-						data[i].name,
-						data[i].age,
-						data[i].pfp
-					);
+			const markers = data.map(user => {
+				if (user.self) {
+					return L.marker([user.location.latitude, user.location.longitude], {
+						icon: L.divIcon({
+							className: '',
+							html: `<img src="${user.pfp}" alt="position" style='width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; transform: translateX(-2.1rem); margin-top: 0.5rem;'/>`
+						})
+					}).bindPopup(css_marker_info(user.name, user.age, 'Vous êtes ici', user.pfp));
 				}
-				catch (e) {}
-			}
+				else
+				{
+					return L.marker([user.location.latitude, user.location.longitude], {
+						icon: L.divIcon({
+							className: '',
+							html: `<img src="${user.pfp}" alt="position" style='width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; transform: translateX(-2.1rem); margin-top: 0.5rem;'/>`
+						})
+					}).bindPopup(css_marker_info(user.name, user.age, haversine([self_data.location.latitude, self_data.location.longitude], [user.location.latitude, user.location.longitude]) + 'km', user.pfp));
+				}
+			});
+			markers.forEach(marker => marker.addTo(map));
 		});
 	});
 

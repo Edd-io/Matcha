@@ -32,6 +32,7 @@
 		{
 			userInfo.alreadyLiked = false;
 			userInfo.alreadyDisliked = false;
+			showPopupRemoveReaction = false;
 		}
 	}
 
@@ -49,12 +50,12 @@
 		<p class='data'>Fame: {userInfo.fame}%</p>
 		<p class='data'>Distance: {distance}</p>
 	</div>
-	{#if userInfo.alreadyLiked}
-		<button class='see-profile-btn' style="background-color: #2cb637;" on:click={openPopupRemoveReaction}>Déjà liké</button>
+	{#if userInfo.matched}
+		<button class='see-profile-btn' style="background-color: #f7b500;" disabled>Match !</button>
 	{:else if userInfo.alreadyDisliked}
 		<button class='see-profile-btn' style="background-color: #c21111;" on:click={openPopupRemoveReaction}>Déjà disliké</button>
-	{:else if userInfo.matched}
-		<button class='see-profile-btn' style="background-color: #f7b500;" disabled>Match !</button>
+	{:else if userInfo.alreadyLiked}
+		<button class='see-profile-btn' style="background-color: #2cb637;" on:click={openPopupRemoveReaction}>Déjà liké</button>
 	{:else}
 		<button class='see-profile-btn' style="background-color: #a4a4a4;" on:click={() => showProfilePopup = true}>Voir le profil</button>
 	{/if}

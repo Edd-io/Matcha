@@ -7,3 +7,4 @@ img_test
 .DS_Store
 package-lock.json
 test
+profil_generator.py

@@ -24,6 +24,7 @@
 	let like = false;
 	let dislike = false;
 	let lastConnection = '';
+	let loading = true;
 
 	onMount(() => {
 		const handleLocationUpdated = () => {
@@ -71,6 +72,7 @@
 
 	function getSwipeUser()
 	{
+		loading = true;
 		fetch('/get_swipe_user', {
 			method: 'POST',
 			headers: {
@@ -84,6 +86,7 @@
 			})
 		}).then(res => res.json())
 		.then(data => {
+			loading = false;
 			if (data.finished)
 			{
 				finished = true;
@@ -124,74 +127,71 @@
 </script>
 
 <main>
-	
-	<!-- <NotificationPage /> -->
-	
-	<!-- <Notification /> -->
-	
 	<div class="main">
-
-		{#key counter}
+		{#if loading}
+			<div class="loading"></div>
+		{:else}
 			{#if showComponent}
 				<ScrollProfile bind:users={user} bind:showComponent={showComponent} getSwipeUser={getSwipeUser} lastConnection={lastConnection} />
 			{/if}
-
-			<div class="photo" class:active={like} class:active2={dislike} class:showProfile={!like && !dislike}>
-				{#if !finished || user}
-					<div class='zone-pass'>
-						<div class="centered">
-							<img src={user?.images ? user?.images[iPhoto] : null} alt="" style="height: 100%; width: 100%; object-fit: cover; border-radius: 2rem;"/>
-						</div>
-					</div>
-					<div class="centered" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
-						<div class="nb-photo">
-							{#each Array(user?.nbPhotos) as _, index}
-								<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
-							{/each}
-						</div>
-					</div>
-					<div class="user-info">
-						<div class="info">
-							<div style="position: relative;">
-								<p id="main-info">{user?.name} • {user?.age}</p>
-								<div class="test">
-									<OnlineBtn user_id={user?.id} bind:lastConnection={lastConnection} />
-								</div>
+			{#key counter}
+				<div class="photo" class:active={like} class:active2={dislike} class:showProfile={!like && !dislike}>
+					{#if !finished || user}
+						<div class='zone-pass'>
+							<div class="centered">
+								<img src={user?.images ? user?.images[iPhoto] : null} alt="" style="height: 100%; width: 100%; object-fit: cover; border-radius: 2rem;"/>
 							</div>
-							<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
-								<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-									<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-								</svg>
+						</div>
+						<div class="centered" on:click={skipPhoto} on:keydown={skipPhoto} role="button" tabindex="0">
+							<div class="nb-photo">
+								{#each Array(user?.nbPhotos) as _, index}
+									<div class={iPhoto === index ? "bar-photo-default" : "bar-photo-selected"}></div>
+								{/each}
+							</div>
+						</div>
+						<div class="user-info">
+							<div class="info">
+								<div style="position: relative;">
+									<p id="main-info">{user?.name} • {user?.age}</p>
+									<div class="test">
+										<OnlineBtn user_id={user?.id} bind:lastConnection={lastConnection} />
+									</div>
+								</div>
+								<button class="open-scroll" on:click={toggleScrollInfo} aria-label='Ouvrir le scroll'>
+									<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+										<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+									</svg>
+								</button>
+							</div>
+							<div class=low-info>
+								<img src={positionLogo} alt="positionLogo"/>
+								<p id="scd-info">{user?.city}, {user?.country}</p>
+							</div>
+						</div>
+						<div class=buttons>
+							<button id="dislike" on:click={() => {
+								like = dislike = false;
+								dislike = true;
+								reactToUser(false);
+							}}>
+								<img src={dislikeLogo} alt="dislikeLogo"/>
+							</button>
+							<button id="like" on:click={() => {
+								like = dislike = false;
+								like = true;
+								reactToUser(true);
+							}}>
+								<img src={likeLogo} alt="likeLogo"/>
 							</button>
 						</div>
-						<div class=low-info>
-							<img src={positionLogo} alt="positionLogo"/>
-							<p id="scd-info">{user?.city}, {user?.country}</p>
+					{:else}
+						<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
+							<p>Aucun profil trouvé avec vos critères</p>
 						</div>
-					</div>
-					<div class=buttons>
-						<button id="dislike" on:click={() => {
-							like = dislike = false;
-							dislike = true;
-							reactToUser(false);
-						}}>
-							<img src={dislikeLogo} alt="dislikeLogo"/>
-						</button>
-						<button id="like" on:click={() => {
-							like = dislike = false;
-							like = true;
-							reactToUser(true);
-						}}>
-							<img src={likeLogo} alt="likeLogo"/>
-						</button>
-					</div>
-				{:else}
-					<div style="display: flex; justify-content: center; align-items: center; height: 100%; width: 100%;">
-						<p>Aucun profil trouvé avec vos critères</p>
-					</div>
-				{/if}
-			</div>
-		{/key}
+					{/if}
+				</div>
+			{/key}
+		{/if}
 	</div>
 </main>
 
@@ -391,5 +391,24 @@
 		background-color: #15902F;
 		color: white;
 		z-index: 5;
+	}
+
+	.loading {
+		margin-top: 2rem;
+		width: 50px;
+		height: 50px;
+		border: 5px solid #87db9f;
+		border-top: 5px solid #006e25;
+		border-radius: 50%;
+		animation: spin 1s ease-in-out infinite;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

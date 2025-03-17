@@ -58,7 +58,6 @@
 		<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 100%; padding-inline: 3.5rem;">
 			<Choose_interests bind:selected_interests={interests}/>
 		</div>
-		<Notsaved />
 </main>
 
 <style>
