@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/15 12:08:14 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/17 16:55:56 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -730,29 +730,31 @@ class Database
 		this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 
 		const conn = await this.pool.getConnection();
+		const user1 = await this.getNameAndPfp(user_id);
+		const user2 = await this.getNameAndPfp(other_id);
 		if (react == true)
 		{
 			console.log("User liked");
 			await conn.query('INSERT INTO users_likes (user_id, user_liked_id) VALUES (?, ?)', [user_id, other_id]);
 			if (await this.hasMatch(user_id, other_id))
 			{
-				Websocket.sendNotification(user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
-				Websocket.sendNotification(other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
-				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png", other_id]);
-				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png", user_id]);
+				Websocket.sendNotification(user_id, `Tu as un nouveau match avec ${user2.name} ! Vas voir ça dans tes messages`, user2.pfp);
+				Websocket.sendNotification(other_id, `Tu as un nouveau match avec ${user.name} ! Vas voir ça dans tes messages`, user.pfp);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [user_id, `Tu as un nouveau match avec ${user2.name} ! Vas voir ça dans tes messages`, "match.png", other_id]);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `Tu as un nouveau match avec ${user1.name} ! Vas voir ça dans tes messages`, "match.png", user_id]);
 				await conn.query('INSERT INTO users_last_message (from_id, to_id, message, system) VALUES (?, ?, ?, ?)', [user_id, other_id, "Commence la conversation !", true]);
 			}
 			else
 			{
 				const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
-				Websocket.sendNotification(other_id, `${name_user[0].first_name} a liké ton profil`, "like.png");
+				Websocket.sendNotification(other_id, `${name_user[0].first_name} a liké ton profil`, user1.pfp);
 				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `${name_user[0].first_name} a liké ton profil`, "seen.png", user_id]);
 			}
 		}
 		else
 		{
 			const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
-			Websocket.sendNotification(other_id, `${name_user[0].first_name} a disliké ton profil`, "dislike.png");
+			Websocket.sendNotification(other_id, `${name_user[0].first_name} a disliké ton profil`, user1.pfp);
 			await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png", user_id]);
 			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
 		}
@@ -1388,6 +1390,20 @@ class Database
 		conn.release();
 		conn.end();
 		return (row.length != 0);
+	}
+
+	async getNameAndPfp(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
+
+		conn.release();
+		conn.end();
+		return ({
+			name: row[0].first_name,
+			pfp: row2[0].local_url,
+		});
 	}
 }
 

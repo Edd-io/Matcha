@@ -19,6 +19,7 @@
 	import Search from "./Search/Search.svelte";
 	import IncomingCall from "./Global/IncomingCall.svelte";
 	import Ws from './websocket/ws';
+	import NotifTel from "./main/Notif-phone.svelte";
 
 	let path: string = window.location.pathname;
 	globalThis.last_path = path;
@@ -37,6 +38,11 @@
 		isConnected = value;
 		if (isConnected)
 		{
+			fetch('/get_status_self_connected')
+			.then(res => res.json())
+			.then(data => {
+				globalThis.self_id = data.id;
+			});
 			ws = new Ws();
 			globalThis.ws = ws;
 			getLocation();
@@ -90,16 +96,31 @@
 			incomingCallInstance = null;
 		}
 
+		function newNotif(e: any)
+		{
+			console.log(e.detail);
+			mount(NotifTel, {
+				target: document.body,
+				props: {
+					title: e.detail.title,
+					message: e.detail.message,
+					image: e.detail.image
+				}
+			});
+		}
+
 		darkMode();
 		window.addEventListener('incomingCall', incommingCall);
 		window.addEventListener('calling', calling);
 		window.addEventListener('endCall', endCall);
+		window.addEventListener('newNotif', newNotif);
 		return (() => {
-			console.log("Removing event listener");
 			window.removeEventListener('incomingCall', incommingCall);
 			window.removeEventListener('calling', calling);
 			window.removeEventListener('endCall', endCall);
-			incomingCallInstance.$destroy();
+			window.removeEventListener('newNotif', newNotif);
+			if (incomingCallInstance)
+				incomingCallInstance.$destroy();
 		});
 	});
 
@@ -108,6 +129,7 @@
 	.then(res => res.json())
 	.then(data => {
 		globalThis.connected.set(data.logged);
+		globalThis.self_id = data.id;
 	});
 
 	window.onerror = (msg, url, lineNo, columnNo, error) =>
@@ -260,8 +282,8 @@
 		height: 100vh;
 		max-height: 100vh;
 		margin: 0 auto;
-		min-width: 600px;
-		min-height: 800px;
+		min-width: 500px;
+		min-height: 600px;
 	}
 
 	.content {

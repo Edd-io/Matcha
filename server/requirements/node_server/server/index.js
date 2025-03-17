@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/08 13:08:43 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/17 16:04:10 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ function init_ws(db)
 	server.on('upgrade', (request, socket, head) => {
 		sessionParser(request, {}, () => {
 			if (!request.session.info || !request.session.info.logged)
-				return (res.send(JSON.stringify({error: "You are not logged in"})));
+				return (request.send(JSON.stringify({error: "You are not logged in"})));
 			wss.handleUpgrade(request, socket, head, (ws) => {
 				wss.emit('connection', ws, request);
 			});

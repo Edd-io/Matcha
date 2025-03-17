@@ -6,28 +6,29 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/15 11:36:35 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/15 14:06:21 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/17 16:30:26 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const base64ToFile = require('../../utils/base64ToFile');
 
-function wsImage(wsUsers, base64Image, from, to, db)
+async function wsImage(wsUsers, base64Image, from, to, db)
 {
 	try {
 		const path_name = base64ToFile(base64Image);
 		const filename = path_name.split('/')[path_name.split('/').length - 1];
-		const json = {
+		let json = {
 			type: 'image',
 			content: filename,
 			from: from,
 			to: to,
 		};
+		wsUsers[from].ws.send(JSON.stringify(json));
 		if (wsUsers[to])
 		{
-			wsUsers[to].ws.send(JSON.stringify(json));
+			const dataUser = await db.getNameAndPfp(from);
+			wsUsers[to].ws.send(JSON.stringify({type: 'image', content: filename, from: from, name: dataUser.name, pfp: dataUser.pfp}));
 		}
-		wsUsers[from].ws.send(JSON.stringify(json));
 		db.sendImage(from, to, filename);
 	}
 	catch (e) {

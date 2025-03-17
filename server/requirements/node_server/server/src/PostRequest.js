@@ -21,7 +21,7 @@ class PostRequest
 	{
 		Debug.log(req);
 		if (req.session.info && req.session.info.logged)
-			res.send(JSON.stringify({logged: true}));
+			res.send(JSON.stringify({logged: true, id: req.session.info.id}));
 		else
 			res.send(JSON.stringify({logged: false}));
 	}

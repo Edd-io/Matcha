@@ -6,10 +6,11 @@
 /*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 11:03:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/15 13:48:47 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/17 17:05:33 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+import { title } from "process";
 import { callFunctions } from "./callFunctions.ts";
 
 class Ws
@@ -45,11 +46,21 @@ class Ws
 				return;
 			}
 			if (data.type === "message")
+			{
 				customEvent = new CustomEvent("newMessage", {detail: {content: data.content, from: data.from}});
+				window.dispatchEvent(new CustomEvent("newNotif", {detail: {title: data.name, message: data.content, image: data.pfp}}));
+			}
 			else if (data.type === "image")
+			{
 				customEvent = new CustomEvent("newImage", {detail: {content: data.content, from: data.from, to: data.to}});
+				if (data.from !== globalThis.self_id)
+					window.dispatchEvent(new CustomEvent("newNotif", {detail: {title: data.name, message: "vous a envoyé une image.", image: data.pfp}}));
+			}
 			else if (data.type === "notification")
+			{
 				customEvent = new CustomEvent("newNotification", {detail: {content: data.content}});
+				window.dispatchEvent(new CustomEvent("newNotif", {detail: {title: "Nouvelle notification", message: data.content.message, image: data.content.image}}));
+			}
 			else if (data.type === "ban")
 				globalThis.banned.set(true);
 			else if (data.type === "call")

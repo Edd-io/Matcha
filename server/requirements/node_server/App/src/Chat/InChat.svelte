@@ -259,8 +259,8 @@
 	<div class="list-messages">
 		{#each listMessages as message}
 			{#if message.isImage}
-				<div class="message {message.sendBySelf ? 'self' : 'other'}">
-					<img src={message.content} alt={message.content} style="max-width: 100%; max-height: 20rem; margin: 0.5rem; border-radius: 2rem;"/>
+				<div class="message {message.sendBySelf ? 'self' : 'other'}" style="padding: 0.5rem;">
+					<img src={message.content} alt={message.content} style="max-width: 100%; max-height: 20rem; border-radius: 2rem;"/>
 				</div>
 			{:else}
 				<div class="message {message.sendBySelf ? 'self' : 'other'}">
@@ -409,7 +409,6 @@
 		width: 1.5rem;
 		height: 1.5rem;
 	}
-
 	.bottom {
 		display: flex;
 		justify-content: center;
