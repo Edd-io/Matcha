@@ -260,6 +260,8 @@
 		height: 100vh;
 		max-height: 100vh;
 		margin: 0 auto;
+		min-width: 600px;
+		min-height: 800px;
 	}
 
 	.content {
