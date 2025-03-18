@@ -24,9 +24,6 @@
 
 	onMount(() => {
 		getUserInfo();
-		return (() => {
-
-		});
 	});
 
 
@@ -75,7 +72,7 @@
 				if (last_email !== mail)
 					showPopup = true;
 				error = "";
-				// show popup here to confirm
+				window.dispatchEvent(new CustomEvent('newNotif', {detail: {title: 'Succès', message: 'Vos informations ont bien été enregistrées !', image: null}}));
 			}
 		});
 	}
@@ -220,7 +217,7 @@
 		
 		<div class="input-place">
 			<label for="date">Date de naissance</label>
-			<input class="input-text" type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value}>
+			<input class="input-text" type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value} style="display: inline-block;">
 		</div>
 
 		<div class="input-place">

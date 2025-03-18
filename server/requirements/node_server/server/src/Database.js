@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Database.js                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/17 16:55:56 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/18 09:56:22 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -1149,8 +1149,6 @@ class Database
 		catch (e) {
 			return ({error: 'Error to hash password'});
 		}
-
-		  
 	}
 
 	async changeMailConfirm(user_id, mail)
