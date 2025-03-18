@@ -19,7 +19,7 @@
 	import Search from "./Search/Search.svelte";
 	import IncomingCall from "./Global/IncomingCall.svelte";
 	import Ws from './websocket/ws';
-	import NotifTel from "./main/Notif-phone.svelte";
+	import NotifTel from "./Main/Notif-phone.svelte";
 
 	let path: string = window.location.pathname;
 	globalThis.last_path = path;
@@ -282,7 +282,7 @@
 		height: 100vh;
 		max-height: 100vh;
 		margin: 0 auto;
-		min-width: 500px;
+		min-width: 400px;
 		min-height: 600px;
 	}
 
