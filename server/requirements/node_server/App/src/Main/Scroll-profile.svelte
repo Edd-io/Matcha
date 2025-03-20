@@ -196,14 +196,16 @@ p {
 	display: flex;
 	flex-direction: column;
 	background-color: white;
-	top: 30%;
-	transform: translateX(8%);
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 	margin-top: 20px;
 	width: 80%;
 	padding: 20px;
 	gap: 20px;
 	border-radius: 2rem;
 	z-index: 11;
+	max-width: 40rem;
 }
 
 .delete-account h2 {
@@ -248,7 +250,6 @@ p {
 .info-profil{
 	width: 94%;
 	border-radius: 2rem 2rem 0 0;
-	background-color: white;
 	position: fixed;
 	transform: translate(-50%);
 	left: 50%;
@@ -258,12 +259,7 @@ p {
 	max-width: 38rem;
 }
 
-.info-profil p {
-	color: #111111;
-}
-
 #main-info-scroll{
-	color: #111111;
 	font-weight: 700;
 	font-size: 2.5rem;
 	margin: 20px;

@@ -57,9 +57,6 @@
 			<button class="login-button" on:click={() => navigate('/login')}>
 				<p>J’ai déjà un compte</p>
 			</button>
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-				<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
-			</svg>
 		</div>
 	</div>
 </main>

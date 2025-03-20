@@ -118,7 +118,7 @@
 
 	.profile-popup {
 		width: 80%;
-		max-width: 50rem;
+		max-width: 40rem;
 		height: 80%;
 		background-color: white;
 		border-radius: 1rem;

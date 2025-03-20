@@ -27,6 +27,18 @@
 	filter: invert(var(--invert-svg));
 }
 
+.info-profil {
+	background-color: var(--background-color);
+}
+
+.info-profil p {
+	color: var(--text-color);
+}
+
+#main-info-scroll{
+	color: var(--text-color);
+}
+
 ::-webkit-scrollbar {
 	width: 8px;
 	height: 8px;
