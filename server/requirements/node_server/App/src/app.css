@@ -2,6 +2,7 @@
 	--text-color: #111111;
 	--background-color: #ffffff;
 	--invert-svg: 0;
+	--invert-invert-svg: 1;
 }
 
 * {
@@ -35,6 +36,18 @@
 	color: var(--text-color);
 }
 
+.container {
+	background-color: var(--background-color);
+}
+
+.min-info img {
+	filter: invert(var(--invert-svg));
+}
+
+.profile-popup {
+	background-color: var(--background-color);
+}
+
 #main-info-scroll{
 	color: var(--text-color);
 }
@@ -44,11 +57,21 @@
 	height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-	background: #111;
+	background: var(--text-color);
 	border-radius: 4px;
 }
 ::-webkit-scrollbar-track {
-	background: white;
+	background: var(--background-color);
+}
+
+main {
+	background-color: var(--background-color);
+	color: var(--text-color);
+}
+
+.main {
+	background-color: var(--background-color);
+	color: var(--text-color);
 }
 
 body {
@@ -62,7 +85,6 @@ body {
 .text {
 	font-size: 1.1rem;
 	font-weight: 600;
-	color: #111111;
 }
 
 .input-text {
@@ -81,7 +103,7 @@ body {
 }
 
 .next-button {
-	background-color: #D9D9D9;
+	/* background-color: #D9D9D9; */
 	border-radius: 1.5rem;
 	padding: 1.3rem;
 	text-decoration: none;
@@ -96,14 +118,13 @@ body {
 }
 
 .next-button svg {
-	color: #111111;
+	/* color: #111111; */
 	transform: scale(2);
 }
 
 .small-text {
 	font-size: 0.9rem;
 	font-weight: 600;
-	color: #111111;
 }
 
 .input-slider {

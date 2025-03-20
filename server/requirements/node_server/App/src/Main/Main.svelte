@@ -164,7 +164,7 @@
 								</button>
 							</div>
 							<div class=low-info>
-								<img src={positionLogo} alt="positionLogo"/>
+								<img src={positionLogo} alt="positionLogo" style="filter: invert(1);"/>
 								<p id="scd-info">{user?.city}, {user?.country}</p>
 							</div>
 						</div>
@@ -371,13 +371,13 @@
 	#scd-info{
 		font-size: 1rem;
 		z-index: 5;
+		color: #fff;
 	}
 
 	.low-info{
 		display: flex;
 		flex-direction: row;
 		gap: 10px;
-		filter: invert(1);
 		z-index: 5;
 	}
 

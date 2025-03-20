@@ -294,10 +294,6 @@
 </main>
 
 <style>
-	/* main {
-		
-	} */
-
 	main {
 		width: 100%;
 		height: 100%;
@@ -351,6 +347,7 @@
 		font-size: 1rem;
 		height: 2.5rem;
 		padding: 0.5rem;
+		color: #111;
 	}
 
 	.bg_container {
@@ -371,16 +368,9 @@
 		bottom: 0;
 		left: 50%;
 		transform: translateX(-50%);
-		background-color: white;
 		border-radius: 2rem 2rem 0 0;
 		padding: 2rem;
 		overflow-y: auto;
-	}
-
-	.container-interests {
-		width: 100%;
-		height: 100%;
-		background-color: rgb(201, 201, 201);
 	}
 
 	h1 {

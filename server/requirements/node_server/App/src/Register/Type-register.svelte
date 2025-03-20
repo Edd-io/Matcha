@@ -99,7 +99,6 @@
 		align-items: center;
 		text-align: center;
 		padding: 20px;
-		color: #111111;
 		width: 100%;
 		max-width: 35rem;
 	}
@@ -148,7 +147,6 @@
 	.small-text {
 		position: absolute;
 		font-size: 0.8rem;
-		color: #111111;
 		bottom: -1.7rem;
 	}
 </style>

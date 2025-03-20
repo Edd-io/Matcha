@@ -145,7 +145,6 @@
 		flex-direction: column;
 		text-align: center;
 		height: 100vh;
-		background-color: white;
 		max-width: 40rem;
 		margin: 0 auto;
 	}
@@ -232,7 +231,7 @@
 		position: absolute;
 		display: flex;
 		flex-direction: column;
-		background-color: white;
+		background-color: var(--background-color);
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);

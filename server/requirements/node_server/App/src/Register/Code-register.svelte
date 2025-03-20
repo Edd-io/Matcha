@@ -82,7 +82,6 @@
 		align-items: center;
 		text-align: center;
 		padding: 20px;
-		color: #111111;
 		width: 100%;
 		max-width: 35rem;
 		

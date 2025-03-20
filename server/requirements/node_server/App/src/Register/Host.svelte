@@ -37,17 +37,17 @@
 
 <main class="main-host">
 	<div class="main-logo">
-		<img class="matcha-logo" src={matchaLogo} alt="Matcha logo"/>
-		<h1>MATCHA</h1>
-		<p>L’amour infusé de simplicité et d’authenticité.</p>
+		<img class="matcha-logo" src={matchaLogo} alt="Matcha logo" style="filter: invert(1);"/>
+		<h1 style="color : #fff">MATCHA</h1>
+		<p style="color : #fff">L’amour infusé de simplicité et d’authenticité.</p>
 	</div>
 	<div class="bottom">
 		<div class="bot">
 			<div class="buttons">
 				<button on:click={redirect} class="create">
-					<p>Créer <br />un compte</p>
+					<p style="color : #111">Créer <br />un compte</p>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-						<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+						<path stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
 					</svg>
 				</button>
 				<button on:click={redirect42}>
@@ -55,7 +55,7 @@
 				</button>
 			</div>
 			<button class="login-button" on:click={() => navigate('/login')}>
-				<p>J’ai déjà un compte</p>
+				<p style="color : #fff">J’ai déjà un compte</p>
 			</button>
 		</div>
 	</div>
@@ -82,7 +82,6 @@
 		flex-direction: column;
 		align-items: center;
 		padding: 20px;
-		color: white;
 	}
 
 	.main-logo h1 {
@@ -119,6 +118,10 @@
 		justify-content: center;
 		align-items: center;
 		text-decoration: none;
+	}
+
+	.buttons svg {
+		filter: invert(var(--invert-svg));
 	}
 
 	.buttons .create {

@@ -118,7 +118,6 @@
 
 	.data {
 		font-size: 0.8rem;
-		color: rgb(37, 37, 37);
 	}
 	
 
@@ -156,6 +155,7 @@
 		font-size: 1.5rem;
 		display: flex;
 		justify-content: center;
+		color: #111;
 	}
 
 	.delete-account p {

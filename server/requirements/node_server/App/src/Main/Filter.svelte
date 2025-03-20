@@ -65,7 +65,6 @@
         position: absolute;
         height: 100vh;
         width: 100vw;
-        background-color: white;
         top: 0;
         z-index: 4;
 		max-width: 40rem;

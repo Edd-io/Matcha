@@ -3,10 +3,12 @@
 	import positionLogo from "../assets/position.svg";
 	import ScrollProfile from "../Main/Scroll-profile.svelte";
 	import Cross from "../assets/cross.svg";
+	import OnlineBtn from "../Main/Online-btn.svelte";
 
 	export let userId: number;
 	export let showProfilePopup: boolean;
-
+	
+	let lastConnection = '';
 	let user = null;
 	let iPhoto = 0;
 	const voyelle = ['a', 'e', 'i', 'o', 'u', 'y'];
@@ -61,7 +63,10 @@
 		<div class="loading"></div>
 	{:else}
 		{#if showComponent}
-			<ScrollProfile bind:users={user} bind:showComponent={showComponent} />
+			<div style="display: none;">
+				<OnlineBtn user_id={user?.id} bind:lastConnection={lastConnection} />
+			</div>
+			<ScrollProfile bind:users={user} bind:showComponent={showComponent} lastConnection={lastConnection} />
 		{/if}
 		<div class="profile-popup">
 			<div style="display: flex; justify-content: space-between;">
@@ -98,7 +103,7 @@
 							</button>
 						</div>
 						<div class=low-info>
-							<img src={positionLogo} alt="positionLogo"/>
+							<img src={positionLogo} alt="positionLogo" style="filter: invert(1);"/>
 							<p id="scd-info">{user?.city}, {user?.country}</p>
 						</div>
 					</div>
@@ -126,7 +131,6 @@
 		width: 80%;
 		max-width: 40rem;
 		height: 80%;
-		background-color: white;
 		border-radius: 1rem;
 		padding: 2rem;
 	}
@@ -244,13 +248,13 @@
 	#scd-info{
 		font-size: 1rem;
 		z-index: 5;
+		color: #fff;
 	}
 
 	.low-info {
 		display: flex;
 		flex-direction: row;
 		gap: 10px;
-		filter: invert(1);
 		z-index: 5;
 		margin-bottom: 2rem;
 	}

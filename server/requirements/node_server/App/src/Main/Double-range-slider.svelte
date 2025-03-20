@@ -111,7 +111,7 @@
 
     .slider-range {
       height: 100%;
-      background: #007bff;
+      background: #14aa34;
       border-radius: 1rem 0px 0px 1rem;
       position: absolute;
     }
@@ -119,7 +119,7 @@
     .slider-button {
       width: 20px;
       height: 20px;
-      background: #007bff;
+      background: #15902F;
       border-radius: 50%;
       position: absolute;
       top: -5px;

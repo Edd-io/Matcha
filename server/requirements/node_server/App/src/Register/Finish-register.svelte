@@ -54,7 +54,6 @@
 		margin-top: 100px;
 		width: 200px;
 		height: 200px;
-		filter: invert(2%);
 	}
 
 	p {

@@ -182,7 +182,7 @@
 		<div class="overlay" on:click={() => showDeletePopup = false}></div>
 		<div class="delete-account">
 			<h2>Supprimer le compte</h2>
-			<p>Vous êtes sur le point de supprimer votre compte. Cette action est irréversible.</p>
+			<p style="color : #111">Vous êtes sur le point de supprimer votre compte. Cette action est irréversible.</p>
 			<button class="btn" style="background-color: #c64141;" on:click={() => {deleteAccount()}}>Supprimer</button>
 			<button class="btn" style="background-color: #111;" on:click={() => showDeletePopup = false}>Annuler</button>
 		</div>
@@ -192,7 +192,7 @@
 		<div class="overlay" on:click={() => showDisconnectPopup = false}></div>
 		<div class="delete-account">
 			<h2>Déconnecter</h2>
-			<p>Vous êtes sur le point de vous déconnecter. Voulez-vous continuer ?</p>
+			<p style="color : #111">Vous êtes sur le point de vous déconnecter. Voulez-vous continuer ?</p>
 			<button class="btn" style="background-color: #c7c7c7; color: #111;" on:click={() => {disconnect()}}>Déconnecter</button>
 			<button class="btn" style="background-color: #111;" on:click={() => showDisconnectPopup = false}>Annuler</button>
 		</div>
@@ -450,6 +450,7 @@
 		font-size: 1.5rem;
 		display: flex;
 		justify-content: center;
+		color: #111;
 	}
 
 	.delete-account p {

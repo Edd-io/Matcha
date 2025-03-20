@@ -67,7 +67,7 @@
 		<div class="overlay" on:click={() => showSignalPopup = false}></div>
 		<div class="delete-account">
 			<h2>Signaler</h2>
-			<p>Vous êtes sur le point de signaler {users.name}, êtes-vous sûr de vouloir le faire ?</p>
+			<p style="color: #111">Vous êtes sur le point de signaler {users.name}, êtes-vous sûr de vouloir le faire ?</p>
 			<button class="btn" style="background-color: #c7c7c7; color: #111;" on:click={() => {reportUser(); showSignalPopup = false}}>Signaler</button>
 			<button class="btn" style="background-color: #111;" on:click={() => showSignalPopup = false}>Annuler</button>
 		</div>
@@ -77,7 +77,7 @@
 		<div class="overlay" on:click={() => showBlockPopup = false}></div>
 		<div class="delete-account">
 			<h2>Bloquer</h2>
-			<p>Vous êtes sur le point de bloquer {users.name}, cette action est irréversible. Êtes-vous sûr de vouloir le faire ?</p>
+			<p style="color: #111">Vous êtes sur le point de bloquer {users.name}, cette action est irréversible. Êtes-vous sûr de vouloir le faire ?</p>
 			<button class="btn" style="background-color: #C64141; color: white;" on:click={() => {blockUser(); showBlockPopup = false}}>Bloquer</button>
 			<button class="btn" style="background-color: #111;" on:click={() => showBlockPopup = false}>Annuler</button>
 		</div>
@@ -104,7 +104,7 @@
 					<p id="scd-info">{users.orientation}</p>
 				</div>
 				<div class="min-info">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="m16 11.78l4.24-7.33l1.73 1l-5.23 9.05l-6.51-3.75L5.46 19H22v2H2V3h2v14.54L9.5 8z"/></svg>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path style="filter: invert(var(--invert-invert-svg));" d="m16 11.78l4.24-7.33l1.73 1l-5.23 9.05l-6.51-3.75L5.46 19H22v2H2V3h2v14.54L9.5 8z"/></svg>
 					<p id="scd-info">{users.fameRatingCalc}%</p>
 				</div>
 				<div class="min-info">
@@ -163,10 +163,10 @@ main {
 	left: 0;
 	width: 100%;
 	height: 100%;
+	background: transparent;
 }
 
 p {
-	color: #111111;
 	font-size: 1.3rem;
 }
 
@@ -212,6 +212,7 @@ p {
 	font-size: 1.5rem;
 	display: flex;
 	justify-content: center;
+	color: #111;
 }
 
 .delete-account p {
@@ -245,6 +246,7 @@ p {
 .close-scroll svg{
 	width: 20px;
 	height: 20px;
+	filter: invert(var(--invert-invert-svg));
 }
 
 .info-profil{
@@ -270,18 +272,12 @@ p {
 	flex-direction: column;
 	gap: 10px;
 	margin: 20px;
-	color: #111111;
-}
-
-.low-info-scroll p{
-	color: #111111;
 }
 
 .min-info{
 	display: flex;
 	flex-direction: row;
 	gap: 25px;
-	color: #111111;
 }
 
 .bar-scroll {

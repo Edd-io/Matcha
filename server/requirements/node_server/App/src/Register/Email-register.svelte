@@ -91,9 +91,7 @@
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
-		padding: 20px;
-		color: #111111;
-		
+		padding: 20px;		
 	}
 
 	#txt {
