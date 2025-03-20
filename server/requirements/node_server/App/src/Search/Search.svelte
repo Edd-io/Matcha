@@ -1,7 +1,7 @@
 <script lang="ts">
 	import UserLine from "./UserLine.svelte";
 	import ChooseInterests from "../Register/Choose_interests.svelte";
-    import { onMount } from "svelte";
+	import { onMount } from "svelte";
 	import Cross from "../assets/cross.svg";
 
 	let showFilter = false;
@@ -21,10 +21,13 @@
 		fame: false,
 		distance: false
 	}
-
 	let lstUsers = [];
 	let lstUsersSorted = lstUsers;
 	let searchQuery = "";
+	let count = 0;
+
+	globalThis.path.set('/search');
+	globalThis.last_path = window.location.pathname;
 
 	onMount(() => {
 		get_users();
@@ -33,11 +36,10 @@
 	async function get_users()
 	{
 		try {
-			const response = await fetch('get_list_users');
+			const response = await fetch('/get_list_users');
 			const data = await response.json();
 			lstUsers = data;
 			lstUsersSorted = lstUsers;
-			console.log(globalThis.self_location);
 			if (globalThis.self_location.latitude !== -1)
 			{
 				lstUsers.forEach(user => {
@@ -56,27 +58,28 @@
 	}
 
 	function haversine(pos1, pos2): number
-    {
-        const earth_radius = 6378000;
-        const radius = (n: number) => n  * (Math.PI / 180);
+	{
+		const earth_radius = 6378000;
+		const radius = (n: number) => n  * (Math.PI / 180);
 
-        pos1[0] = radius(pos1[0]);
-        pos1[1] = radius(pos1[1]);
-        pos2[0] = radius(pos2[0]);
-        pos2[1] = radius(pos2[1]);
+		pos1[0] = radius(pos1[0]);
+		pos1[1] = radius(pos1[1]);
+		pos2[0] = radius(pos2[0]);
+		pos2[1] = radius(pos2[1]);
 
-        const distance =  2 * earth_radius * Math.asin(
-            Math.sqrt(
-                Math.pow(Math.sin((pos2[0] - pos1[0]) / 2), 2)
-                + ((Math.cos(pos1[0]) * Math.cos(pos2[0]))
-                * Math.pow(Math.sin((pos2[1] - pos1[1]) / 2), 2))
-            )
-        )
-        return (Number((distance / 1000).toFixed(2)))
-    }
+		const distance =  2 * earth_radius * Math.asin(
+			Math.sqrt(
+				Math.pow(Math.sin((pos2[0] - pos1[0]) / 2), 2)
+				+ ((Math.cos(pos1[0]) * Math.cos(pos2[0]))
+				* Math.pow(Math.sin((pos2[1] - pos1[1]) / 2), 2))
+			)
+		)
+		return (Number((distance / 1000).toFixed(2)))
+	}
 
 	function sort_by_func(age: boolean, fame: boolean, distance: boolean)
 	{
+		console.log(age, fame, distance);
 		if (age)
 		{
 			lstUsersSorted = [...lstUsers].sort((a, b) => a.age - b.age);
@@ -92,9 +95,9 @@
 			lstUsersSorted = [...lstUsers].sort((a, b) => a.distance - b.distance);
 			sort_by = 'distance';
 		}
-		else {
+		else
 			lstUsersSorted = [...lstUsers];
-		}
+		count++;
 	}
 
 	function filter_by_change()
@@ -118,7 +121,16 @@
 			(user.interests && user.interests.some(interest => selected_interests.includes(interest))) ||
 			(user.interest && user.interest.some(interest => selected_interests.includes(interest))))
 		);
+		lstUsersSorted = lstUsersSorted.sort((a, b) => {
+			if (sort_by === 'age')
+				return (a.age - b.age);
+			else if (sort_by === 'fame')
+				return (b.fame - a.fame);
+			else if (sort_by === 'distance')
+				return (a.distance - b.distance);
+		});
 		showFilter = false;
+		count++;
 	}
 
 	$: {
@@ -132,18 +144,12 @@
 		<button class='filter-btn' on:click={() => showFilter = true}>Filtrer</button>
 	</div>
 
-	<!-- <div class="overlay"></div>
-	<div class="delete-account">
-		<h2>Retirer une réaction</h2>
-		<p>Souhaitez-vous vraiment retirer la réaction que vous avez mis à {name} ?</p>
-		<button class="btn" style="background-color: #c64141;">Oui</button>
-		<button class="btn" style="background-color: #111;">Annuler</button>
-	</div> -->
-
 	<div class="search-results">
-		{#each lstUsersSorted as user}
-			<UserLine userInfo={user} />
-		{/each}
+		{#key count}
+			{#each lstUsersSorted as user}
+				<UserLine userInfo={user} />
+			{/each}
+		{/key}
 	</div>
 	{#if showFilter}
 		<div class="filter">
@@ -208,52 +214,6 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-	}
-
-	.overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(5px);
-		border: none;
-		z-index: 2;
-	}
-
-	.delete-account {
-		position: absolute;
-		display: flex;
-		flex-direction: column;
-		background-color: white;
-		top: 50%;
-		transform: translateY(-50%);
-		margin-top: 20px;
-		width: 80%;
-		padding: 20px;
-		gap: 20px;
-		border-radius: 2rem;
-		z-index: 3;
-	}
-
-	.delete-account h2 {
-		font-size: 1.5rem;
-		display: flex;
-		justify-content: center;
-	}
-
-	.delete-account p {
-		font-size: 1rem;
-	}
-
-	.btn {
-		color: white;
-		padding: 10px 20px;
-		border-radius: 2rem;
-		cursor: pointer;
-		border: none;
-		font-weight: 600;
 	}
 
 	.search-bar {

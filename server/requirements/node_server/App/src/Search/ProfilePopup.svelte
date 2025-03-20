@@ -28,6 +28,12 @@
 		})
 		.then(res => res.json())
 		.then(data => {
+			if (data.error)
+			{
+				alert("Profil non disponible");
+				showProfilePopup = false;
+				return;
+			}
 			user = data;
 			loading = false;
 		})

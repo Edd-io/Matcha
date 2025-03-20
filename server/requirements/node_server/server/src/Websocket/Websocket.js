@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   Websocket.js                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 23:36:18 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/13 13:10:18 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/15 11:59:26 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 const Debug = require('../Debug');
 const wsMessage = require('./typeRequest/message');
+const wsImage = require('./typeRequest/image');
 const wsMessageSeen = require('./typeRequest/messageSeen');
 const wsCall = require('./typeRequest/wsCall');
 const users = [];
@@ -61,6 +62,8 @@ class Websocket
 			}
 			if (json.type == 'message')
 				wsMessage(users, json.content, this.id, json.to, this.db);
+			else if (json.type == 'image')
+				wsImage(users, json.content, this.id, json.to, this.db);
 			else if (json.type == 'message_seen')
 				wsMessageSeen(this.id, json.to, this.db);
 			else if (json.type == 'seen_notifs')

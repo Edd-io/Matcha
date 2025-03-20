@@ -18,14 +18,12 @@
 	let codePopup: string = "";
 	let passwordPopup: string = "";
 	let err_popup: string = "";
+	let darkModeEnabled = localStorage.getItem('darkMode') === 'true';
 
 	globalThis.path.set('settings');
 
 	onMount(() => {
 		getUserInfo();
-		return (() => {
-
-		});
 	});
 
 
@@ -74,7 +72,7 @@
 				if (last_email !== mail)
 					showPopup = true;
 				error = "";
-				// show popup here to confirm
+				window.dispatchEvent(new CustomEvent('newNotif', {detail: {title: 'Succès', message: 'Vos informations ont bien été enregistrées !', image: null}}));
 			}
 		});
 	}
@@ -219,7 +217,7 @@
 		
 		<div class="input-place">
 			<label for="date">Date de naissance</label>
-			<input class="input-text" type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value}>
+			<input class="input-text" type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value} style="display: inline-block;">
 		</div>
 
 		<div class="input-place">
@@ -265,7 +263,7 @@
 			<label for="dark-mode">Mode sombre</label>
 
 			<label class="switch">
-				<input type="checkbox" on:change={(e) => darkMode(e.target.checked)}>
+				<input type="checkbox" on:change={(e) => darkMode(e.target.checked)} bind:checked={darkModeEnabled}>
 				<span class="slider round"></span>
 			</label>
 		</div>

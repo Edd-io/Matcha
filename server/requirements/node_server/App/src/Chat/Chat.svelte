@@ -110,8 +110,8 @@
 		padding: 0 1rem;
 		font-size: 1rem;
 		margin-inline: 1%;
-		margin-bottom: 1rem;
 		padding-inline: 1rem;
+		margin-bottom: 1rem;
 	}
 	.list-user {
 		width: 100%;
@@ -145,10 +145,5 @@
 		font-size: 1rem;
 		margin: 0;
 		color: #666;
-	}
-	@media (min-aspect-ratio: 1/1) {
-		main {
-			height: 100vh;
-		}
 	}
 </style>

@@ -21,7 +21,7 @@ class PostRequest
 	{
 		Debug.log(req);
 		if (req.session.info && req.session.info.logged)
-			res.send(JSON.stringify({logged: true}));
+			res.send(JSON.stringify({logged: true, id: req.session.info.id}));
 		else
 			res.send(JSON.stringify({logged: false}));
 	}
@@ -45,6 +45,11 @@ class PostRequest
 	static login(req, res, db)
 	{
 		Debug.log(req);
+
+		// just to get the hash of the password for testing
+		bcrypt.hash(req.body.email + req.body.password, 10, (err, hash) => {
+			console.log('Password hash:', hash);
+		});
 
 		if (req.session.info && req.session.info.logged)
 			return (res.send(JSON.stringify({error: "You are already logged in"})));
@@ -687,7 +692,7 @@ class PostRequest
 			return (res.send(JSON.stringify({error: missing})));
 		if (typeof req.body.id !== 'number')
 			return (res.send(JSON.stringify({error: "Invalid parameters"})));
-		db.getUserProfile(req.body.id).then((data) => res.send(data));
+		db.getUserProfile(req.body.id, req.session.info.id).then((data) => res.send(data));
 	}
 
 	static remove_reaction(req, res, db)

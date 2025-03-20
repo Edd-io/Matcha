@@ -1,42 +1,41 @@
 <script lang="ts">
-		import { navigate } from "svelte-routing";
-		import DoubleRangeSlider from "./Double-range-slider.svelte";
-		import SimpleRangeSlider from "./Simple-range-slider.svelte";
-		import Choose_interests from "../Register/Choose_interests.svelte";
-		import Notsaved from "./not-save.svelte";
+	import { navigate } from "svelte-routing";
+	import DoubleRangeSlider from "./Double-range-slider.svelte";
+	import SimpleRangeSlider from "./Simple-range-slider.svelte";
+	import Choose_interests from "../Register/Choose_interests.svelte";
 
-		let min_age: number;
-		let max_age: number;
-		let range: number;
-		let fame: number;
+	let min_age: number;
+	let max_age: number;
+	let range: number;
+	let fame: number;
 
-		let interests: number[] = [];
-		globalThis.path.set('/filter');
+	let interests: number[] = [];
+	globalThis.path.set('/filter');
 
-		function back()
-		{
-			globalThis.filterData = {
-				min_age: min_age,
-				max_age: max_age,
-				range: range,
-				interests: interests,
-				fame: fame
-			};
-			globalThis.pageLoaded = false;
-			navigate(globalThis.last_path);
+	function back()
+	{
+		globalThis.filterData = {
+			min_age: min_age,
+			max_age: max_age,
+			range: range,
+			interests: interests,
+			fame: fame
 		};
-		min_age = globalThis.filterData.min_age;
-		max_age = globalThis.filterData.max_age;
-		range = globalThis.filterData.range;
-		interests = globalThis.filterData.interests;
-		fame = globalThis.filterData.fame;
-		$: localStorage.setItem('min_age', String(min_age));
-		$: localStorage.setItem('max_age', String(max_age));
-		$: localStorage.setItem('range', String(range));
-		$: localStorage.setItem('interests', JSON.stringify(interests));
-		$: localStorage.setItem('fame', String(fame));
-		$: globalThis.filterData = {min_age, max_age, range, interests, fame};
-		$: console.log({min_age, max_age, range, interests, fame});
+		globalThis.pageLoaded = false;
+		navigate(globalThis.last_path);
+	};
+	min_age = globalThis.filterData.min_age;
+	max_age = globalThis.filterData.max_age;
+	range = globalThis.filterData.range;
+	interests = globalThis.filterData.interests;
+	fame = globalThis.filterData.fame;
+	$: localStorage.setItem('min_age', String(min_age));
+	$: localStorage.setItem('max_age', String(max_age));
+	$: localStorage.setItem('range', String(range));
+	$: localStorage.setItem('interests', JSON.stringify(interests));
+	$: localStorage.setItem('fame', String(fame));
+	$: globalThis.filterData = {min_age, max_age, range, interests, fame};
+	$: console.log({min_age, max_age, range, interests, fame});
 </script>
 	
 <main>
@@ -58,7 +57,6 @@
 		<div style="width: 100%; height: 10rem; margin-top: 1rem; max-width: 100%; padding-inline: 3.5rem;">
 			<Choose_interests bind:selected_interests={interests}/>
 		</div>
-		<Notsaved />
 </main>
 
 <style>

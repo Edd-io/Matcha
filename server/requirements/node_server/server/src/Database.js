@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/13 09:13:36 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/18 09:56:22 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ class Database
 				to_id INT,
 				message TEXT,
 				date DATETIME,
+				is_image BOOLEAN DEFAULT FALSE,
 				FOREIGN KEY(from_id) REFERENCES accounts(id) ON DELETE CASCADE,
 				FOREIGN KEY(to_id) REFERENCES accounts(id) ON DELETE CASCADE
 			)`);
@@ -729,29 +730,31 @@ class Database
 		this.buffer_neverSeenUser[index].neverSeen.sort((a, b) => b.score - a.score);
 
 		const conn = await this.pool.getConnection();
+		const user1 = await this.getNameAndPfp(user_id);
+		const user2 = await this.getNameAndPfp(other_id);
 		if (react == true)
 		{
 			console.log("User liked");
 			await conn.query('INSERT INTO users_likes (user_id, user_liked_id) VALUES (?, ?)', [user_id, other_id]);
 			if (await this.hasMatch(user_id, other_id))
 			{
-				Websocket.sendNotification(user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
-				Websocket.sendNotification(other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png");
-				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [user_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png", other_id]);
-				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, "Tu as un nouveau match ! Vas voir ça dans tes messages", "match.png", user_id]);
+				Websocket.sendNotification(user_id, `Tu as un nouveau match avec ${user2.name} ! Vas voir ça dans tes messages`, user2.pfp);
+				Websocket.sendNotification(other_id, `Tu as un nouveau match avec ${user.name} ! Vas voir ça dans tes messages`, user.pfp);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [user_id, `Tu as un nouveau match avec ${user2.name} ! Vas voir ça dans tes messages`, "match.png", other_id]);
+				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `Tu as un nouveau match avec ${user1.name} ! Vas voir ça dans tes messages`, "match.png", user_id]);
 				await conn.query('INSERT INTO users_last_message (from_id, to_id, message, system) VALUES (?, ?, ?, ?)', [user_id, other_id, "Commence la conversation !", true]);
 			}
 			else
 			{
 				const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
-				Websocket.sendNotification(other_id, `${name_user[0].first_name} a liké ton profil`, "like.png");
+				Websocket.sendNotification(other_id, `${name_user[0].first_name} a liké ton profil`, user1.pfp);
 				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `${name_user[0].first_name} a liké ton profil`, "seen.png", user_id]);
 			}
 		}
 		else
 		{
 			const name_user = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
-			Websocket.sendNotification(other_id, `${name_user[0].first_name} a disliké ton profil`, "dislike.png");
+			Websocket.sendNotification(other_id, `${name_user[0].first_name} a disliké ton profil`, user1.pfp);
 			await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `${name_user[0].first_name} a vu ton profil`, "seen.png", user_id]);
 			await conn.query('INSERT INTO users_dislikes (user_id, user_disliked_id) VALUES (?, ?)', [user_id, other_id]);
 		}
@@ -840,6 +843,7 @@ class Database
 			chat.push({
 				content: row[i].message,
 				sendBySelf: row[i].from_id == from_id,
+				isImage: row[i].is_image,
 			});
 		}
 		return (chat);
@@ -859,6 +863,15 @@ class Database
 			await conn.query('DELETE FROM users_last_message WHERE (from_id = ? AND to_id = ?) OR (from_id = ? AND to_id = ?)', [from_id, to_id, to_id, from_id]);
 			await conn.query('INSERT INTO users_last_message (from_id, to_id, message) VALUES (?, ?, ?)', [from_id, to_id, message]);
 		}
+		conn.release();
+		conn.end();
+	}
+
+	async sendImage(from_id, to_id, image_name)
+	{
+		const conn = await this.pool.getConnection();
+
+		await conn.query('INSERT INTO users_messages (from_id, to_id, message, is_image) VALUES (?, ?, ?, ?)', [from_id, to_id, image_name, true]);
 		conn.release();
 		conn.end();
 	}
@@ -982,7 +995,7 @@ class Database
 		conn.end();
 		for (let i = 0; i < row.length; i++)
 		{
-			if (row3.find((element) => element.user_id == row[i].user_id || element.user_blocked_id == row[i].user_id))
+			if (row3.find((element) => (element.user_id == row2[i].user_id && element.user_blocked_id == self_id) || (element.user_blocked_id == row2[i].user_id && element.user_id == self_id)))
 				continue;
 			if (row[i].location)
 			{
@@ -1136,8 +1149,6 @@ class Database
 		catch (e) {
 			return ({error: 'Error to hash password'});
 		}
-
-		  
 	}
 
 	async changeMailConfirm(user_id, mail)
@@ -1210,7 +1221,7 @@ class Database
 		
 		for (let i = 0; i < row2.length; i++)
 		{
-			if (row3.find((element) => element.user_id == row2[i].user_id || element.user_blocked_id == row2[i].user_id))
+			if (row3.find((element) => (element.user_id == row2[i].user_id && element.user_blocked_id == user_id) || (element.user_blocked_id == row2[i].user_id && element.user_id == user_id)))
 				continue;
 			usersList.push({
 				first_name: row2[i].first_name,
@@ -1232,7 +1243,7 @@ class Database
 		return (usersList);
 	}
 
-	async getUserProfile(user_id)
+	async getUserProfile(user_id, self_id)
 	{
 		const fameRatingCalc = async (user_id) => {
 			const conn = await this.pool.getConnection();
@@ -1254,6 +1265,8 @@ class Database
 			return (data.error ? null : data);
 		}
 
+		if (await this.isBlockedUser(user_id, self_id))
+			return ({error: "User blocked"});
 		const conn = await this.pool.getConnection();
 		const row = await conn.query('SELECT * FROM users_info WHERE user_id = ?', [user_id]);
 		const row2 = await conn.query('SELECT * FROM users_tags WHERE user_id = ?', [user_id]);
@@ -1375,6 +1388,20 @@ class Database
 		conn.release();
 		conn.end();
 		return (row.length != 0);
+	}
+
+	async getNameAndPfp(user_id)
+	{
+		const conn = await this.pool.getConnection();
+		const row = await conn.query('SELECT first_name FROM users_info WHERE user_id = ?', [user_id]);
+		const row2 = await conn.query('SELECT local_url FROM users_images WHERE user_id = ?', [user_id]);
+
+		conn.release();
+		conn.end();
+		return ({
+			name: row[0].first_name,
+			pfp: row2[0].local_url,
+		});
 	}
 }
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   message.js                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/18 17:51:32 by edbernar          #+#    #+#             */
-/*   Updated: 2025/02/26 15:42:25 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/17 16:11:14 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@ const userBlocked = require('../../utils/userBlocked');
 
 function wsMessage(wsUsers, message, from, to, db)
 {
-	userBlocked({session: {info: {id: from}}}, null, db, to).then((blocked) => {
+	userBlocked({session: {info: {id: from}}}, null, db, to).then(async (blocked) => {
 		if (blocked)
 		{
 			wsUsers[from].send({type: 'error', content: 'User blocked'});
@@ -37,7 +37,11 @@ function wsMessage(wsUsers, message, from, to, db)
 		}
 		db.sendMessage(from, to, message);
 		if (wsUsers[to])
-			wsUsers[to].send({type: 'message', content: message, from: from});
+		{
+			const dataUser = await db.getNameAndPfp(from);
+
+			wsUsers[to].send({type: 'message', content: message, from: from, name: dataUser.name, pfp: dataUser.pfp});
+		}
 	});
 }
 
