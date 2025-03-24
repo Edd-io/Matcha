@@ -51,6 +51,26 @@
 
 	function setUserInfo()
 	{
+		if (name_user.trim() === "" || last_name_user.trim() === "" || pseudo.trim() === "" || dateOfBirth.trim() === "" || mail.trim() === "")
+		{
+			error = "Veuillez remplir tous les champs.";
+			return;
+		}
+		if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(mail))
+		{
+			error = "Adresse mail invalide.";
+			return;
+		}
+
+		const birthDate = new Date(dateOfBirth);
+		const today = new Date();
+		const age = today.getFullYear() - birthDate.getFullYear();
+		if (age < 18)
+		{
+			error = "Vous devez avoir au moins 18 ans pour vous inscrire.";
+			return;
+		}
+		
 		fetch('/change_info', {
 			method: 'POST',
 			headers: {
