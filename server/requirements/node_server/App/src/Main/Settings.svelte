@@ -19,6 +19,10 @@
 	let passwordPopup: string = "";
 	let err_popup: string = "";
 	let darkModeEnabled = localStorage.getItem('darkMode') === 'true';
+	const today = new Date();
+	const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+		.toISOString()
+		.split("T")[0];
 
 	globalThis.path.set('settings');
 
@@ -217,7 +221,7 @@
 		
 		<div class="input-place">
 			<label for="date">Date de naissance</label>
-			<input class="input-text" type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value} style="display: inline-block;">
+			<input class="input-text" max={maxDate} type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value} style="display: inline-block;">
 		</div>
 
 		<div class="input-place">
