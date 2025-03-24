@@ -46,8 +46,8 @@
 			<div class="buttons">
 				<button on:click={redirect} class="create">
 					<p style="color : #111">Créer <br />un compte</p>
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
-						<path stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
+					<svg xmlns="http://www.w3.org/2000/svg" style="filter: invert(0);" fill="none" viewBox="0 0 24 24" width="18" height="18" class="arrow-icon">
+						<path fill="none" stroke="currentColor" stroke-width="2" d="M5 12h14M12 5l7 7-7 7"/>
 					</svg>
 				</button>
 				<button on:click={redirect42}>

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   index.js                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+        */
+/*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/14 22:25:21 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/17 16:04:10 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/24 12:49:07 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,8 +47,7 @@ function init(db)
 		Debug.log(req);
 		res.sendFile('/app/website/index.html');
 	});
-	
-	// Move static files to nginx later
+
 	app.get('/assets/:file', (req, res) => {
 		res.sendFile(`/app/website/assets/${req.params.file}`);
 	});
@@ -86,6 +85,10 @@ function init(db)
 	app.get('/get_list_users', (req, res) => PostRequest.get_list_users(req, res, db));
 	app.post('/get_user_profile', (req, res) => PostRequest.get_user_profile(req, res, db));
 	app.post('/remove_reaction', (req, res) => PostRequest.remove_reaction(req, res, db));
+
+	app.get('*', function(req, res){
+		res.status(301).redirect('/');
+	});
 
 	server.listen(port, () => {
 		console.log(`Server running on port ${port}`);
