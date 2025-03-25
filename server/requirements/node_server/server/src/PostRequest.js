@@ -225,6 +225,14 @@ class PostRequest
 				isNaN(parseInt(req.body.date_of_birth.substr(8, 2)))
 			)
 			return (res.send(JSON.stringify({error: "Invalid date of birth"})));
+		const birthDate = new Date(req.body.date_of_birth);
+		const today = new Date();
+		const age = today.getFullYear() - birthDate.getFullYear();
+		const monthDiff = today.getMonth() - birthDate.getMonth();
+		if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()))
+			age--;
+		if (age < 18)
+			return (res.send(JSON.stringify({error: "You must be at least 18 years old"})));
 		if (req.body.sexe !== 'M' && req.body.sexe !== 'F' && req.body.sexe !== 'O')
 			return (res.send(JSON.stringify({error: "Invalid sexe"})));
 		if (req.body.orientation !== 'M' && req.body.orientation !== 'F' && req.body.orientation !== 'O')
@@ -552,6 +560,14 @@ class PostRequest
 			isNaN(parseInt(req.body.date_of_birth.substr(8, 2)))
 		)
 			return (res.send(JSON.stringify({error: "Invalid date of birth"})));
+		const birthDate = new Date(req.body.date_of_birth);
+		const today = new Date();
+		const age = today.getFullYear() - birthDate.getFullYear();
+		const monthDiff = today.getMonth() - birthDate.getMonth();
+		if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate()))
+			age--;
+		if (age < 18)
+			return (res.send(JSON.stringify({error: "You must be at least 18 years old"})));
 		if (req.body.first_name.length < 2 || req.body.first_name.length > 50)
 			return (res.send(JSON.stringify({error: "First name must be between 2 and 50 characters"})));
 		if (req.body.last_name.length < 2 || req.body.last_name.length > 50)
