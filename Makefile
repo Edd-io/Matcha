@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: edbernar <edbernar@student.42angouleme.    +#+  +:+       +#+         #
+#    By: madegryc <madegryc@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/16 14:07:45 by edbernar          #+#    #+#              #
-#    Updated: 2025/01/14 15:45:15 by edbernar         ###   ########.fr        #
+#    Updated: 2025/03/25 15:39:48 by madegryc         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,9 +18,6 @@ all: up
 
 up: buildSvelte
 	$(COMPOSE) up  --build -d
-
-up_att: buildSvelte
-	$(COMPOSE) up --build
 
 watch:
 	$(COMPOSE) watch 
@@ -36,7 +33,7 @@ fclean:clean
 	docker system prune -af
 
 buildSvelte:
-	cd server/requirements/node_server/App && npm run build
+	cd server/requirements/node_server/App && npm install && npm run build
 
 re: fclean all
 
