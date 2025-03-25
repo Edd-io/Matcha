@@ -29,6 +29,8 @@
     .pfp-notif {
         height: 90px;
         width: 90px;
+        min-width: 90px;
+        min-height: 90px;
         background-color: #d9d9d9;
         border-radius: 3rem;
         margin-inline: 20px;
