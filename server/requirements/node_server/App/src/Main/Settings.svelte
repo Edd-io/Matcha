@@ -189,12 +189,14 @@
 			document.documentElement.style.setProperty('--background-color', '#111111');
 			document.documentElement.style.setProperty('--text-color', '#ffffff');
 			document.documentElement.style.setProperty('--invert-svg', '1');
+			document.documentElement.style.setProperty('--invert-invert-svg', '0');
 		}
 		else
 		{
 			document.documentElement.style.setProperty('--background-color', '#ffffff');
 			document.documentElement.style.setProperty('--text-color', '#000000');
 			document.documentElement.style.setProperty('--invert-svg', '0');
+			document.documentElement.style.setProperty('--invert-invert-svg', '1');
 		}
 		localStorage.setItem('darkMode', enable);
 	}

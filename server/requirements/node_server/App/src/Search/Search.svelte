@@ -255,7 +255,7 @@
 	.filter-container {
 		display: flex;
 		flex-direction: column;
-		background-color: white;
+		background-color: var(--background-color);
 		width: 80%;
 		padding: 2rem;
 		padding-top: 1.5rem;
@@ -268,14 +268,14 @@
 		top: 1rem;
 		right: 1.5rem;
 		font-size: 1.5rem;
-		background-color: white;
 		border: none;
+		background: transparent;
 		cursor: pointer;
+		filter: invert(var(--invert-invert-svg));
 	}
 
 	.close-filter-btn img {
 		width: 1rem;
-		filter: invert(1);
 	}
 
 	.line {
