@@ -63,7 +63,7 @@
 					<img src={user.pfp} alt="Pfp de {user.name}" />
 				</div>
 					<div style="padding-inline: 1rem;">
-						<h3>{user.name}</h3>
+						<h3 style="color: var(--text-color);">{user.name}</h3>
 						<p style="{!user.seen ? 'font-weight: 700; color: #111' : ''}">
 							{user.sendBySystem ? "" : user.sendBySelf ? "Toi : " : user.name + " : "} {user.lastMessage.length > 30 ? user.lastMessage.slice(0, 30) + '...' : user.lastMessage}
 						</p>

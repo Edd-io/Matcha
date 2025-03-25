@@ -470,6 +470,7 @@
 		gap: 20px;
 		border-radius: 2rem;
 		z-index: 3;
+		max-width: 40rem;
 	}
 
 	.delete-account h2 {

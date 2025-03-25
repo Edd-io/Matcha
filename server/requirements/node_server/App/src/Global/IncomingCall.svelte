@@ -164,7 +164,7 @@
 	#popup {
 		position: absolute;
 		width: 90vw;
-		background-color: white;
+		background-color: var(--background-color);
 		z-index: 1001;
 		left: 50%;
 		transform: translateX(-50%);

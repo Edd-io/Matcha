@@ -235,22 +235,22 @@
 				</div>
 			</div>
 			<p>{user.name}</p>
-			<p style="color: #4e4e4e; margin-left: 1rem; font-size: 0.9rem">{lastConnection}</p>
+			<p style="color: var(--text-color); margin-left: 1rem; font-size: 0.9rem">{lastConnection}</p>
 		</div>
 		<div style="display: flex; gap: 1rem; align-items: center;">
 			<button class="no-button-style" aria-label="Appeler" on:click={startCall}>
 				<i class="fa-solid fa-phone"></i>
 			</button>
 			<button id="testtt" class="no-button-style" on:click={() => options = !options} aria-label="Options">	
-				<img src={threeDotsIcon} alt="Options" />
+				<img src={threeDotsIcon} alt="Options" style="filter: invert(var(--invert-svg));"/>
 			</button>
 		</div>
 		{#if options}
 			<div class="options">
-				<button class="no-button-style" on:click={() => reportUser()}>
+				<button class="no-button-style" on:click={() => reportUser()} style="color: var(--text-color)">
 					Signaler
 				</button>
-				<button class="no-button-style" on:click={() => blockUser()}>
+				<button class="no-button-style" on:click={() => blockUser()} style="color: var(--text-color)">
 					Bloquer
 				</button>
 			</div>
@@ -270,7 +270,7 @@
 		{/each}
 	</div>
 	<div class='bottom'>
-		<button class="send-image-btn" on:click={sendImage} aria-label="Envoyer une image">
+		<button class="send-image-btn" on:click={sendImage} aria-label="Envoyer une image" style="filter: invert(var(--invert-svg));">
 			<img src={addPhoto} alt="Envoyer" />
 		</button>
 		<div class=input-message-container>
@@ -298,7 +298,7 @@
 		overflow: hidden;
 		top: 0;
 		left: 0;
-		background-color: white;
+		background-color: var(--background-color);
 		z-index: 5000;
 	}
 	.arrow-icon {
@@ -315,7 +315,8 @@
 		right: 10px;
 		display: flex;
 		flex-direction: column;
-		background-color: white;
+		background-color: var(--background-color);
+		color: var(--text-color);
 		padding: 10px;
 		gap: 10px;
 		box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -427,9 +428,8 @@
 		flex-direction: row;
 		align-items: center;
 		justify-content: center;
-		border: 0.25rem solid #111;
-		border-radius: 100%;
 		padding: 1.5rem;
+		border: none;
 	}
 
 	.bottom .send-image-btn img {

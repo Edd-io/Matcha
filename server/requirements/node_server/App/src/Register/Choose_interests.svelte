@@ -270,7 +270,7 @@
 							class='interest-button {selected_interests.includes(interest.id) ? "selected" : ""}'
 							on:click={() => selectInterests(interest.id)}
 						>{interest.interest}
-							<i class="fa-regular fa-circle-check"></i>
+							<i class="fa-regular fa-circle-check" style="filter: invert(var(--invert-invert-svg));"></i>
 						</button>
 					{/each}
 				</div>
