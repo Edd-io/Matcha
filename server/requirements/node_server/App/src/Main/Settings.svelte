@@ -19,6 +19,10 @@
 	let passwordPopup: string = "";
 	let err_popup: string = "";
 	let darkModeEnabled = localStorage.getItem('darkMode') === 'true';
+	const today = new Date();
+	const maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate())
+		.toISOString()
+		.split("T")[0];
 
 	globalThis.path.set('settings');
 
@@ -47,6 +51,26 @@
 
 	function setUserInfo()
 	{
+		if (name_user.trim() === "" || last_name_user.trim() === "" || pseudo.trim() === "" || dateOfBirth.trim() === "" || mail.trim() === "")
+		{
+			error = "Veuillez remplir tous les champs.";
+			return;
+		}
+		if (!/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/.test(mail))
+		{
+			error = "Adresse mail invalide.";
+			return;
+		}
+
+		const birthDate = new Date(dateOfBirth);
+		const today = new Date();
+		const age = today.getFullYear() - birthDate.getFullYear();
+		if (age < 18)
+		{
+			error = "Vous devez avoir au moins 18 ans pour vous inscrire.";
+			return;
+		}
+		
 		fetch('/change_info', {
 			method: 'POST',
 			headers: {
@@ -219,7 +243,7 @@
 		
 		<div class="input-place">
 			<label for="date">Date de naissance</label>
-			<input class="input-text" type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value} style="display: inline-block;">
+			<input class="input-text" max={maxDate} type="date" id="date" name="date" value={dateOfBirth} on:change={(e) => dateOfBirth = e.target.value} style="display: inline-block;">
 		</div>
 
 		<div class="input-place">
