@@ -6,7 +6,7 @@
 /*   By: edbernar <edbernar@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/16 16:54:56 by edbernar          #+#    #+#             */
-/*   Updated: 2025/03/18 09:56:22 by edbernar         ###   ########.fr       */
+/*   Updated: 2025/03/25 14:37:03 by edbernar         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -739,7 +739,7 @@ class Database
 			if (await this.hasMatch(user_id, other_id))
 			{
 				Websocket.sendNotification(user_id, `Tu as un nouveau match avec ${user2.name} ! Vas voir ça dans tes messages`, user2.pfp);
-				Websocket.sendNotification(other_id, `Tu as un nouveau match avec ${user.name} ! Vas voir ça dans tes messages`, user.pfp);
+				Websocket.sendNotification(other_id, `Tu as un nouveau match avec ${user1.name} ! Vas voir ça dans tes messages`, user1.pfp);
 				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [user_id, `Tu as un nouveau match avec ${user2.name} ! Vas voir ça dans tes messages`, "match.png", other_id]);
 				await conn.query('INSERT INTO users_notifications (user_id, message, image, from_id) VALUES (?, ?, ?, ?)', [other_id, `Tu as un nouveau match avec ${user1.name} ! Vas voir ça dans tes messages`, "match.png", user_id]);
 				await conn.query('INSERT INTO users_last_message (from_id, to_id, message, system) VALUES (?, ?, ?, ?)', [user_id, other_id, "Commence la conversation !", true]);
