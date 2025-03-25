@@ -133,7 +133,7 @@
 				<input type="email" id="reset-email" placeholder="Votre email" class="input-text" />
 			</div>
 			<button class="reset-button" on:click={handlePasswordReset}>Envoyer</button>
-			<button class="reset-button" style="color: white; background-color: #111;">Annuler</button>
+			<button class="reset-button" style="color: white; background-color: #111;" on:click={() => showPopup = false}>Annuler</button>
 			</div>
 		</div>
 	{/if}

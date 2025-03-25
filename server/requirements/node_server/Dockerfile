@@ -58,7 +58,7 @@ RUN mkdir -p /app/user_static_data/
 RUN mkdir -p /app/website/
 
 # line for local testing
-COPY ./img_test /app/user_static_data/
+COPY ./img /app/user_static_data/
 
 COPY ../App/dist /app/website
 

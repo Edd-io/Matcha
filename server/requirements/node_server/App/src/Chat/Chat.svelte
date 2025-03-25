@@ -64,7 +64,7 @@
 				</div>
 					<div style="padding-inline: 1rem;">
 						<h3 style="color: var(--text-color);">{user.name}</h3>
-						<p style="{!user.seen ? 'font-weight: 700; color: #111' : ''}">
+						<p style="{!user.seen ? 'font-weight: 700; color: var(--text-color);' : ''}">
 							{user.sendBySystem ? "" : user.sendBySelf ? "Toi : " : user.name + " : "} {user.lastMessage.length > 30 ? user.lastMessage.slice(0, 30) + '...' : user.lastMessage}
 						</p>
 					</div>
