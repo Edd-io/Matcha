@@ -26,7 +26,7 @@ Avant de commencer ce projet nous avons confectionné une maquette sur Figma pou
 • **Messagerie instantanée** pour discuter avec ses matchs  
 • **Protection contre les faux profils** (vérification, blocage, signalement)  
 • **Système de notifications** en temps réel  
-• **Filtres personnalisés** pour trouver plus facilement les personnes qui correspondent à ses critères
+• **Filtres personnalisés** pour trouver plus facilement les personnes qui correspondent à ses critères  
 • **Gestion stricte de l'authentification** (hashage des mots de passe, 2FA)  
 • **Système de signalement et de blocage** pour les comportements inappropriés
 
