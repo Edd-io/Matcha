@@ -8,10 +8,6 @@
 
 **Matcha** est une application web de rencontre, développée dans le cadre du programme de 42. Son objectif est de permettre aux utilisateurs de créer un profil, de découvrir d'autres membres en fonction de leurs préférences et d'interagir via un système de matchmaking et de chat en temps réel.  
 
-L'accent est mis sur l'authenticité, avec une interface fluide et une gestion stricte des profils pour garantir des interactions sûres et pertinentes.  
-
-🚧 Le projet est en cours de développement : de nouvelles fonctionnalités et améliorations sont prévues !
-
 ---
 
 ## 📝 Maquette
@@ -24,13 +20,23 @@ Avant de commencer ce projet nous avons confectionné une maquette sur Figma pou
 
 ## 🚀 Fonctionnalités principales  
 
-• **Inscription et connexion sécurisées**
+• **Inscription et connexion sécurisées**  
 • **Gestion de profil** (ajout de photos, description, préférences, localisation)  
 • **Système de matching** basé sur l'orientation et les intérêts communs  
 • **Messagerie instantanée** pour discuter avec ses matchs  
-• **Système de géolocalisation** pour afficher des profils proches  
 • **Protection contre les faux profils** (vérification, blocage, signalement)  
 • **Système de notifications** en temps réel  
+• **Filtres personnalisés** pour trouver plus facilement les personnes qui correspondent à ses critères
+• **Gestion stricte de l'authentification** (hashage des mots de passe, 2FA)  
+• **Système de signalement et de blocage** pour les comportements inappropriés
+
+## ☁️ Fonctionnalités Bonus
+
+• **Système de géolocalisation** pour afficher les profils sur une carte  
+• **Mode sombre** pour basculer entre un thème clair ou sombre selon les préférences  
+• **Connexion via 42** pour lier son compte 42 à Matcha et se connecter sans identifiants  
+• **Appels vocaux** pour pouvoir appeler directement depuis le site  
+• **Envoi d’images** dans les conversations  
 
 ---
 
@@ -49,9 +55,7 @@ Avant de commencer ce projet nous avons confectionné une maquette sur Figma pou
 
 ---
 
-## 🛡️ Sécurité et protection des données  
+## Auteurs
 
-La plateforme intègre plusieurs mesures pour garantir un espace sécurisé :  
-
-🔒 **Gestion stricte de l'authentification** (hashage des mots de passe, 2FA)  
-🚫 **Système de signalement et de blocage** pour les comportements inappropriés
+• Mathis, madegryc [https://github.com/Misthaa]
+• Eddy, edbernar [https://github.com/Edd-io]
