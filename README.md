@@ -49,9 +49,12 @@ Avant de commencer ce projet nous avons confectionné une maquette sur Figma pou
 
 ---
 
-## 🏗️ Installation et utilisation  
+## 🏗️ Utilisation  
 
-🚧 • WIP •
+Lancer le serveur :
+```bash
+  $> make
+```
 
 ---
 
